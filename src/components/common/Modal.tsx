@@ -48,11 +48,11 @@ const Modal: React.FC<ModalProps> = ({
                                     <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close Modal">
                                         <LuX className="h-5 w-5" />
                                     </Button>
+                                </header>
 
-                                    <main>
+                                    <main className="p-5">
                                         {children}
                                     </main>
-                                </header>
                             </Dialog.Panel>
                         </Transition.Child>
                     </div>

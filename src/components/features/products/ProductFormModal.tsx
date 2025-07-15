@@ -114,7 +114,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={isEditMode ? t('product.editTitle') : t('product.addTitle')}>
+    <Modal isOpen={isOpen} onClose={onClose} title={isEditMode ? t('product.editTitle') : t('product.addTitle', 'Add Title')}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input label={t('product.form.name', 'Product Name') + ' *'} name="name" value={formData.name || ''} onChange={handleChange} error={errors.name} required />

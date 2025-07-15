@@ -3,5 +3,8 @@
     "invalidDate": "Data inválida",
     "today": "Hoje",
     "yesterday": "Ontem"
+  },
+  "product": {
+    "addTitle": "Adicionar Produto"
   }
 }

@@ -4,7 +4,7 @@ import clsx from 'clsx';
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   iconLeft?: React.ReactNode;
-  error?: string;
+  error?: string | null;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
