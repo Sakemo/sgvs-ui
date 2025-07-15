@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Estilos globais para a aplicação */
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  
+  body {
+    @apply bg-bg-light text-text-primary font-sans;
+    @apply transition-colors duration-200 ease-in-out;
+  }
+
+  /* Estilos base para o modo escuro */
+  .dark body {
+    @apply bg-bg-dark text-gray-200;
+  }
+  
+  /* Anel de foco para acessibilidade, usando as cores da nova paleta */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-offset-2 ring-brand-primary/50 dark:ring-brand-accent/70 dark:ring-offset-bg-dark;
+  }
+}
