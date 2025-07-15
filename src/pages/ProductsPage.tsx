@@ -1,5 +1,3 @@
-// src/pages/ProductsPage.tsx
-
 // React and hooks
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';

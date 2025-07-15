@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { createProduct, updateProduct } from '../../../api/services/product.service';
-import type { ProductRequest, ProductResponse, EntitySummary } from '../../../api/types/domain';
+import type { ProductRequest, ProductResponse, EntitySummary, CategoryResponse, ProviderResponse } from '../../../api/types/domain';
 import { UnitOfSale } from '../../../api/types/domain';
 
 import Modal from '../../common/Modal';
@@ -10,6 +10,9 @@ import Input from '../../common/ui/Input';
 import Select from '../../common/ui/Select';
 import Textarea from '../../common/ui/Textarea';
 import { AxiosError } from 'axios';
+import { LuPlus } from 'react-icons/lu';
+import CategoryAddModal from '../categories/CategoryAddModal';
+import ProviderAddModal from '../providers/ProviderAddModal';
 
 interface ProductFormModalProps {
   isOpen: boolean;
@@ -30,6 +33,16 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const isEditMode = !!productToEdit;
+
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [isProviderModalOpen, setIsProviderModalOpen] = useState(false);
+
+  const handleNewCategory = (newCategory: CategoryResponse) => {
+    onSaveSuccess();
+  }
+  const handleNewProvider = (newProvider: ProviderResponse) => {
+    onSaveSuccess();
+  }
 
   const getInitialFormData = useCallback((): ProductRequest => {
     if (isEditMode && productToEdit) {
@@ -114,24 +127,39 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
   };
 
   return (
+    <>
     <Modal isOpen={isOpen} onClose={onClose} title={isEditMode ? t('product.editTitle') : t('product.addTitle', 'Add Title')}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input label={t('product.form.name', 'Product Name') + ' *'} name="name" value={formData.name || ''} onChange={handleChange} error={errors.name} required />
-          <Select label={t('common.category', 'Category') + ' *'} name="categoryId" value={formData.categoryId ?? ''} onChange={handleChange} error={errors.categoryId} required>
-            <option value="" disabled>{t('common.select', 'Select...')}</option>
-            {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
-          </Select>
+
+          <div className='flex items-end gap-2'>
+            <Select label={t('common.category', 'Category') + ' *'} name="categoryId" value={formData.categoryId ?? ''} onChange={handleChange} error={errors.categoryId} required>
+              <option value="" disabled>{t('common.select', 'Select...')}</option>
+              {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+            </Select>
+
+            <Button type='button' variant="ghost" size="icon" onClick={() => setIsCategoryModalOpen(true)} title={t('category.addTitle')} iconLeft={<LuPlus />} />
+          </div>
+
           <Input label={t('product.salePrice', 'Sale Price') + ' *'} name="salePrice" type="number" step="0.01" value={formData.salePrice ?? ''} onChange={handleChange} error={errors.salePrice} required />
+
           <Input label={t('product.costPrice', 'Cost Price')} name="costPrice" type="number" step="0.01" value={formData.costPrice ?? ''} onChange={handleChange} error={errors.costPrice} />
+
           <Input label={t('common.stock', 'Stock Quantity')} name="stockQuantity" type="number" step="1" value={formData.stockQuantity ?? ''} onChange={handleChange} error={errors.stockQuantity} />
+
           <Select label={t('product.unitOfSale', 'Unit of Sale')} name="unitOfSale" value={formData.unitOfSale} onChange={handleChange}>
             {Object.values(UnitOfSale).map(unit => <option key={unit} value={unit}>{t(`unitOfSale.${unit.toLowerCase()}`, unit)}</option>)}
           </Select>
-          <Select label={t('product.provider', 'Provider')} name="providerId" value={formData.providerId ?? ''} onChange={handleChange}>
-            <option value="">{t('common.none', 'None')}</option>
-            {providers.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-          </Select>
+
+          <div className='flex items-end gap-2'>
+            <Select label={t('product.provider', 'Provider')} name="providerId" value={formData.providerId ?? ''} onChange={handleChange}>
+              <option value="">{t('common.none', 'None')}</option>
+              {providers.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+            </Select>
+            <Button type='button' variant="ghost" size="icon" onClick={() => setIsProviderModalOpen(true)} title={t('provider.addTitle')} iconLeft={<LuPlus />}/>
+          </div>
+
           <Input label={t('product.barcode', 'Barcode')} name="barcode" value={formData.barcode || ''} onChange={handleChange} />
         </div>
         <Textarea label={t('common.description', 'Description')} name="description" value={formData.description || ''} onChange={handleChange} rows={3} />
@@ -146,6 +174,19 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
         </div>
       </form>
     </Modal>
+
+    <CategoryAddModal
+      isOpen={isCategoryModalOpen}
+      onClose={() => setIsCategoryModalOpen(false)}
+      onCategoryAdded={handleNewCategory}
+    />
+    <ProviderAddModal
+      isOpen={isProviderModalOpen}
+      onClose={() => setIsProviderModalOpen(false)}
+      onProviderAdded={handleNewProvider}
+    />
+    
+    </>
   );
 };
 

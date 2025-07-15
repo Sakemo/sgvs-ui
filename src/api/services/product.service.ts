@@ -1,5 +1,3 @@
-// src/api/services/product.service.ts
-
 import apiClient from "../../lib/apiClient";
 import type { Page, ProductRequest, ProductResponse } from "../types/domain";
 

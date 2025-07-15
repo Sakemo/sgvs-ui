@@ -1,4 +1,3 @@
-// src/api/services/category.service.ts
 import apiClient from "../../lib/apiClient";
 import type { CategoryResponse, CategoryRequest } from "../types/domain";
 

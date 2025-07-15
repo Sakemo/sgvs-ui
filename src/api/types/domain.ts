@@ -115,7 +115,7 @@ export interface SaleItemResponse {
 export interface SaleResponse {
   id: number;
   totalValue: number;
-  customer: EntitySummary | null; // Reutilizando o tipo genérico
+  customer: EntitySummary | null;
   paymentMethod: PaymentMethod;
   description: string | null;
   saleDate: string;
@@ -145,3 +145,7 @@ export interface ExpenseRequest {
 // --- Category ---
 export type CategoryResponse = EntitySummary;
 export type CategoryRequest = Omit<EntitySummary, 'id'>;
+
+// --- Provider ---
+export type ProviderResponse = EntitySummary;
+export type ProviderRequest = Omit<EntitySummary, 'id'>;

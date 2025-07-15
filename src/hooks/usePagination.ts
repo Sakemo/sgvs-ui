@@ -1,4 +1,3 @@
-// src/hooks/usePagination.ts
 import { useMemo } from 'react';
 
 export const DOTS = '...';

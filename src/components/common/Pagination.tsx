@@ -1,4 +1,3 @@
-// src/components/common/Pagination.tsx
 import React from 'react';
 import { LuChevronLeft, LuChevronRight, LuFlipHorizontal } from 'react-icons/lu';
 import Button from './ui/Button';
