@@ -1,10 +1,128 @@
 {
-  "formatters": {
-    "invalidDate": "Data inválida",
+  "common": {
+    "name": "Nome",
+    "category": "Categoria",
+    "description": "Descrição",
+    "value": "Valor",
+    "price": "Preço",
+    "cost": "Custo",
+    "status": "Status",
+    "stock": "Estoque",
+    "unit": "Unidade",
+    "paymentMethod": "Forma de Pagamento",
+    "actions": "Ações",
+    "details": "Detalhes",
+    "client": "Cliente",
+    "select": "Selecione...",
+    "none": "Nenhum",
+    "active": "Ativo",
+    "inactive": "Inativo",
+    "all": "Todos",
+    "loading": "Carregando..."
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "sales": "Vendas",
+    "products": "Produtos",
+    "customers": "Clientes",
+    "expenses": "Despesas",
+    "settings": "Configurações"
+  },
+  "actions": {
+    "add": "Adicionar",
+    "edit": "Editar",
+    "delete": "Deletar",
+    "copy": "Copiar",
+    "searchByName": "Buscar por nome...",
+    "viewAll": "Ver Tudo",
+    "clearFilter": "Limpar Filtro",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "saveChanges": "Salvar Alterações",
+    "create": "Criar",
+    "close": "Fechar",
+    "confirm": "Você tem certeza que deseja",
+    "activate": "Ativar",
+    "deactivate": "Desativar",
+    "confirmDeletePermanent": "Deletar permanentemente este item? Esta ação não pode ser desfeita."
+  },
+  "filter": {
+    "filterBy": "Filtrar por",
+    "orderBy": "Ordenar por",
+    "dateStart": "Data Início",
+    "dateEnd": "Data Fim",
+    "mostRecent": "Mais Recente",
+    "oldest": "Mais Antigo",
+    "highestValue": "Maior Valor",
+    "lowestValue": "Menor Valor",
     "today": "Hoje",
-    "yesterday": "Ontem"
+    "month": "Este Mês",
+    "year": "Este Ano",
+    "all": "Ver Tudo"
+  },
+  "errors": {
+    "fetchProducts": "Falha ao carregar produtos.",
+    "fetchCategories": "Falha ao carregar categorias.",
+    "fetchInitialData": "Falha ao carregar dados da página.",
+    "toggleStatus": "Falha ao atualizar status.",
+    "copyProduct": "Falha ao copiar produto.",
+    "deleteProduct": "Falha ao deletar produto.",
+    "genericSave": "Ocorreu um erro inesperado ao salvar."
   },
   "product": {
-    "addTitle": "Adicionar Produto"
+    "objectName": "Produto",
+    "pageTitle": "Gerenciamento de Produtos",
+    "addProduct": "Adicionar Produto",
+    "editTitle": "Editar Produto",
+    "allCategories": "Todas as Categorias",
+    "confirmCopy": "Deseja criar uma cópia deste produto?",
+    "table": {
+      "name": "Nome",
+      "category": "Categoria",
+      "salePrice": "Preço",
+      "stock": "Estoque",
+      "status": "Status",
+      "lastUpdated": "Última Atualização",
+      "empty": "Nenhum produto encontrado."
+    },
+    "form": {
+      "name": "Nome do Produto",
+      "activeProduct": "Produto Ativo",
+      "salePrice": "Preço de Venda",
+      "costPrice": "Preço de Custo"
+    },
+    "sort": {
+      "az": "Nome (A-Z)",
+      "za": "Nome (Z-A)",
+      "mostExpensive": "Mais Caro",
+      "leastExpensive": "Mais Barato",
+      "mostSold": "Mais Vendido"
+    },
+    "unitOfSale": "Unidade de Venda",
+    "provider": "Fornecedor",
+    "barcode": "Código de Barras"
+  },
+  "customer": {
+    "objectName": "Cliente",
+    "pageTitle": "Clientes",
+    "addCustomer": "Adicionar Cliente",
+    "editTitle": "Editar Cliente",
+    "debtors": "Devedores",
+    "noDebt": "Sem Dívida",
+    "phone": "Telefone",
+    "taxId": "CPF/CNPJ",
+    "address": "Endereço",
+    "creditInfo": "Informações de Crédito",
+    "debtBalance": "Saldo Devedor",
+    "creditLimit": "Limite",
+    "allowCredit": "Permitir compras no fiado?",
+    "noCustomersFound": "Nenhum cliente encontrado com os seus critérios.",
+    "confirmToggle": "Você tem certeza?",
+    "sort": {
+        "az": "Nome (A-Z)",
+        "za": "Nome (Z-A)",
+        "highestDebt": "Maior Saldo Devedor",
+        "lowestDebt": "Menor Saldo Devedor"
+    }
   }
 }

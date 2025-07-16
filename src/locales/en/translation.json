@@ -1,10 +1,128 @@
 {
-  "formatters": {
-    "invalidDate": "Invalid date",
+  "common": {
+    "name": "Name",
+    "category": "Category",
+    "description": "Description",
+    "value": "Value",
+    "price": "Price",
+    "cost": "Cost",
+    "status": "Status",
+    "stock": "Stock",
+    "unit": "Unit",
+    "paymentMethod": "Payment Method",
+    "actions": "Actions",
+    "details": "Details",
+    "client": "Client",
+    "select": "Select...",
+    "none": "None",
+    "active": "Active",
+    "inactive": "Inactive",
+    "all": "All",
+    "loading": "Loading..."
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "sales": "Sales",
+    "products": "Products",
+    "customers": "Customers",
+    "expenses": "Expenses",
+    "settings": "Settings"
+  },
+  "actions": {
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "copy": "Copy",
+    "searchByName": "Search by name...",
+    "viewAll": "View All",
+    "clearFilter": "Clear Filter",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saveChanges": "Save Changes",
+    "create": "Create",
+    "close": "Close",
+    "confirm": "Are you sure you want to",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "confirmDeletePermanent": "Permanently delete this item? This action cannot be undone."
+  },
+  "filter": {
+    "filterBy": "Filter by",
+    "orderBy": "Order by",
+    "dateStart": "Start Date",
+    "dateEnd": "End Date",
+    "mostRecent": "Most Recent",
+    "oldest": "Oldest",
+    "highestValue": "Highest Value",
+    "lowestValue": "Lowest Value",
     "today": "Today",
-    "yesterday": "Yesterday"
+    "month": "This Month",
+    "year": "This Year",
+    "all": "All Time"
+  },
+  "errors": {
+    "fetchProducts": "Failed to load products.",
+    "fetchCategories": "Failed to load categories.",
+    "fetchInitialData": "Failed to load page data.",
+    "toggleStatus": "Failed to update status.",
+    "copyProduct": "Failed to copy product.",
+    "deleteProduct": "Failed to delete product.",
+    "genericSave": "An unexpected error occurred while saving."
   },
   "product": {
-    "addTitle": "Add Product"
+    "objectName": "Product",
+    "pageTitle": "Products Management",
+    "addProduct": "Add Product",
+    "editTitle": "Edit Product",
+    "allCategories": "All Categories",
+    "confirmCopy": "Create a copy of this product?",
+    "table": {
+      "name": "Name",
+      "category": "Category",
+      "salePrice": "Price",
+      "stock": "Stock",
+      "status": "Status",
+      "lastUpdated": "Last Updated",
+      "empty": "No products found."
+    },
+    "form": {
+      "name": "Product Name",
+      "activeProduct": "Active Product",
+      "salePrice": "Sale Price",
+      "costPrice": "Cost Price"
+    },
+    "sort": {
+      "az": "Name (A-Z)",
+      "za": "Name (Z-A)",
+      "mostExpensive": "Most Expensive",
+      "leastExpensive": "Least Expensive",
+      "mostSold": "Most Sold"
+    },
+    "unitOfSale": "Unit of Sale",
+    "provider": "Provider",
+    "barcode": "Barcode"
+  },
+  "customer": {
+    "objectName": "Customer",
+    "pageTitle": "Customers",
+    "addCustomer": "Add Customer",
+    "editTitle": "Edit Customer",
+    "debtors": "With Debt",
+    "noDebt": "No Debt",
+    "phone": "Phone",
+    "taxId": "Tax ID",
+    "address": "Address",
+    "creditInfo": "Credit Info",
+    "debtBalance": "Debt Balance",
+    "creditLimit": "Limit",
+    "allowCredit": "Allow purchases on credit?",
+    "noCustomersFound": "No customers found matching your criteria.",
+    "confirmToggle": "Are you sure?",
+    "sort": {
+        "az": "Name (A-Z)",
+        "za": "Name (Z-A)",
+        "highestDebt": "Highest Debt",
+        "lowestDebt": "Lowest Debt"
+    }
   }
 }
