@@ -3,7 +3,7 @@ import type { ExpenseRequest, ExpenseResponse, Page } from "../types/domain";
 
 export interface GetExpensesParams {
     name?: string;
-    expenseType: string;
+    expenseType?: string;
     startDate?: string;
     endDate?: string;
     page?: number;
@@ -12,11 +12,13 @@ export interface GetExpensesParams {
 
 export const getExpenses = async (params: GetExpensesParams): Promise<Page<ExpenseResponse>> => {
     const response = await apiClient.get<Page<ExpenseResponse>>('/expenses', { params });
+    console.log(response.data);
     return response.data;
 };
 
 export const createExpense = async (data: ExpenseRequest): Promise<ExpenseResponse> => {
     const response = await apiClient.post<ExpenseResponse>('/expenses', data);
+    console.log(response.data);
     return response.data;
 };
 
