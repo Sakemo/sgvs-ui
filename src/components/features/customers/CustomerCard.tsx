@@ -5,17 +5,18 @@ import Badge from "../../common/ui/Badge";
 import clsx from "clsx";
 import { formatCurrency } from "../../../utils/formatters";
 import Button from "../../common/ui/Button";
-import { LuPencil, LuPower, LuPowerOff, LuTrash2 } from "react-icons/lu";
+import { LuEye, LuPencil, LuPower, LuPowerOff, LuTrash2 } from "react-icons/lu";
 
 interface CustomerCardProps {
     customer: CustomerResponse;
     onEdit: (customer: CustomerResponse) => void;
     onToggleStatus: (id: number, currentStatus: boolean) => void;
+    onViewDetails: (customer: CustomerResponse) => void;
     onDelete: (id: number) => void;
 }
 
 const CustomerCard: React.FC<CustomerCardProps> = ({
-    customer, onEdit, onToggleStatus, onDelete
+    customer, onEdit, onToggleStatus, onDelete, onViewDetails
 }) => {
     const { t } = useTranslation();
     const hasDebt = customer.debtBalance > 0;
@@ -31,10 +32,14 @@ const CustomerCard: React.FC<CustomerCardProps> = ({
                         {customer.active ? t('common.active', 'Active') : t('common.inactive', 'Inactive')}
                     </Badge>
                 </header>
-
-                <div className="space-y-1 text-sm text-text-secondary">
-                    <p><strong>{t('customer.phone', 'Phone')}: </strong></p>
-                    <p><strong>{t('customer.taxId', 'Tax ID')}: </strong></p>
+ 
+                <div className="space-y-1 text-sm text-text-secondary ">
+                    <p><strong>{t('customer.taxId', 'Tax ID')}:   </strong>
+                    {customer.taxId ? customer.taxId : t('common.notApplicable')}
+                    </p>
+                    <p><strong>{t('customer.phone', 'Phone')}:  </strong>
+                        {customer.phone ? customer.phone : t('common.notApplicable')}
+                    </p>
                 </div>
 
                 {customer.creditEnabled &&
@@ -52,13 +57,16 @@ const CustomerCard: React.FC<CustomerCardProps> = ({
                         </div>
                         <div className="flex justify-between text-xs text-text-secondary">
                             <span>{t('customer.creditLimit', 'Limit')}: </span>
-                            <span>{customer.creditLimit ? formatCurrency(customer.creditLimit) : t('common.notApplicable', 'N/A')}</span>
+                            <span>{
+                                customer.creditLimit ? formatCurrency(customer.creditLimit) : t('common.notApplicable')
+                                }</span>
                         </div>
                     </div>
                 )}
             </div>
 
             <footer className="mt-4 pt-4 border-t border-border-light dark:border-border-dark flex justify-end items-center gap-1">
+                <Button variant="ghost" size="icon" title={t('common.details', 'Details')} onClick={() => onViewDetails(customer)} iconLeft={<LuEye/>}/>
                 <Button variant="ghost" size="icon" title={t('actions.edit')} onClick={() => onEdit(customer)} iconLeft={<LuPencil />} /> 
                 <Button variant="ghost" size="icon" title={customer.active ? t('actions.deactivate') : t('actions.activate')} onClick={() => onToggleStatus(customer.id, customer.active)} className={customer.active ? "text-yellow-600 hover:text-yellow-700" : "text-green-600 hover:text-green-700"} disabled={hasDebt && customer.active} iconLeft={customer.active ? <LuPowerOff /> : <LuPower />} />
                 <Button variant="ghost" size="icon" title={t('actions.delete')} className="text-red-600 hover:text-red-700" onClick={() => onDelete(customer.id)} iconLeft={<LuTrash2 />} />

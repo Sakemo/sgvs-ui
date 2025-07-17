@@ -18,7 +18,8 @@
     "active": "Ativo",
     "inactive": "Inativo",
     "all": "Todos",
-    "loading": "Carregando..."
+    "loading": "Carregando...",
+    "notApplicable": "N/A"
   },
   "sidebar": {
     "dashboard": "Dashboard",

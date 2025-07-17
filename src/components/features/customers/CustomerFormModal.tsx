@@ -63,6 +63,7 @@ const CustomerFormModal: React.FC<CustomerFormModalProps> = ({
 
         try {
             const payload = formData as CustomerRequest;
+            console.log(payload);
             if(isEditMode && customerToEdit) {
                 await updateCustomer(customerToEdit.id, payload);
             } else {

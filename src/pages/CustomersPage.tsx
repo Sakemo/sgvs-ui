@@ -11,6 +11,7 @@ import Input from "../components/common/ui/Input";
 import Select from "../components/common/ui/Select";
 import CustomerCard from "../components/features/customers/CustomerCard";
 import CustomerFormModal from "../components/features/customers/CustomerFormModal";
+import CustomerDetailsModal from "../components/features/customers/CustomerDetailsModal";
 
 type ActivityFilter = 'all' | 'active' | 'inactive';
 type DebtFilter = 'all' | 'debtors' | 'non_debtors';
@@ -24,7 +25,9 @@ const CustomerPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [customerToEdit, setCustomerToEdit] = useState<CustomerResponse | null>(null);
-
+        const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+    const [customerToView, setCustomerToView] = useState<CustomerResponse | null>(null);
+    
     const [filters, setFilters] = useState({
         name: '',
         activity: 'active' as ActivityFilter,
@@ -89,6 +92,11 @@ const CustomerPage: React.FC = () => {
             }
         }
     };
+
+    const handleViewDetails = (customer: CustomerResponse) => {
+        setCustomerToView(customer);
+        setIsDetailsModalOpen(true);
+    }
 
     const handleDelete = async (id: number) => {
         if (window.confirm(t('actions.confirmDeletePermanent'))) {
@@ -160,6 +168,7 @@ const CustomerPage: React.FC = () => {
                                 customer={customer}
                                 onEdit={handleOpenModal}
                                 onToggleStatus={handleToggleStatus}
+                                onViewDetails={handleViewDetails}
                                 onDelete={handleDelete}
                             />
                         ))}
@@ -177,6 +186,14 @@ const CustomerPage: React.FC = () => {
                     onClose={() => setIsModalOpen(false)}
                     onSaveSucess={handleSaveSucess}
                     customerToEdit={customerToEdit}
+                />
+            )}
+
+            {isDetailsModalOpen && (
+                <CustomerDetailsModal
+                    isOpen={isDetailsModalOpen}
+                    onClose={() => setIsDetailsModalOpen(false)}
+                    customer={customerToView}
                 />
             )}
         </div>
