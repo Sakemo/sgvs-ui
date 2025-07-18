@@ -8,6 +8,7 @@ import Modal from "../../common/Modal";
 import Input from "../../common/ui/Input";
 import Textarea from "../../common/ui/Textarea";
 import Button from "../../common/ui/Button";
+import AdvancedOptions from "../../common/AdvancedOptions";
 
 interface CustomerFormModalProps {
     isOpen: boolean;
@@ -82,9 +83,6 @@ const CustomerFormModal: React.FC<CustomerFormModalProps> = ({
         <Modal isOpen={isOpen} onClose={onClose} title={isEditMode ? t('customer.editTitle') : t('customer.addTitle')} >
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
                 <Input label={t('common.name') + ' *'} name="name" value={formData.name || ''} onChange={handleChange} error={errors.name} />
-                <Input label={t('customer.taxId')} name="taxId" value={formData.taxId || ''} onChange={handleChange} error={errors.taxId} />
-                <Input label={t('customer.phone')} name="phone" value={formData.phone || ''} onChange={handleChange} error={errors.phone} />
-                <Textarea label={t('customer.address')} name="address" value={formData.address || ''} onChange={handleChange} error={errors.address} rows={2} />
 
                 <div className="pt-4 border-t border-border-light dark:border-border-dark space-y-3">
                     <div className="flex items-center gap-2">
@@ -97,6 +95,12 @@ const CustomerFormModal: React.FC<CustomerFormModalProps> = ({
                         <Input label={t('customer.creditLimit')} name="creditLimit" type="number" step="0.01" value={formData.creditLimit ?? ''} onChange={handleChange} error={errors.creditLimit} />
                     )}
                 </div>
+
+                <AdvancedOptions className="grid grid-cols-2 [&>*:nth-child(3)]:col-span-2 gap-4">
+                    <Input label={t('customer.taxId')} name="taxId" value={formData.taxId || ''} onChange={handleChange} error={errors.taxId} />
+                    <Input label={t('customer.phone')} name="phone" value={formData.phone || ''} onChange={handleChange} error={errors.phone} />
+                    <Textarea label={t('customer.address')} name="address" value={formData.address || ''} onChange={handleChange} error={errors.address} rows={2} />
+                </AdvancedOptions>
 
                 {errors.form && 
                 <p className="text-sm text-red-500">

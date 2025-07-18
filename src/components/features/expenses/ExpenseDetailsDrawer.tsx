@@ -19,10 +19,10 @@ const ExpenseDetailsDrawer: React.FC<ExpenseDetailsDrawerProps> = ({
     const { t } = useTranslation();
 
     return (
-        <aside className="h-full flex flex-col rounded-card border border-border-light bg-card-light shadow-soft dark:border-border-dark dark:bg-card-dark">
-            <header className="flex items-center justify-between p-4 border-b border-border-light dark:border-border-dark">
+        <aside className="h-full flex flex-col rounded-card border border-border-light bg-brand-primary/10 dark:!bg-brand-accent/10 dark:text-white">
+            <header className="flex items-center justify-between p-4 border-b border-border-light dark:border-border-dark ">
                 <h2 className="text-lg font-semibold">
-                    {t('expense.detailsTitle', 'Expense Details')}
+                    {t('expense.detailsTitle', 'Expense Details')} - {expense.name}
                 </h2>
                 <div className="flex items-center">
                     <Button variant="ghost" size="icon" onClick={() => onEdit(expense)} title={t('actions.edit')} iconLeft={<LuPencil />} />
@@ -30,6 +30,7 @@ const ExpenseDetailsDrawer: React.FC<ExpenseDetailsDrawerProps> = ({
                     <Button variant="ghost" size="icon" onClick={onClose} title={t('actions.close')} iconLeft={<LuX />} />
                 </div>
             </header>
+
             <div className="flex-grow overflow-y-auto p-4">
                 <dl className="divide-y divide-border-light dark:divide-border-dark">
                     <DetailRow label={t('common.name')} value={expense.name} />

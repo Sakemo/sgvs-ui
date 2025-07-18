@@ -13,6 +13,7 @@ import { AxiosError } from 'axios';
 import { LuPlus } from 'react-icons/lu';
 import CategoryAddModal from '../categories/CategoryAddModal';
 import ProviderAddModal from '../providers/ProviderAddModal';
+import AdvancedOptions from '../../common/AdvancedOptions';
 
 interface ProductFormModalProps {
   isOpen: boolean;
@@ -130,9 +131,11 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
     <>
     <Modal isOpen={isOpen} onClose={onClose} title={isEditMode ? t('product.editTitle') : t('product.addTitle', 'Add Title')}>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 md:[&>*:nth-child(1)]:col-span-2 gap-4">
           <Input label={t('product.form.name', 'Product Name') + ' *'} name="name" value={formData.name || ''} onChange={handleChange} error={errors.name} required />
 
+          <Input label={t('product.salePrice', 'Sale Price') + ' *'} name="salePrice" type="number" step="0.01" value={formData.salePrice ?? ''} onChange={handleChange} error={errors.salePrice} required />
+        
           <div className='flex items-end gap-2'>
             <Select label={t('common.category', 'Category') + ' *'} name="categoryId" value={formData.categoryId ?? ''} onChange={handleChange} error={errors.categoryId} required>
               <option value="" disabled>{t('common.select', 'Select...')}</option>
@@ -141,16 +144,17 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
 
             <Button type='button' variant="ghost" size="icon" onClick={() => setIsCategoryModalOpen(true)} title={t('category.addTitle')} iconLeft={<LuPlus />} />
           </div>
+        </div>
 
-          <Input label={t('product.salePrice', 'Sale Price') + ' *'} name="salePrice" type="number" step="0.01" value={formData.salePrice ?? ''} onChange={handleChange} error={errors.salePrice} required />
+        <div className="flex items-center space-x-2">
+            <input type="checkbox" id="active" name="active" checked={formData.active ?? true} onChange={handleChange} className="h-4 w-4 rounded" />
+            <label htmlFor="active">{t('product.form.activeProduct', 'Active Product')}</label>
+        </div>
 
+        <AdvancedOptions className='grid grid-cols-3 [&>*:nth-child(1)]:col-span-2 [&>*:nth-child(6)]:col-span-3 gap-4'>
           <Input label={t('product.costPrice', 'Cost Price')} name="costPrice" type="number" step="0.01" value={formData.costPrice ?? ''} onChange={handleChange} error={errors.costPrice} />
 
           <Input label={t('common.stock', 'Stock Quantity')} name="stockQuantity" type="number" step="1" value={formData.stockQuantity ?? ''} onChange={handleChange} error={errors.stockQuantity} />
-
-          <Select label={t('product.unitOfSale', 'Unit of Sale')} name="unitOfSale" value={formData.unitOfSale} onChange={handleChange}>
-            {Object.values(UnitOfSale).map(unit => <option key={unit} value={unit}>{t(`unitOfSale.${unit.toLowerCase()}`, unit)}</option>)}
-          </Select>
 
           <div className='flex items-end gap-2'>
             <Select label={t('product.provider', 'Provider')} name="providerId" value={formData.providerId ?? ''} onChange={handleChange}>
@@ -161,17 +165,20 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
           </div>
 
           <Input label={t('product.barcode', 'Barcode')} name="barcode" value={formData.barcode || ''} onChange={handleChange} />
-        </div>
-        <Textarea label={t('common.description', 'Description')} name="description" value={formData.description || ''} onChange={handleChange} rows={3} />
-        <div className="flex items-center space-x-2">
-            <input type="checkbox" id="active" name="active" checked={formData.active ?? true} onChange={handleChange} className="h-4 w-4 rounded" />
-            <label htmlFor="active">{t('product.form.activeProduct', 'Active Product')}</label>
-        </div>
+
+          <Select label={t('product.unitOfSale', 'Unit of Sale')} name="unitOfSale" value={formData.unitOfSale} onChange={handleChange}>
+            {Object.values(UnitOfSale).map(unit => <option key={unit} value={unit}>{t(`unitOfSale.${unit.toLowerCase()}`, unit)}</option>)}
+          </Select>
+
+          <Textarea label={t('common.description', 'Description')} name="description" value={formData.description || ''} onChange={handleChange} rows={3} />
+        </AdvancedOptions>
+
         {errors.form && <p className="text-sm text-red-500">{errors.form}</p>}
         <div className="flex justify-end gap-2 pt-4">
             <Button type="button" variant="secondary" onClick={onClose} disabled={isLoading}>{t('actions.cancel', 'Cancel')}</Button>
             <Button type="submit" isLoading={isLoading}>{isEditMode ? t('actions.saveChanges', 'Save Changes') : t('actions.create', 'Create')}</Button>
         </div>
+
       </form>
     </Modal>
 

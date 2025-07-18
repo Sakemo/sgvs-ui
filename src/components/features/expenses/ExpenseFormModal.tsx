@@ -10,6 +10,7 @@ import Input from "../../common/ui/Input";
 import Select from "../../common/ui/Select";
 import Textarea from "../../common/ui/Textarea";
 import Button from "../../common/ui/Button";
+import AdvancedOptions from "../../common/AdvancedOptions";
 
 interface ExpenseFormModalProps {
     isOpen: boolean;
@@ -90,23 +91,32 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
     <Modal isOpen={isOpen} onClose={onClose} title={isEditMode ? t('expense.editTitle') : t('expense.addTitle')}>
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
             <Input label={t('common.name') + ' *'} name="name" value={formData.name || ''} onChange={handleChange} error={errors.name} required />
+            
             <Input label={t('common.value') + ' *'} name="value" type="number" step="0.01" value={formData.value  ?? ''} onChange={handleChange} error={errors.value} required />
+
             <Select label={('common.paymentMethod') + ' *'} name="paymentMethod" value={formData.paymentMethod || ''} onChange={handleChange} error={errors.paymentMethod} required>
               {Object.values(PaymentMethod).map(type => (
                 <option key={type} value={type}>
-                  {t(`paymentMethods.${type.toLowerCase()}`, type)}
+                  {t(`paymentMethods.${type.toLowerCase().replace('_', ' ')}`, type.replace('_', ' '))}
                 </option>
               ))}
             </Select>
+
+
+
+            <AdvancedOptions className="grid grid-cols-2 auto-rows-auto gap-4 [&>*:nth-child(3)]:col-span-2">
             <Input label={t('expense.expenseDate')} name="expenseDate" type="datetime-local" value={formData.expenseDate} required />
-            <Select label={t('expense.expenseType' + ' *')} name="expenseType" value={formData.expenseType || ''} onChange={handleChange} error={errors.expenseType || ''} required>
-                {Object.values(ExpenseType).map(type => (
-                    <option key={type} value={type}>
-                        {t(`expenseCategories.${type.toLowerCase()}`, type)}
-                    </option>
-                ))}
-            </Select>
-            <Textarea label={t('common.description')} name="description" value={formData.description || ''} onChange={handleChange} rows={3} />
+
+              <Select label={t('expense.expenseType' + ' *')} name="expenseType" value={formData.expenseType || ''} onChange={handleChange} error={errors.expenseType || ''} required>
+                  {Object.values(ExpenseType).map(type => (
+                      <option key={type} value={type}>
+                          {t(`expenseCategories.${type.toLowerCase()}`, type)}
+                      </option>
+                  ))}
+              </Select>
+
+              <Textarea label={t('common.description')} name="description" value={formData.description || ''} onChange={handleChange} rows={3} />
+            </AdvancedOptions>
 
             {errors.form && <p className="text-sm text-red-500">{errors.form}</p>}
 
