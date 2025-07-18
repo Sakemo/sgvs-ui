@@ -33,7 +33,7 @@ const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({
     const { t } = useTranslation();
 
     return (
-    <aside className="h-full flex flex-col rounded-card border border-border-light bg-card-light shadow-soft dark:border-border-dark dark:bg-card-dark">
+    <aside className="h-full flex flex-col rounded-card border border-border-light bg-card-light shadow-soft dark:border-border-dark dark:bg-card-dark !bg-brand-primary/10 dark:!bg-brand-accent/10">
       
       {/* Cabeçalho do Drawer */}
       <header className="flex items-center justify-between p-4 border-b border-border-light dark:border-border-dark">

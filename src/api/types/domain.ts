@@ -57,7 +57,7 @@ export interface ProductRequest {
   description?: string | null;
   barcode?: string | null;
   stockQuantity: number;
-  salePrice: number;
+  salePrice: number | undefined;
   costPrice?: number | null;
   unitOfSale: UnitOfSale;
   active: boolean;

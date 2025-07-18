@@ -65,8 +65,8 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
       description: '',
       barcode: '',
       stockQuantity: 0,
-      salePrice: 0,
-      costPrice: 0,
+      salePrice: undefined,
+      costPrice: undefined,
       unitOfSale: UnitOfSale.UNIT,
       active: true,
       categoryId: categories[0]?.id,
@@ -103,11 +103,30 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
     setIsLoading(true);
     setErrors({});
 
+    const newErrors: Record<string, string> = {};
+    if(!formData.name || formData.name.trim().length <2) {
+      newErrors.name = t('validation.nameRequired', 'Name is required (min 2 char)')
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const payload = formData as ProductRequest;
-      if (!payload.name || !payload.salePrice || !payload.categoryId) {
-        throw new Error("Validation failed client-side");
-      }
+      const payload: ProductRequest = {
+        name: formData.name!,
+        salePrice: formData.salePrice!,
+        categoryId: formData.categoryId!,
+        description: formData.description || null,
+        barcode: formData.barcode || null,
+        stockQuantity: formData.stockQuantity ?? 0,
+        costPrice: formData.costPrice ?? null,
+        unitOfSale: formData.unitOfSale ?? UnitOfSale.UNIT,
+        active: formData.active ?? true,
+        providerId: formData.providerId ?? null,
+      };
       if (isEditMode && productToEdit) {
         await updateProduct(productToEdit.id, payload);
       } else {
