@@ -1,5 +1,5 @@
 import type React from "react";
-import { ExpenseType, type ExpenseRequest, type ExpenseResponse } from "../../../api/types/domain";
+import { ExpenseType, PaymentMethod, type ExpenseRequest, type ExpenseResponse } from "../../../api/types/domain";
 import { useTranslation } from "react-i18next";
 import { useCallback, useEffect, useState } from "react";
 import { format } from "date-fns";
@@ -31,6 +31,7 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
         value: expenseToEdit.value,
         expenseDate: format(new Date(expenseToEdit.expenseDate), "yyyy-MM-dd'T'HH:mm"),
         expenseType: expenseToEdit.expenseType,
+        paymentMethod: expenseToEdit.paymentMethod,
         description: expenseToEdit.description,
       };
     }
@@ -39,6 +40,7 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
       value: undefined,
       expenseDate: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
       expenseType: ExpenseType.OTHERS,
+      paymentMethod: PaymentMethod.CASH,
       description: '',
     };
   }, [isEditMode, expenseToEdit]);
@@ -89,11 +91,18 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
             <Input label={t('common.name') + ' *'} name="name" value={formData.name || ''} onChange={handleChange} error={errors.name} required />
             <Input label={t('common.value') + ' *'} name="value" type="number" step="0.01" value={formData.value  ?? ''} onChange={handleChange} error={errors.value} required />
+            <Select label={('common.paymentMethod') + ' *'} name="paymentMethod" value={formData.paymentMethod || ''} onChange={handleChange} error={errors.paymentMethod} required>
+              {Object.values(PaymentMethod).map(type => (
+                <option key={type} value={type}>
+                  {t(`paymentMethods.${type.toLowerCase()}`, type)}
+                </option>
+              ))}
+            </Select>
             <Input label={t('expense.expenseDate')} name="expenseDate" type="datetime-local" value={formData.expenseDate} required />
             <Select label={t('expense.expenseType' + ' *')} name="expenseType" value={formData.expenseType || ''} onChange={handleChange} error={errors.expenseType || ''} required>
                 {Object.values(ExpenseType).map(type => (
                     <option key={type} value={type}>
-                        {t(`expenseCategories.${type}`, type)}
+                        {t(`expenseCategories.${type.toLowerCase()}`, type)}
                     </option>
                 ))}
             </Select>

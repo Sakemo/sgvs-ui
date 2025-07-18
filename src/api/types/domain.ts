@@ -129,6 +129,7 @@ export interface ExpenseResponse {
   value: number;
   expenseDate: string;
   expenseType: ExpenseType;
+  paymentMethod: PaymentMethod;
   description: string | null;
   createdAt: string;
   updatedAt: string;
@@ -139,6 +140,7 @@ export interface ExpenseRequest {
   value: number;
   expenseDate: string;
   expenseType: ExpenseType;
+  paymentMethod: PaymentMethod;
   description?: string | null;
 }
 

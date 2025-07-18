@@ -40,6 +40,11 @@ const ExpenseDetailsDrawer: React.FC<ExpenseDetailsDrawerProps> = ({
                         </Badge>
                     } />
                     <DetailRow label={t('expense.expenseDate')} value={formatDate(expense.expenseDate, { showTime: true })} />
+                    <DetailRow label={t('common.paymentMethod')} value={
+                        <Badge variant="outline" colorScheme="gray">
+                            {t(`paymentMethods.${expense.paymentMethod.toLowerCase()}`, expense.paymentMethod)}
+                        </Badge>
+                    } />
                     <DetailRow label={t('common.createdAt')} value={formatDate(expense.updatedAt)} />
                 </dl>
             </div>

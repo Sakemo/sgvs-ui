@@ -33,6 +33,14 @@ const ExpensesTable: React.FC<ExpensesTableProps> = ({
             accessor: (row) => formatDate(row.expenseDate, { showTime: false })
         },
         {
+            header: t('common.paymentMethod'),
+            accessor: (row) => (
+                <Badge variant="subtle" colorScheme="gray">
+                    {t(`paymentMethods.${row.paymentMethod.toLowerCase()}`, row.paymentMethod)}
+                </Badge>
+            )
+        },
+        {
             header: t('common.actions', 'Actions'),
             accessor: (row) => (
                 <div className="flex justify-end gap-1">
