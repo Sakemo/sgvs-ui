@@ -55,35 +55,52 @@ const ProductsPage: React.FC = () => {
         // { value: 'mostSold', label: t('product.sort.mostSold', 'Most Sold') },
     ];
 
-    const fetchData = useCallback(async () => {
+    //fetchdata
+    const fetchDropdownData = useCallback(async () => {
+        try {
+            const [categoriesData, providersData] = await Promise.all([
+                getCategories(),
+                getProviders()
+            ]);
+            setCategories(categoriesData);
+            setProviders(providersData);
+        } catch (err) {
+            setError(t('errors.fetchInitialData' + err, `failed to load categories/providers: ${err}`));
+        }
+    }, [t])
+
+    const fetchProducts = useCallback(async () => {
         setLoading(true);
-        setError(null);
+        setError(null)
         try {
             const params: GetProductsParams = {
                 ...filters,
                 name: debouncedNameFilter?.trim() || undefined,
                 page: currentPage, size: 10,
             };
-            const [productsData, categoriesData, providersData] = await Promise.all([
-                getProducts(params),
-                getCategories(),
-                getProviders()
+
+            const [productsData] = await Promise.all([
+                getProducts(params)
             ]);
 
-            setProductsPage(productsData);
-            setCategories(categoriesData);
-            setProviders(providersData);
+            setProductsPage(productsData)
         } catch (err) {
-            setError(t('errors.fetchProducts' + err, "failed to load products"));
+            setError(t('errors.fetchProducts' + err, `failed to load products: ${err}`))
         } finally {
             setLoading(false);
         }
-    }, [filters, currentPage, debouncedNameFilter, t]);
+    }, [filters, currentPage, debouncedNameFilter, t])
 
+    // Busca Produtos sempre que os filtros mudam
     useEffect(() => {
-        fetchData();
-    }, [fetchData]);
+        fetchProducts();
+    }, [fetchProducts]);
 
+    // Handle de refresh
+    const handleDataRefresh = () => {
+        fetchDropdownData();
+    };
+    
     // --- Handlers de Ação ---
     const handleFilterChange = (
         field: keyof typeof filters, 
@@ -102,7 +119,8 @@ const ProductsPage: React.FC = () => {
     
     const handleSaveSuccess = () => {
         handleCloseModal();
-        fetchData();
+        fetchProducts();
+        fetchDropdownData();
     };
     
     const handleToggleStatus = async (id: number, currentStatus: boolean) => {
@@ -110,7 +128,7 @@ const ProductsPage: React.FC = () => {
         if (window.confirm(`${t('actions.confirm', 'Are you sure you want to')} ${action} ${t('product.objectName', 'this product')}?`)) {
             try {
                 await toggleProductStatus(id);
-                fetchData();
+                fetchProducts();
             } catch { setError(t('errors.toggleStatus', 'Failed to update status.')); }
         }
     };
@@ -119,7 +137,7 @@ const ProductsPage: React.FC = () => {
         if (window.confirm(t('product.confirmCopy', 'Create a copy of this product?'))) {
             try {
                 await copyProduct(id);
-                fetchData();
+                fetchProducts();
             } catch { setError(t('errors.copyProduct', 'Failed to copy product.')); }
         }
     };
@@ -129,7 +147,7 @@ const ProductsPage: React.FC = () => {
             try {
                 await deleteProductPermanently(id);
                 if (selectedProduct?.id === id) setSelectedProduct(null);
-                fetchData();
+                fetchProducts();
             } catch { setError(t('errors.deleteProduct', 'Failed to delete product.')); }
         }
     };
@@ -202,7 +220,7 @@ const ProductsPage: React.FC = () => {
             </div>
 
             {isModalOpen && (
-                <ProductFormModal isOpen={isModalOpen} onClose={handleCloseModal} onSaveSuccess={handleSaveSuccess} productToEdit={productToEdit} categories={categories} providers={providers}/>
+                <ProductFormModal isOpen={isModalOpen} onClose={handleCloseModal} onSaveSuccess={handleSaveSuccess} productToEdit={productToEdit} categories={categories} providers={providers} onDataRefresh={handleDataRefresh}/>
             )}
         </div>
     );

@@ -5,7 +5,7 @@ import Table, { type TableColumn } from '../../common/Table';
 import Button from '../../common/ui/Button';
 import Badge from '../../common/ui/Badge';
 import { formatCurrency } from '../../../utils/formatters';
-import { LuCopy, LuPencil, LuPowerOff, LuTrash2 } from 'react-icons/lu';
+import { LuCopy, LuPencil, LuPower, LuPowerOff, LuTrash2 } from 'react-icons/lu';
 
 interface ProductsTableProps {
   products: ProductResponse[];
@@ -55,7 +55,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
     {
       header: t('product.table.status', 'Status'),
       accessor: (row) => (
-        <Badge colorScheme={row.active ? 'green' : 'gray'}>
+        <Badge variant="subtle" colorScheme={row.active ? 'blue' : 'gray'}>
           {row.active ? t('common.active', 'Active') : t('common.inactive', 'Inactive')}
         </Badge>
       ),
@@ -76,9 +76,9 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
             variant="ghost" size="icon"
             title={row.active ? t('actions.deactivate', 'Deactivate') : t('actions.activate', 'Activate')}
             onClick={(e) => { e.stopPropagation(); onToggleStatus(row.id, row.active); }}
-            className={row.active ? "text-yellow-600 hover:text-yellow-700" : "text-green-600 hover:text-green-700"}
+            className={row.active ? "text-orange-600 hover:text-orange-700" : "text-green-600 hover:text-green-700"}
+            iconLeft={row.active ? <LuPowerOff /> : <LuPower />}
           >
-            <LuPowerOff className="h-4 w-4" />
           </Button>
           <Button variant="ghost" size="icon" title={t('actions.delete', 'Delete')} className="text-red-600 hover:text-red-700" onClick={(e) => { e.stopPropagation(); onDelete(row.id); }}>
             <LuTrash2 className="h-4 w-4" />

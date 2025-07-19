@@ -6,20 +6,19 @@ export const badgeVariants = cva(
     {
         variants: {
             variant: {
-                default: 'border-transparent bg-brand-primary text-white',
+                default: 'border-transparent text-white',
                 secondary: 'border-transparent bg-brand-secondary-accent text-white',
                 destructive: 'border-transparent bg-red-600 text-white',
                 outline: 'text-text-primary dark:text-gray-100',
                 subtle: 'border-transparent',
             },
             colorScheme: {
-                gray: '', // Usado para outline e subtle
-                green: '',
-                yellow: '',
-                blue: '',
+                gray:      'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200',
+                green:     'bg-green-600 text-white dark:bg-green-700',
+                blue:      'bg-brand-primary text-white dark:bg-blue-700',
+                yellow:    'bg-yellow-500 text-white dark:bg-yellow-600',
             },
         },
-        // Estilos compostos para combinar variant e colorScheme
         compoundVariants: [
             { variant: 'subtle', colorScheme: 'gray', className: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-200' },
             { variant: 'subtle', colorScheme: 'green', className: 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300' },
@@ -32,6 +31,7 @@ export const badgeVariants = cva(
         ],
         defaultVariants: {
             variant: 'default',
+            colorScheme: 'blue'
         },
     }
 );

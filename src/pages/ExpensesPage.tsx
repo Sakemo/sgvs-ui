@@ -106,7 +106,9 @@ const ExpensesPage: React.FC = () => {
                 <h1 className="text-2xl font-semibold">
                     {t('expense.pageTitle', 'Expenses')}
                 </h1>
-                <Button onClick={() => handleOpenModal(null)} iconLeft={<LuPlus />}/>
+                <Button onClick={() => handleOpenModal(null)} iconLeft={<LuPlus />}>
+                    {t('expenses.addTitle', "Add Expense")}
+                </Button>
             </header>
 
             <Card>
@@ -127,7 +129,7 @@ const ExpensesPage: React.FC = () => {
                 </div>
             </Card>
 
-            <div className="flex flex-col lg:flex-row gap-6">
+            <div className={clsx("flex flex-col lg:flex-row gap-6", selectedExpense ? "gap-6" : "gap-0")}>
                 <div className={clsx("transition-all duration-300 ease-in-out", selectedExpense ? "lg:w-2/3" : "w-full")}>
                 {error && <p className="text-red-500 mb-4">{error}</p>}
 

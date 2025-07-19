@@ -22,6 +22,7 @@ interface ProductFormModalProps {
   productToEdit?: ProductResponse | null;
   categories: EntitySummary[];
   providers: EntitySummary[];
+  onDataRefresh: () => void;
 }
 
 const ProductFormModal: React.FC<ProductFormModalProps> = ({
@@ -31,6 +32,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
   productToEdit,
   categories,
   providers,
+  onDataRefresh
 }) => {
   const { t } = useTranslation();
   const isEditMode = !!productToEdit;
@@ -39,10 +41,15 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
   const [isProviderModalOpen, setIsProviderModalOpen] = useState(false);
 
   const handleNewCategory = (newCategory: CategoryResponse) => {
-    onSaveSuccess();
-  }
+    setIsCategoryModalOpen(false);
+    onDataRefresh();
+    setFormData(prev => ({ ...prev, categoryId: newCategory.id }));
+  };
+
   const handleNewProvider = (newProvider: ProviderResponse) => {
-    onSaveSuccess();
+    setIsProviderModalOpen(false);
+    onDataRefresh();
+    setFormData(prev => ({ ...prev, providerId: newProvider.id }));
   }
 
   const getInitialFormData = useCallback((): ProductRequest => {
