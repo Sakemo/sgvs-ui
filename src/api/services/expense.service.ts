@@ -16,6 +16,16 @@ export const getExpenses = async (params: GetExpensesParams): Promise<Page<Expen
     return response.data;
 };
 
+export const getTotalExpenses = async (params: { startDate?: string | null; endDate?: string | null }): Promise<number> => {
+    try {
+        const response = await apiClient.get<number>('/expenses/total', { params });
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching total expenses: ", error);
+        return 0;
+    }
+}
+
 export const createExpense = async (data: ExpenseRequest): Promise<ExpenseResponse> => {
     const response = await apiClient.post<ExpenseResponse>('/expenses', data);
     console.log(response.data);
