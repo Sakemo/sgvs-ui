@@ -2,6 +2,9 @@
 // ENUMS
 // =================================================================
 
+export const StockControlType = { NONE: "NONE", PER_ITEM: "PER_ITEM", GLOBAL: "GLOBAL" } as const;
+export type StockControlType = typeof StockControlType[keyof typeof StockControlType];
+
 export const UnitOfSale = { UNIT: "UNIT", WEIGHT: "WEIGHT", VOLUME: "VOLUME" } as const;
 export type UnitOfSale = typeof UnitOfSale[keyof typeof UnitOfSale];
 
@@ -34,6 +37,20 @@ export interface EntitySummary {
 // =================================================================
 // DOMAIN-SPECIFIC TYPES
 // =================================================================
+
+// --- Settings Domain ---
+export interface GeneralSettingsResponse {
+  id: number;
+  stockControlType: StockControlType;
+  businessName: string | null;
+  businessField: string | null;
+}
+
+export interface GeneralSettingsRequest {
+  stockControlType: StockControlType;
+  businessName?: string | null;
+  businessField?: string | null;
+}
 
 // --- Product Domain ---
 export interface ProductResponse {
