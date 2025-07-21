@@ -19,7 +19,12 @@
     "inactive": "Inactive",
     "all": "All",
     "loading": "Loading...",
-    "notApplicable": "N/A"
+    "notApplicable": "N/A",
+    "items": "Items",
+    "date": "Date",
+    "allClients": "All Clients",
+    "allProducts": "All Products",
+    "allPaymentMethods": "All Payment Methods"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -57,9 +62,9 @@
     "highestValue": "Highest Value",
     "lowestValue": "Lowest Value",
     "today": "Today",
-    "month": "This Month",
-    "year": "This Year",
-    "all": "All Time"
+    "thisMonth": "This Month",
+    "thisYear": "This Year",
+    "allTime": "All Time"
   },
   "errors": {
     "fetchProducts": "Failed to load products.",
@@ -75,6 +80,7 @@
     "pageTitle": "Products Management",
     "addProduct": "Add Product",
     "editTitle": "Edit Product",
+    "addTitle": "Add Product",
     "allCategories": "All Categories",
     "confirmCopy": "Create a copy of this product?",
     "table": {
@@ -120,10 +126,36 @@
     "noCustomersFound": "No customers found matching your criteria.",
     "confirmToggle": "Are you sure?",
     "sort": {
-        "az": "Name (A-Z)",
-        "za": "Name (Z-A)",
-        "highestDebt": "Highest Debt",
-        "lowestDebt": "Lowest Debt"
+      "az": "Name (A-Z)",
+      "za": "Name (Z-A)",
+      "highestDebt": "Highest Debt",
+      "lowestDebt": "Lowest Debt"
     }
+  },
+  "sale": {
+    "pageTitle": "Sales",
+    "addSale": "Register Sale",
+    "grossTotal": "Gross Total",
+    "netProfit": "Net Profit",
+    "totalByAllMethods": "Total (All Methods)",
+    "allMethods": "All Methods",
+    "totalValue": "Total Value",
+    "noSalesFound": "No sales found for the selected period.",
+    "anonymous": "Anonymous",
+    "addItem": "Add Item",
+    "quantity": "Quantity",
+    "registerSale": "Register Sale",
+    "items": "Items",
+    "saleDate": "Sale Date",
+    "details": {
+      "title": "Sale Details"
+    }
+  },
+  "paymentMethods": {
+    "cash": "Cash",
+    "debit": "Debit",
+    "credit": "Credit",
+    "on_credit": "On Credit",
+    "bank_transfer": "Bank Transfer"
   }
 }

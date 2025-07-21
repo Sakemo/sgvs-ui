@@ -20,10 +20,12 @@ import { LuPlus, LuSearch } from 'react-icons/lu';
 import clsx from 'clsx';
 import Pagination from '../components/common/Pagination';
 import { getProviders } from '../api/services/provider.service';
+import { useConfirmation } from '../contexts/utils/UseConfirmation';
 
 const ProductsPage: React.FC = () => {
     const { t } = useTranslation();
-    
+    const showConfirmation = useConfirmation();
+
     // Data State
     const [productsPage, setProductsPage] = useState<Page<ProductResponse> | null>(null);
     const [categories, setCategories] = useState<EntitySummary[]>([]);
@@ -124,32 +126,53 @@ const ProductsPage: React.FC = () => {
     }
     
     const handleToggleStatus = async (id: number, currentStatus: boolean) => {
-        const action = currentStatus ? t('actions.deactivate', 'Deactivate') : t('actions.activate', 'Activate');
-        if (window.confirm(`${t('actions.confirm', 'Are you sure you want to')} ${action} ${t('product.objectName', 'this product')}?`)) {
-            try {
-                await toggleProductStatus(id);
-                fetchProducts();
-            } catch { setError(t('errors.toggleStatus', 'Failed to update status.')); }
-        }
+        const actionText = currentStatus ? t('actions.deactivate') : t('actions.activate');
+        showConfirmation({
+            title: t('product.confirmToggleTitle', { action: actionText }),
+            description: t('product.confirmToggleDesc', 'Are you sure you want to proceed?'),
+            confirmText: actionText,
+            onConfirm: async () => {
+                try {
+                    await toggleProductStatus(id);
+                    fetchProducts();
+                } catch {
+                    setError(t('errors.toggleStatus'));
+                }
+            }
+        });
     };
 
     const handleCopy = async (id: number) => {
-        if (window.confirm(t('product.confirmCopy', 'Create a copy of this product?'))) {
-            try {
-                await copyProduct(id);
-                fetchProducts();
-            } catch { setError(t('errors.copyProduct', 'Failed to copy product.')); }
-        }
+        showConfirmation({
+            title: t('product.confirmCopyTitle', 'Copy Product?'),
+            description: t('product.confirmCopyDesc', 'This will create a new, inactive copy of the product'),
+            confirmText: t('actions.copy'),
+            onConfirm: async () => {
+                try {
+                    await copyProduct(id);
+                    fetchProducts();
+                } catch {
+                    setError(t('errors.copyProduct'));
+                }
+            }
+        });
     };
 
     const handleDelete = async (id: number) => {
-        if (window.confirm(t('actions.confirmDeletePermanent', 'Permanently delete this product? This action cannot be undone.'))) {
-            try {
-                await deleteProductPermanently(id);
-                if (selectedProduct?.id === id) setSelectedProduct(null);
-                fetchProducts();
-            } catch { setError(t('errors.deleteProduct', 'Failed to delete product.')); }
-        }
+        showConfirmation({
+            title: t('product.confirmDeleteTitle', 'Delete Product?'),
+            description: t('actions.confirmDeletePermanent'),
+            confirmText: t('actions.delete'),
+            onConfirm: async () => {
+                try {
+                    await deleteProductPermanently(id);
+                    if (selectedProduct?.id === id) setSelectedProduct(null);
+                    fetchProducts();
+                } catch {
+                    setError(t('errors.deleteProduct'));
+                }
+            }
+        });
     };
 
     const handleRowClick = (product: ProductResponse) => {

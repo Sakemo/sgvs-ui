@@ -19,7 +19,12 @@
     "inactive": "Inativo",
     "all": "Todos",
     "loading": "Carregando...",
-    "notApplicable": "N/A"
+    "notApplicable": "N/A",
+    "items": "Itens",
+    "date": "Data",
+    "allClients": "Todos os Clientes",
+    "allProducts": "Todos os Produtos",
+    "allPaymentMethods": "Todas as Formas"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -57,9 +62,9 @@
     "highestValue": "Maior Valor",
     "lowestValue": "Menor Valor",
     "today": "Hoje",
-    "month": "Este Mês",
-    "year": "Este Ano",
-    "all": "Ver Tudo"
+    "thisMonth": "Este Mês",
+    "thisYear": "Este Ano",
+    "allTime": "Ver Tudo"
   },
   "errors": {
     "fetchProducts": "Falha ao carregar produtos.",
@@ -75,6 +80,7 @@
     "pageTitle": "Gerenciamento de Produtos",
     "addProduct": "Adicionar Produto",
     "editTitle": "Editar Produto",
+    "addTitle": "Adicionar Produto",
     "allCategories": "Todas as Categorias",
     "confirmCopy": "Deseja criar uma cópia deste produto?",
     "table": {
@@ -125,5 +131,31 @@
         "highestDebt": "Maior Saldo Devedor",
         "lowestDebt": "Menor Saldo Devedor"
     }
+  },
+  "sale": {
+    "pageTitle": "Vendas",
+    "addSale": "Registrar Venda",
+    "grossTotal": "Total Bruto",
+    "netProfit": "Lucro Líquido",
+    "totalByAllMethods": "Total (Todas as Formas)",
+    "allMethods": "Todas as Formas",
+    "totalValue": "Valor Total",
+    "noSalesFound": "Nenhuma venda encontrada para o período selecionado.",
+    "anonymous": "Anônimo",
+    "addItem": "Adicionar Item",
+    "quantity": "Quantidade",
+    "registerSale": "Registrar Venda",
+    "items": "Itens",
+    "saleDate": "Data da Venda",
+    "details": {
+      "title": "Detalhes da Venda"
+    }
+  },
+  "paymentMethods": {
+    "cash": "Dinheiro",
+    "debit": "Débito",
+    "credit": "Crédito",
+    "on_credit": "Fiado",
+    "bank_transfer": "PIX / Transferência"
   }
 }
