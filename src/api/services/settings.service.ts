@@ -17,6 +17,6 @@ export const getGeneralSettings = async ():Promise<GeneralSettingsResponse> => {
  * @returns general settings updated
  */
 export const updateGeneralSettings = async (data: GeneralSettingsRequest): Promise<GeneralSettingsResponse> => {
-    const response = await apiClient.put<GeneralSettingsResponse>('/api/settings', data);
+    const response = await apiClient.put<GeneralSettingsResponse>('/settings', data);
     return response.data;
 }

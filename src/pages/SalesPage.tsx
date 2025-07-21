@@ -143,8 +143,7 @@ const SalesPage: React.FC = () => {
     <div className="space-y-6">
       <header className="flex flex-wrap justify-between items-center gap-4">
         <h1 className="text-2xl font-semibold">{t('sale.pageTitle', 'Sales')}</h1>
-        <Button onClick={() => setIsFormModalOpen(true)}>
-          <LuPlus className="mr-2 h-4 w-4" />
+        <Button onClick={() => setIsFormModalOpen(true)} iconLeft={<LuPlus />}>
           {t('sale.addSale', 'Register Sale')}
         </Button>
       </header>

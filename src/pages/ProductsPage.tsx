@@ -30,7 +30,8 @@ const ProductsPage: React.FC = () => {
     const [providers, setProviders] = useState<EntitySummary[]>([]);
 
     // UI State
-    const [loading, setLoading] = useState(true);
+    const [isLoadingPage, setIsLoadingPage] = useState(true);
+    const [isLoadingTable, setIsLoadingTable] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [productToEdit, setProductToEdit] = useState<ProductResponse | null>(null);
@@ -56,51 +57,47 @@ const ProductsPage: React.FC = () => {
     ];
 
     //fetchdata
-    const fetchDropdownData = useCallback(async () => {
+    const fetchDependencies = useCallback(async () => {
         try {
             const [categoriesData, providersData] = await Promise.all([
-                getCategories(),
-                getProviders()
+                getCategories(), getProviders()
             ]);
             setCategories(categoriesData);
             setProviders(providersData);
         } catch (err) {
-            setError(t('errors.fetchInitialData' + err, `failed to load categories/providers: ${err}`));
+            setError(t(`errors.fetchInitialData` + err ));
+        } finally {
+            setIsLoadingPage(false);
         }
-    }, [t])
+    }, [t]);
 
     const fetchProducts = useCallback(async () => {
-        setLoading(true);
-        setError(null)
+        setIsLoadingTable(true); 
         try {
             const params: GetProductsParams = {
                 ...filters,
                 name: debouncedNameFilter?.trim() || undefined,
-                page: currentPage, size: 10,
+                page: currentPage,
+                size: 10,
             };
-
-            const [productsData] = await Promise.all([
-                getProducts(params)
-            ]);
-
-            setProductsPage(productsData)
+            const data = await getProducts(params);
+            setProductsPage(data);
         } catch (err) {
-            setError(t('errors.fetchProducts' + err, `failed to load products: ${err}`))
+            setError(t('errors.fetchProducts' + err));
         } finally {
-            setLoading(false);
+            setIsLoadingTable(false);
         }
-    }, [filters, currentPage, debouncedNameFilter, t])
+    }, [filters, currentPage, debouncedNameFilter, t]);
 
-    // Busca Produtos sempre que os filtros mudam
+    // Effects
+    useEffect(() => {
+        fetchDependencies();
+    }, [fetchDependencies]);
+    
     useEffect(() => {
         fetchProducts();
     }, [fetchProducts]);
 
-    // Handle de refresh
-    const handleDataRefresh = () => {
-        fetchDropdownData();
-    };
-    
     // --- Handlers de Ação ---
     const handleFilterChange = (
         field: keyof typeof filters, 
@@ -120,8 +117,11 @@ const ProductsPage: React.FC = () => {
     const handleSaveSuccess = () => {
         handleCloseModal();
         fetchProducts();
-        fetchDropdownData();
     };
+
+    const handleDataRefresh = () => {
+        fetchDependencies();
+    }
     
     const handleToggleStatus = async (id: number, currentStatus: boolean) => {
         const action = currentStatus ? t('actions.deactivate', 'Deactivate') : t('actions.activate', 'Activate');
@@ -194,7 +194,7 @@ const ProductsPage: React.FC = () => {
                     {error && <p className="text-red-500 mb-4">{error}</p>}
                     <ProductsTable
                         products={productsPage?.content ?? []}
-                        isLoading={loading}
+                        isLoading={isLoadingTable}
                         onEdit={handleOpenModal}
                         onToggleStatus={handleToggleStatus}
                         onDelete={handleDelete}

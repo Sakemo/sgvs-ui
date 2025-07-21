@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { createProduct, updateProduct } from '../../../api/services/product.service';
 import type { ProductRequest, ProductResponse, EntitySummary, CategoryResponse, ProviderResponse } from '../../../api/types/domain';
-import { UnitOfSale } from '../../../api/types/domain';
+import { StockControlType, UnitOfSale } from '../../../api/types/domain';
 
 import Modal from '../../common/Modal';
 import Button from '../../common/ui/Button';
@@ -14,6 +14,7 @@ import { LuPlus } from 'react-icons/lu';
 import CategoryAddModal from '../categories/CategoryAddModal';
 import ProviderAddModal from '../providers/ProviderAddModal';
 import AdvancedOptions from '../../common/AdvancedOptions';
+import { useSettings } from '../../../contexts/utils/UseSettings';
 
 interface ProductFormModalProps {
   isOpen: boolean;
@@ -35,6 +36,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
   onDataRefresh
 }) => {
   const { t } = useTranslation();
+  const { settings } = useSettings();
   const isEditMode = !!productToEdit;
 
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
@@ -63,6 +65,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
         costPrice: productToEdit.costPrice,
         unitOfSale: productToEdit.unitOfSale,
         active: productToEdit.active,
+        managesStock: productToEdit.managesStock,
         categoryId: productToEdit.category.id,
         providerId: productToEdit.provider?.id,
       };
@@ -76,6 +79,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
       costPrice: undefined,
       unitOfSale: UnitOfSale.UNIT,
       active: true,
+      managesStock: false,
       categoryId: categories[0]?.id,
       providerId: undefined,
     };
@@ -132,6 +136,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
         costPrice: formData.costPrice ?? null,
         unitOfSale: formData.unitOfSale ?? UnitOfSale.UNIT,
         active: formData.active ?? true,
+        managesStock: formData.managesStock!,
         providerId: formData.providerId ?? null,
       };
       if (isEditMode && productToEdit) {
@@ -172,12 +177,32 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center space-x-2">
-            <input type="checkbox" id="active" name="active" checked={formData.active ?? true} onChange={handleChange} className="h-4 w-4 rounded" />
-            <label htmlFor="active">{t('product.form.activeProduct', 'Active Product')}</label>
+        <div className='grid grid-cols-2'>
+            <div className="flex items-center space-x-2">
+                <input type="checkbox" id="active" name="active" checked={formData.active ?? true} onChange={handleChange} className="h-4 w-4 rounded" />
+                <label htmlFor="active">{t('product.form.activeProduct', 'Active Product')}</label>
+            </div>
+
+            {settings?.stockControlType === StockControlType.PER_ITEM && (
+              <div className='flex items-center space-x-2'>
+                <input
+                  type='checkbox'
+                  id='managesStock'
+                  name='managesStock'
+                  checked={formData.managesStock ?? true}
+                  onChange={handleChange}
+                  className='h-4 w-4 rounded'
+                />
+                <label htmlFor='managesStock'>
+                  {t('products.form.managesStock', 'Manage Stock')}
+                </label>
+              </div> 
+            )}
         </div>
 
+
         <AdvancedOptions className='grid grid-cols-3 [&>*:nth-child(1)]:col-span-2 [&>*:nth-child(6)]:col-span-3 gap-4'>
+
           <Input label={t('product.costPrice', 'Cost Price')} name="costPrice" type="number" step="0.01" value={formData.costPrice ?? ''} onChange={handleChange} error={errors.costPrice} />
 
           <Input label={t('common.stock', 'Stock Quantity')} name="stockQuantity" type="number" step="1" value={formData.stockQuantity ?? ''} onChange={handleChange} error={errors.stockQuantity} />

@@ -63,7 +63,8 @@ export interface ProductResponse {
   costPrice: number | null;
   unitOfSale: UnitOfSale;
   active: boolean;
-  category: EntitySummary; // Reutilizando o tipo genérico
+  managesStock: boolean;
+  category: EntitySummary;
   provider: EntitySummary | null;
   createdAt: string;
   updatedAt: string;
@@ -78,6 +79,7 @@ export interface ProductRequest {
   costPrice?: number | null;
   unitOfSale: UnitOfSale;
   active: boolean;
+  managesStock: boolean;
   categoryId: number;
   providerId?: number | null;
 }
