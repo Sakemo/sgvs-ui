@@ -37,23 +37,23 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({ isOpen, onClose, onSaveSu
 
   // State
   const [items, setItems] = useState<FormSaleItem[]>([]);
-  const [customerId, setCustomerId] = useState<number | undefined>();
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(PaymentMethod.CASH);
   const [description, setDescription] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   
-  // State for Autocomplete
+  // State for Autocomplete products
   const [productQuery, setProductQuery] = useState('');
   const [productOptions, setProductOptions] = useState<ProductResponse[]>([]);
   const [selectedProductOption, setSelectedProductOption] = useState<AutocompleteOption | null>(null);
   const [isSearchingProducts, setIsSearchingProducts] = useState(false);
-  
-  // State for item entry
   const [quantity, setQuantity] = useState('1');
-  
-  // State for dropdowns
-  const [allCustomers, setAllCustomers] = useState<EntitySummary[]>([]);
+
+  // State Autocomplete Customers
+  const [customerQuery, setCustomerQuery] = useState('');
+  const [customerOptions, setCustomerOptions] = useState<EntitySummary[]>([]);
+  const [selectedCustomerOption, setSelectedCustomerOption] = useState<AutocompleteOption | null>(null);
+  const [isSearchingCustomers, setIsSearchingCustomers] = useState(false);
 
 
   const selectedProductDetails = useMemo(() => {
@@ -63,25 +63,27 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({ isOpen, onClose, onSaveSu
 
   const resetForm = useCallback(() => {
     setItems([]);
-    setCustomerId(undefined);
     setPaymentMethod(PaymentMethod.CASH);
     setDescription('');
     setSelectedProductOption(null);
     setProductQuery('');
+    setSelectedCustomerOption(null);
+    setCustomerQuery('');
     setQuantity('1');
     setErrors({});
   }, []);
 
   // fetch customers
   useEffect(() => {
-    if (isOpen) {
-      getCustomers({ isActive: true })
-        .then(setAllCustomers)
-        .catch(() => setErrors(prev => ({ ...prev, form: t('errors.fetchCustomers') })));
-      resetForm();
+    if (customerQuery.length < 1) {
+      setCustomerOptions([]);
+      return;
     }
-  }, [isOpen, resetForm, t]);
-
+    setIsSearchingCustomers(true);
+    getCustomers({ name: customerQuery, isActive: true })
+      .then(setCustomerOptions)
+      .finally(() => setIsSearchingCustomers(false));
+  }, [customerQuery]);
 
   // fetch products
   useEffect(() => {
@@ -107,7 +109,7 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({ isOpen, onClose, onSaveSu
       return;
     }
 
-    if (selectedProductDetails && selectedProductDetails.stockQuantity < numQuantity) {
+    if (selectedProductDetails.managesStock && selectedProductDetails.stockQuantity < numQuantity) {
         setErrors({ item: t('validation.insufficientStock', { available: selectedProductDetails?.stockQuantity }) });
         return;
     }
@@ -150,6 +152,8 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({ isOpen, onClose, onSaveSu
     e.preventDefault();
     setErrors({});
 
+    const customerId = selectedCustomerOption ? Number(selectedCustomerOption.value) : undefined;
+
     if (items.length === 0) {
       setErrors({ form: t('validation.saleItemsRequired', `At least one item is required for the sale.`) })
       return;
@@ -163,7 +167,7 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({ isOpen, onClose, onSaveSu
     
     try {
       const payload: SaleRequest = {
-        customerId: customerId || undefined,
+        customerId,
         paymentMethod,
         description: description || undefined,
         items: items.map(({ productId, quantity }) => ({ productId, quantity })),
@@ -189,10 +193,15 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({ isOpen, onClose, onSaveSu
       <form onSubmit={handleSubmit}>
         <div className="p-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Select label={t('common.client')} name="customerId" value={customerId ?? ''} onChange={(e) => setCustomerId(Number(e.target.value) || undefined)}>
-                <option value="">{t('sale.anonymous', 'Anonymous')}</option>
-                {allCustomers.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </Select>
+            <AutocompleteInput
+                label={t('common.client')}
+                placeholder={t('actions.searchByName')}
+                options={customerOptions.map(c => ({ value: c.id, label: c.name }))}
+                selected={selectedCustomerOption}
+                onSelect={setSelectedCustomerOption}
+                onQueryChange={setCustomerQuery}
+                isLoading={isSearchingCustomers}
+            />
             <Select label={t('common.paymentMethod')} name="paymentMethod" value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}>
                 {Object.values(PaymentMethod).map(pm => <option key={pm} value={pm}>{t(`paymentMethods.${pm.toLowerCase()}`, pm.replace('_', ' '))}</option>)}
             </Select>
