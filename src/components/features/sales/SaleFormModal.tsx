@@ -350,8 +350,8 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
                 type="button"
                 onClick={handleAddItem}
                 disabled={!selectedProductOption}
+                iconLeft={<LuPlus />}
               >
-                <LuPlus className="mr-2 h-4 w-4" />
                 {t("actions.add", "Add")}
               </Button>
             </div>
