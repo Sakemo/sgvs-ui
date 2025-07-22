@@ -22,6 +22,8 @@ import Pagination from '../components/common/Pagination';
 import ValueTotalCard from '../components/features/sales/ValueTotalCard';
 import TotalByPaymentMethodCard from '../components/features/sales/TotalByPaymentMethodCard';
 import DateFilterDropdown, { type DateFilterOption } from '../components/common/DateFilterDropdown';
+import useDebounce from '../hooks/useDebounce';
+import AutocompleteInput from '../components/common/AutoCompleteInput';
 
 const SalesPage: React.FC = () => {
   const { t } = useTranslation();
@@ -32,8 +34,6 @@ const SalesPage: React.FC = () => {
   const [netProfit, setNetProfit] = useState(0);
   const [totalsByPaymentMethod, setTotalsByPaymentMethod] = useState<TotalByPaymentMethod[]>([]);
   const [groupSummaries, setGroupSummaries] = useState<Record<string, GroupSummary>>({});
-  const [customers, setCustomers] = useState<EntitySummary[]>([]);
-  const [products, setProducts] = useState<EntitySummary[]>([]);
   
   // UI State
   const [loading, setLoading] = useState(true);
@@ -49,6 +49,42 @@ const SalesPage: React.FC = () => {
     orderBy: 'saleDate,desc',
   });
   const [currentPage, setCurrentPage] = useState(0);
+
+  // customers & products states autocomplete
+  const [customerQuery, setCustomerQuery] = useState('');
+  const [customerOptions, setCustomerOptions] = useState<EntitySummary[]>([]);
+  const [isSearchingCustomers, setIsSearchingCustomers] = useState(false);
+  
+  const [productQuery, setProductQuery] = useState('');
+  const [productOptions, setProductOptions] = useState<EntitySummary[]>([]);
+  const [isSearchingProducts, setIsSearchingProducts] = useState(false);
+  
+  const debouncedCustomerQuery = useDebounce(customerQuery, 400);
+  const debouncedProductQuery = useDebounce(productQuery, 400);
+
+  // search customers for autocomplete
+  useEffect(() => {
+    if (debouncedCustomerQuery.length < 1) {
+      setCustomerOptions([]);
+      return;
+    }
+    setIsSearchingCustomers(true);
+    getCustomers({ name: debouncedCustomerQuery, isActive: true })
+      .then(setCustomerOptions)
+      .finally(() => setIsSearchingCustomers(false));
+  }, [debouncedCustomerQuery]);
+
+  // search products for autocomplete
+  useEffect(() => {
+    if (debouncedProductQuery.length < 1) {
+      setProductOptions([]);
+      return;
+    }
+    setIsSearchingProducts(true);
+    getProducts({ name: debouncedProductQuery, size: 10 })
+      .then(page => setProductOptions(page.content.map(p => ({ id: p.id, name: p.name }))))
+      .finally(() => setIsSearchingProducts(false));
+  }, [debouncedProductQuery]);
 
   // --- Data Fetching ---
   const fetchData = useCallback(async () => {
@@ -70,8 +106,10 @@ const SalesPage: React.FC = () => {
       setGrossTotal(grossTotalData);
       setNetProfit(grossTotalData - expensesData);
       setTotalsByPaymentMethod(paymentTotalsData);
-      setCustomers(customersData);
-      setProducts(productsData.content.map(p => ({ id: p.id, name: p.name })));
+      
+      // ???
+      setCustomerOptions(customersData);
+      setProductOptions(productsData.content.map(p => ({ id: p.id, name: p.name })));
 
       const orderProperty = params.orderBy?.split(',')[0];
       if (orderProperty === "saleDate" || orderProperty === 'customer.name') {
@@ -156,14 +194,24 @@ const SalesPage: React.FC = () => {
               { key: 'this_year', label: t('filter.thisYear') },
               { key: 'all', label: t('filter.allTime') }
           ]} />
-          <Select value={filters.customerId ?? ''} onChange={(e) => handleFilterChange('customerId', e.target.value ? Number(e.target.value) : undefined)}>
-            <option value="">{t('common.allClients')}</option>
-            {customers.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-          </Select>
-          <Select value={filters.productId ?? ''} onChange={(e) => handleFilterChange('productId', e.target.value ? Number(e.target.value) : undefined)}>
-            <option value="">{t('common.allProducts')}</option>
-            {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-          </Select>
+          <AutocompleteInput
+            label=''
+            placeholder={t('actions.searchByClient', 'Search by client...')}
+            options={customerOptions.map(c => ({ value: c.id, label: c.name }))}
+            selected={filters.customerId ? { value: filters.customerId, label: customerOptions.find(c => c.id === filters.customerId)?.name || '' } : null}
+            onSelect={(option) => handleFilterChange('customerId', option ? Number(option.value) : undefined)}
+            onQueryChange={setCustomerQuery}
+            isLoading={isSearchingCustomers}
+          />
+          <AutocompleteInput
+            label=''
+            placeholder={t('actions.searchByProduct', 'Search by product...')}
+            options={productOptions.map(p => ({ value: p.id, label: p.name }))}
+            selected={filters.productId ? { value: filters.productId, label: productOptions.find(p => p.id === filters.productId)?.name || '' } : null}
+            onSelect={(option) => handleFilterChange('productId', option ? Number(option.value) : undefined)}
+            onQueryChange={setProductQuery}
+            isLoading={isSearchingProducts}
+          />
           <Select value={filters.paymentMethod ?? ''} onChange={(e) => handleFilterChange('paymentMethod', e.target.value || undefined)}>
             <option value="">{t('common.allPaymentMethods')}</option>
             {Object.values(PaymentMethod).map(pm => <option key={pm} value={pm}>{t(`paymentMethods.${pm.toLowerCase()}`)}</option>)}
