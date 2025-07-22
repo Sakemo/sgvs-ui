@@ -18,6 +18,7 @@ import Textarea from '../../common/ui/Textarea';
 import Card from '../../common/ui/Card';
 import { LuPlus, LuTrash2 } from 'react-icons/lu';
 import { formatCurrency } from '../../../utils/formatters';
+import AutocompleteInput, { type AutocompleteOption } from '../../common/AutoCompleteInput';
 
 interface SaleFormModalProps {
   isOpen: boolean;
@@ -34,64 +35,89 @@ interface FormSaleItem extends SaleItemRequest {
 const SaleFormModal: React.FC<SaleFormModalProps> = ({ isOpen, onClose, onSaveSuccess }) => {
   const { t } = useTranslation();
 
-  // State for dropdowns
-  const [allProducts, setAllProducts] = useState<ProductResponse[]>([]);
-  const [allCustomers, setAllCustomers] = useState<EntitySummary[]>([]);
-  
-  // State for the main form
+  // State
   const [items, setItems] = useState<FormSaleItem[]>([]);
   const [customerId, setCustomerId] = useState<number | undefined>();
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(PaymentMethod.CASH);
   const [description, setDescription] = useState('');
-  
-  // State for the item entry section
-  const [selectedProductId, setSelectedProductId] = useState<string>('');
-  const [quantity, setQuantity] = useState('1');
-
-  // UI State
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   
-  const selectedProduct = useMemo(() => allProducts.find(p => p.id === Number(selectedProductId)), [allProducts, selectedProductId]);
+  // State for Autocomplete
+  const [productQuery, setProductQuery] = useState('');
+  const [productOptions, setProductOptions] = useState<ProductResponse[]>([]);
+  const [selectedProductOption, setSelectedProductOption] = useState<AutocompleteOption | null>(null);
+  const [isSearchingProducts, setIsSearchingProducts] = useState(false);
+  
+  // State for item entry
+  const [quantity, setQuantity] = useState('1');
+  
+  // State for dropdowns
+  const [allCustomers, setAllCustomers] = useState<EntitySummary[]>([]);
+
+
+  const selectedProductDetails = useMemo(() => {
+    if (!selectedProductOption) return null;
+    return productOptions.find(p => p.id === selectedProductOption.value);
+  }, [selectedProductOption, productOptions]);
 
   const resetForm = useCallback(() => {
     setItems([]);
     setCustomerId(undefined);
     setPaymentMethod(PaymentMethod.CASH);
     setDescription('');
-    setSelectedProductId('');
+    setSelectedProductOption(null);
+    setProductQuery('');
     setQuantity('1');
     setErrors({});
   }, []);
 
+  // fetch customers
   useEffect(() => {
     if (isOpen) {
-      setIsLoading(true);
-      Promise.all([
-        getProducts({ size: 1000 }), // Fetch a large number of products for the dropdown
-        getCustomers({ isActive: true })
-      ]).then(([productsPage, customersData]) => {
-        setAllProducts(productsPage.content);
-        setAllCustomers(customersData);
-      }).catch(() => {
-        setErrors({ form: t('errors.fetchInitialData') });
-      }).finally(() => {
-        setIsLoading(false);
-      });
+      getCustomers({ isActive: true })
+        .then(setAllCustomers)
+        .catch(() => setErrors(prev => ({ ...prev, form: t('errors.fetchCustomers') })));
       resetForm();
     }
   }, [isOpen, resetForm, t]);
 
+
+  // fetch products
+  useEffect(() => {
+    if (productQuery.length < 1) {
+      setProductOptions([]);
+      return;
+    }
+    setIsSearchingProducts(true);
+    getProducts({ name: productQuery, size:10 })
+      .then(page => setProductOptions(page.content))
+      .finally(() => setIsSearchingProducts(false))
+    }, [productQuery]);
+
   const handleAddItem = () => {
     const numQuantity = parseFloat(quantity);
-    if (!selectedProduct || isNaN(numQuantity) || numQuantity <= 0) return;
-    
-    if (selectedProduct.unitOfSale === UnitOfSale.UNIT && !Number.isInteger(numQuantity)) {
-        setErrors({ item: t('validation.integerQuantityRequired') });
+    if (!selectedProductOption || isNaN(numQuantity) || numQuantity <= 0) {
+      setErrors({ item: t('validation.invalidQuantity') });
+      return;
+    }
+
+    if (!selectedProductDetails){
+      setErrors({ item: t('validation.details') });
+      return;
+    }
+
+    if (selectedProductDetails && selectedProductDetails.stockQuantity < numQuantity) {
+        setErrors({ item: t('validation.insufficientStock', { available: selectedProductDetails?.stockQuantity }) });
         return;
     }
 
-    const existingItemIndex = items.findIndex(item => item.productId === selectedProduct.id);
+    if (selectedProductDetails?.unitOfSale === UnitOfSale.UNIT && !Number.isInteger(numQuantity)) {
+        setErrors({ item: t('validation.integerQuantityRequired') });
+        return;
+  }
+
+  const existingItemIndex = items.findIndex(item => item.productId === selectedProductDetails.id);
     if (existingItemIndex > -1) {
       const newItems = [...items];
       newItems[existingItemIndex].quantity += numQuantity;
@@ -99,14 +125,17 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({ isOpen, onClose, onSaveSu
       setItems(newItems);
     } else {
       setItems(prev => [...prev, {
-        productId: selectedProduct.id,
+        productId: selectedProductDetails.id,
         quantity: numQuantity,
-        name: selectedProduct.name,
-        salePrice: selectedProduct.salePrice,
-        totalValue: numQuantity * selectedProduct.salePrice,
+        name: selectedProductDetails.name,
+        salePrice: selectedProductDetails.salePrice,
+        totalValue: numQuantity * selectedProductDetails.salePrice,
+        unitOfSale: selectedProductDetails.unitOfSale,
+        stockQuantity: selectedProductDetails.stockQuantity,
       }]);
     }
-    setSelectedProductId('');
+    setSelectedProductOption(null);
+    setProductQuery('');
     setQuantity('1');
     setErrors({});
   };
@@ -155,8 +184,6 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({ isOpen, onClose, onSaveSu
     }
   };
 
-  const isUnitProduct = selectedProduct?.unitOfSale === UnitOfSale.UNIT;
-
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={t('sale.addSale', 'Register Sale')} className="sm:max-w-4xl">
       <form onSubmit={handleSubmit}>
@@ -174,12 +201,24 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({ isOpen, onClose, onSaveSu
           <Card>
             <h3 className="text-lg font-semibold mb-4">{t('sale.addItem', 'Add Item')}</h3>
             <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_auto] gap-4 items-end">
-                <Select label={t('product.objectName', 'Product')} value={selectedProductId} onChange={(e) => setSelectedProductId(e.target.value)}>
-                    <option value="">{t('common.select', 'Select...')}</option>
-                    {allProducts.map(p => <option key={p.id} value={p.id}>{`${p.name} (${formatCurrency(p.salePrice)})`}</option>)}
-                </Select>
-                <Input label={t('sale.quantity', 'Quantity')} type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} step={isUnitProduct ? "1" : "0.01"} min={isUnitProduct ? "1" : "0.01"}/>
-                <Button type="button" onClick={handleAddItem} disabled={!selectedProduct}>
+                <AutocompleteInput
+                  label={t('product.objectName', 'Product')}
+                  placeholder={t('actions.searchByName')}
+                  options={productOptions.map(p => ({ value: p.id, label: `${p.name} (${formatCurrency(p.salePrice)})` }))}
+                  selected={selectedProductOption}
+                  onSelect={setSelectedProductOption}
+                  onQueryChange={setProductQuery}
+                  isLoading={isSearchingProducts}
+                />
+                <Input 
+                  label={t('sale.quantity', 'Quantity')} 
+                  type="number" value={quantity} 
+                  onChange={(e) => setQuantity(e.target.value)} 
+                  step={selectedProductDetails?.unitOfSale === UnitOfSale.UNIT ? '1' : '0.01'} 
+                  min={selectedProductDetails?.unitOfSale === UnitOfSale.UNIT ? '1' : '0.01'} 
+                  disabled={!selectedProductOption}
+                />
+                <Button type="button" onClick={handleAddItem} disabled={!selectedProductOption}>
                     <LuPlus className="mr-2 h-4 w-4" />{t('actions.add', 'Add')}
                 </Button>
             </div>
