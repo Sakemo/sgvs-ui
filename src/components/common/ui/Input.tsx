@@ -11,7 +11,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, label, iconLeft, error, ...props }, ref) => {
     const hasIcon = !!iconLeft;
     return (
-      <div className="w-full">
+      <div className="w-full dark:text-gray-200">
         {label && (
           <label htmlFor={props.id || props.name} className="mb-1 block text-sm font-medium text-text-secondary">
             {label}

@@ -112,7 +112,7 @@ const CustomerPage: React.FC = () => {
     return (
         <div className="space-y-6">
             <header className="flex flex-wrap justify-between items-center gap-4">
-                <h1 className="text-2xl font-semibold">
+                <h1 className="text-2xl font-semibold dark:text-gray-200">
                     {t('customer.pageTitle', 'Customer')}
                 </h1>
                 <Button onClick={() => handleOpenModal(null)} iconLeft={<LuPlus />}>

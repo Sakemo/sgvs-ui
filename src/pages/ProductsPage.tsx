@@ -182,8 +182,11 @@ const ProductsPage: React.FC = () => {
     return (
         <div className="space-y-6">
             <header className="flex flex-wrap justify-between items-center gap-4">
-                <h1 className="text-2xl font-semibold">{t('product.pageTitle', 'Products Management')}</h1>
-                <Button onClick={() => handleOpenModal(null)} iconLeft={<LuPlus className='mr-2 h-4 w-4'/>}>
+                <h1 className="text-2xl font-semibold text-text-primary dark:text-gray-200">
+                    {t('product.pageTitle', 'Products Management')}
+                </h1>
+                <Button onClick={() => handleOpenModal(null)}>
+                    <LuPlus className='mr-2 h-4 w-4'/>
                     {t('product.addProduct', 'Add Product')}
                 </Button>
             </header>
@@ -200,6 +203,7 @@ const ProductsPage: React.FC = () => {
                         value={filters.categoryId ?? ''}
                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleFilterChange('categoryId', e.target.value ? Number(e.target.value) : undefined)}
                     >
+                        {/* O texto das opções herda a cor do <select> */}
                         <option value="">{t('product.allCategories', 'All Categories')}</option>
                         {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
                     </Select>
@@ -207,6 +211,7 @@ const ProductsPage: React.FC = () => {
                         value={filters.orderBy}
                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleFilterChange('orderBy', e.target.value)}
                     >
+                        {/* O texto das opções herda a cor do <select> */}
                         {orderOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                     </Select>
                 </div>
@@ -214,7 +219,9 @@ const ProductsPage: React.FC = () => {
 
             <div className="flex flex-col lg:flex-row gap-6">
                 <div className={clsx("transition-all duration-300 ease-in-out", selectedProduct ? "lg:w-2/3" : "w-full")}>
+                    {/* A cor do erro já é explícita (text-red-500), então não precisa de modo dark */}
                     {error && <p className="text-red-500 mb-4">{error}</p>}
+                    
                     <ProductsTable
                         products={productsPage?.content ?? []}
                         isLoading={isLoadingTable}
@@ -237,11 +244,14 @@ const ProductsPage: React.FC = () => {
                 </div>
                 <div className={clsx("transition-all duration-300 ease-in-out", selectedProduct ? "lg:w-1/3 opacity-100" : "w-0 opacity-0 pointer-events-none")}>
                     {selectedProduct && (
-                        <ProductDetailsDrawer product={selectedProduct} onClose={() => setSelectedProduct(null)} onEdit={handleOpenModal} />
+                        <ProductDetailsDrawer 
+                            product={selectedProduct} 
+                            onClose={() => setSelectedProduct(null)} 
+                            onEdit={handleOpenModal} 
+                        />
                     )}
                 </div>
             </div>
-
             {isModalOpen && (
                 <ProductFormModal isOpen={isModalOpen} onClose={handleCloseModal} onSaveSuccess={handleSaveSuccess} productToEdit={productToEdit} categories={categories} providers={providers} onDataRefresh={handleDataRefresh}/>
             )}

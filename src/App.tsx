@@ -7,10 +7,12 @@ import SalesPage from "./pages/SalesPage";
 import { SettingsProvider } from "./contexts/SettingsProvider";
 import SettingsPage from "./pages/SettingsPage";
 import { ConfirmationModalProvider } from "./contexts/ConfirmationModalProvider";
+import { ThemeProvider } from "./contexts/ThemeProvider";
 
 function App() {
   return (
     <BrowserRouter>
+    <ThemeProvider>
       <SettingsProvider>
         <ConfirmationModalProvider>
           <Routes>
@@ -25,6 +27,8 @@ function App() {
           </Routes>
         </ConfirmationModalProvider>
       </SettingsProvider>
+    </ThemeProvider>
+
     </BrowserRouter>
   );
 }

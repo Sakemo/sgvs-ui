@@ -37,7 +37,7 @@ function Table<T extends DataObject>({
   };
 
   return (
-    <div className="overflow-hidden rounded-card border border-border-light dark:border-border-dark shadow-soft">
+    <div className="overflow-hidden rounded-card border border-border-light dark:border-border-dark shadow-soft dark:text-gray-200">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-border-light dark:divide-border-dark">
           <thead className="bg-gray-50 dark:bg-card-dark/50">

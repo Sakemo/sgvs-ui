@@ -15,9 +15,12 @@ import Pagination from "../components/common/Pagination";
 import ExpenseDetailsDrawer from "../components/features/expenses/ExpenseDetailsDrawer";
 import ExpenseFormModal from "../components/features/expenses/ExpenseFormModal";
 
+import { useConfirmation } from "../contexts/utils/UseConfirmation";
+
 const ExpensesPage: React.FC = () => {
     const { t } = useTranslation();
     const [expensesPage, setExpensesPage] = useState<Page<ExpenseResponse> | null>(null);
+    const showConfirmation = useConfirmation();
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -84,13 +87,20 @@ const ExpensesPage: React.FC = () => {
     };
 
     const handleDelete = async (id: number) => {
-        if (window.confirm(t('actions.confirmDeletePermanent'))) {
-            try {
-                await deleteExpense(id);
-                if (selectedExpense?.id === id) setSelectedExpense(null);
-                fetchExpenses();
-            } catch { setError(t('errors.deleteExpense', 'Failed to delete expense.')); }
-        }
+        showConfirmation({
+            title: t('expense.confirmDeleteTitle', 'Delete expense?'),
+            description: t('actions.confirmDeletePermanent', 'Permanently delete This action cannot be undone.'),
+            confirmText: t('actions.delete', 'Delete'),
+            onConfirm: async () => {
+                try {
+                    await deleteExpense(id);
+                    if (selectedExpense?.id === id) setSelectedExpense(null);
+                    fetchExpenses();
+                } catch {
+                    setError(t('errors.deleteExpense', 'Failed to delete expense.'))
+                }
+            }
+        });
     };
 
     const handleRowClick = (expense: ExpenseResponse) => {
@@ -103,7 +113,7 @@ const ExpensesPage: React.FC = () => {
     return (
         <div className="space-y-6">
             <header className="flex flex-wrap justify-between items-center gap-4">
-                <h1 className="text-2xl font-semibold">
+                <h1 className="text-2xl font-semibold dark:text-gray-200">
                     {t('expense.pageTitle', 'Expenses')}
                 </h1>
                 <Button onClick={() => handleOpenModal(null)} iconLeft={<LuPlus />}>
@@ -129,7 +139,7 @@ const ExpensesPage: React.FC = () => {
                 </div>
             </Card>
 
-            <div className={clsx("flex flex-col lg:flex-row gap-6", selectedExpense ? "gap-6" : "gap-0")}>
+            <div className={clsx("flex flex-col lg:flex-row", selectedExpense ? "gap-6" : "gap-0")}>
                 <div className={clsx("transition-all duration-300 ease-in-out", selectedExpense ? "lg:w-2/3" : "w-full")}>
                 {error && <p className="text-red-500 mb-4">{error}</p>}
 

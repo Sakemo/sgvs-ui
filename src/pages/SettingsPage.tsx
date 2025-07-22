@@ -60,7 +60,7 @@ const SettingsPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <header className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold">{t('settings.pageTitle', 'Settings')}</h1>
+        <h1 className="text-2xl font-semibold dark:text-gray-200">{t('settings.pageTitle', 'Settings')}</h1>
         <Button onClick={handleSave} disabled={!isDirty || isSaving} isLoading={isSaving} iconLeft={<LuSave />}>
           {t('actions.saveChanges', 'Save Changes')}
         </Button>

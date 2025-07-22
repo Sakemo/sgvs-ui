@@ -11,7 +11,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         className={clsx(
-          'rounded-card border border-border-light bg-card-light p-card-padding shadow-soft dark:border-border-dark dark:bg-card-dark',
+          'rounded-card border border-border-light bg-card-light p-card-padding shadow-soft dark:border-border-dark dark:bg-card-dark dark:text-gray-400',
           className
         )}
         {...props}

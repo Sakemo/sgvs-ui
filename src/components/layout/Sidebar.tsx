@@ -12,6 +12,7 @@ import {
 } from 'react-icons/lu';
 
 import { type IconType } from 'react-icons';
+import ThemeToggleButton from './common/ThemeToggleButton';
 
 interface NavItem {
   path: string;
@@ -65,6 +66,9 @@ const Sidebar: React.FC = () => {
       </nav>
       
       <div className="p-2 border-t border-border-light dark:border-border-dark">
+        <div className='flex items-center justify-between mt-2'>
+          <ThemeToggleButton />
+        </div>
         <NavLink
             to={footerNavItem.path}
             className={({ isActive }) =>
