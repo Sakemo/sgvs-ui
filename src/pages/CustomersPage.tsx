@@ -12,12 +12,14 @@ import Select from "../components/common/ui/Select";
 import CustomerCard from "../components/features/customers/CustomerCard";
 import CustomerFormModal from "../components/features/customers/CustomerFormModal";
 import CustomerDetailsModal from "../components/features/customers/CustomerDetailsModal";
+import { useConfirmation } from "../contexts/utils/UseConfirmation";
 
 type ActivityFilter = 'all' | 'active' | 'inactive';
 type DebtFilter = 'all' | 'debtors' | 'non_debtors';
 
 const CustomerPage: React.FC = () => {
     const { t } = useTranslation();
+    const showConfirmation = useConfirmation();
 
     const [customers, setCustomers] = useState<CustomerResponse[]>([]);
 
@@ -83,14 +85,20 @@ const CustomerPage: React.FC = () => {
     };
 
     const handleToggleStatus = async (id: number, currentStatus: boolean) => {
-        if (window.confirm(t('customer.confirmToggle', 'Are you sure?'))) {
-            try {
-                await toggleCustomerStatus(id, !currentStatus);
-                fetchCustomers();
-            } catch {
-                setError(t('errors.toggleStatus'));
+        const actionText = currentStatus ? t('actions.deactivate') : t('actions.activate');
+        showConfirmation({
+            title: t('customer.confirmToggleTitle', { action: actionText }),
+            description: t('cutomer.confirmToggleDesc', 'Are you sure? This may affect ongoing sale.'),
+            confirmText: actionText,
+            onConfirm: async () => {
+                try {
+                    await toggleCustomerStatus(id, !currentStatus);
+                    fetchCustomers();
+                } catch {
+                    setError(t('errors.toggleStatus'));
+                }
             }
-        }
+        });
     };
 
     const handleViewDetails = (customer: CustomerResponse) => {
@@ -99,14 +107,19 @@ const CustomerPage: React.FC = () => {
     }
 
     const handleDelete = async (id: number) => {
-        if (window.confirm(t('actions.confirmDeletePermanent'))) {
-            try {
-                await deleteCustomerPermanently(id);
-                fetchCustomers();
-            } catch {
-                setError(t('error.deleteCustomer'));
+        showConfirmation({
+            title: t('customer.confirmDeleteTitle', 'Delete customer?'),
+            description: t('actions.confirmDeletePermanent'),
+            confirmText: t('actions.delete'),
+            onConfirm: async () => {
+                try {
+                    await deleteCustomerPermanently(id);
+                    fetchCustomers();
+                } catch {
+                    setError(t('errors.deleteCustomer'));
+                }
             }
-        }
+        });
     };
 
     return (

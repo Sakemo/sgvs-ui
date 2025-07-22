@@ -21,7 +21,7 @@ const DateFilterDropdown: React.FC<DateFilterDropdownProps> = ({ selectedOption,
       <div className="flex rounded-btn shadow-sm">
         <div className="relative flex-grow focus-within:z-10">
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-            <LuCalendar className="h-5 w-5 text-gray-400" />
+            <LuCalendar className="h-5 w-5 text-gray-300" />
           </div>
           <span className="block w-full h-10 pl-10 pr-3 sm:text-sm border border-border-light dark:border-border-dark rounded-l-md bg-card-light dark:bg-card-dark flex items-center">
             {selectedLabel}

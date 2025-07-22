@@ -9,7 +9,7 @@ const ThemeToggleButton: React.FC = () => {
     const { t } = useTranslation();
 
     return (
-        <Button variant="ghost" onClick={toggleTheme} className="dark:text-gray-400 text-text-secondary" iconLeft=           {theme === 'light' ? (<LuMoon />) : (<LuSun />)}
+        <Button variant="ghost" onClick={toggleTheme} className="dark:text-gray-300 text-text-secondary" iconLeft=           {theme === 'light' ? (<LuMoon />) : (<LuSun />)}
         title={theme === 'light' ? t('theme.switchToDark', 'Switch to Dark Mode') : t('theme.switchToLight', 'Light Mode')}>
 
             {theme === 'light' ? t('theme.switchToDark', 'Dark Mode') : t('theme.switchToLight', 'Light Mode')}
