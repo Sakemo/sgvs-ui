@@ -24,6 +24,11 @@ export const updateCustomer = async (id: number, data: CustomerRequest): Promise
     return response.data;
 };
 
+export const getCustomerSuggestions = async (): Promise<CustomerResponse[]> => {
+    const response = await apiClient.get<CustomerResponse[]>('/customers/suggestions');
+    return response.data;
+};
+
 export const toggleCustomerStatus = async (id: number, active: boolean): Promise<void> => {
     await apiClient.patch(`/customers/${id}/status`, { active });
 }

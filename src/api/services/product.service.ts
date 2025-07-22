@@ -69,6 +69,11 @@ export const copyProduct = async (id: number): Promise<ProductResponse> => {
   return response.data;
 };
 
+export const getProductSuggestions = async (): Promise<ProductResponse[]> => {
+    const response = await apiClient.get<ProductResponse[]>('/products/suggestions');
+    return response.data;
+};
+
 /**
  * Alterna o status (ativo/inativo) de um produto.
  * Nota: No backend, isso corresponde ao DELETE lógico do projeto antigo.
