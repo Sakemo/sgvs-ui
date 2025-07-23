@@ -38,6 +38,33 @@ export interface EntitySummary {
 // DOMAIN-SPECIFIC TYPES
 // =================================================================
 
+// --- Dashboard Domain ---
+export interface MetricCardData {
+  value: number;
+  percentageChange: number;
+  sparklineData: number[];
+}
+
+export interface ChartDataPoint {
+  label: string;
+  value: number;
+}
+
+export interface TimeSeriesDataPoint {
+  date: string;
+  revenue: number;
+  profit: number;
+}
+
+export interface DashboardResponse {
+  grossRevenue: MetricCardData;
+  netProfit: MetricCardData;
+  totalExpense: MetricCardData;
+  salesByPaymentMethod: ChartDataPoint[];
+  topSellingProducts: ChartDataPoint[];
+  revenueProfitTrend: TimeSeriesDataPoint[];
+}
+
 // --- Settings Domain ---
 export interface GeneralSettingsResponse {
   id: number;
