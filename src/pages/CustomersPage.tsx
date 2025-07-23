@@ -13,6 +13,7 @@ import CustomerCard from "../components/features/customers/CustomerCard";
 import CustomerFormModal from "../components/features/customers/CustomerFormModal";
 import CustomerDetailsModal from "../components/features/customers/CustomerDetailsModal";
 import { useConfirmation } from "../contexts/utils/UseConfirmation";
+import { notificationService } from "../lib/notification.service";
 
 type ActivityFilter = 'all' | 'active' | 'inactive';
 type DebtFilter = 'all' | 'debtors' | 'non_debtors';
@@ -24,7 +25,6 @@ const CustomerPage: React.FC = () => {
     const [customers, setCustomers] = useState<CustomerResponse[]>([]);
 
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [customerToEdit, setCustomerToEdit] = useState<CustomerResponse | null>(null);
         const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
@@ -49,7 +49,6 @@ const CustomerPage: React.FC = () => {
 
     const fetchCustomers = useCallback(async () => {
         setLoading(true);
-        setError(null);
         try {
             const params: GetCustomersParams = {
                 name: debouncedNameFilter.trim() || undefined,
@@ -60,7 +59,7 @@ const CustomerPage: React.FC = () => {
             const data = await getCustomers(params);
             setCustomers(data);
         } catch (err) {
-            setError(t('errors.fetchCustomers' + err,'Failed to load customers'));
+            notificationService.error(t('errors.fetchCustomers' + err,'Failed to load customers'));
         } finally {
             setLoading(false);
         }
@@ -82,6 +81,7 @@ const CustomerPage: React.FC = () => {
     const handleSaveSucess = () => {
         setIsModalOpen(false);
         fetchCustomers();
+        notificationService.success(t('customer.saveSuccess', 'Customer saved sucefully!'))
     };
 
     const handleToggleStatus = async (id: number, currentStatus: boolean) => {
@@ -94,8 +94,9 @@ const CustomerPage: React.FC = () => {
                 try {
                     await toggleCustomerStatus(id, !currentStatus);
                     fetchCustomers();
+                    notificationService.success(t('product.statusUpdated' + ` - ${actionText}`, `Status updated - ${actionText}`));
                 } catch {
-                    setError(t('errors.toggleStatus'));
+                    notificationService.error(t('errors.toggleStatus'));
                 }
             }
         });
@@ -115,8 +116,9 @@ const CustomerPage: React.FC = () => {
                 try {
                     await deleteCustomerPermanently(id);
                     fetchCustomers();
+                    notificationService.success(t('customer.deleteSuccess', 'Customer deleted'));
                 } catch {
-                    setError(t('errors.deleteCustomer'));
+                    notificationService.error(t('errors.deleteCustomer'));
                 }
             }
         });
@@ -170,9 +172,8 @@ const CustomerPage: React.FC = () => {
             </Card>
 
             {loading && <p className="p-6 text-center">{t('common.loading')}</p>}
-            {error && <p className="p-6 text-center text-red-500">{error}</p>}
 
-            {!loading && !error && (
+            {!loading && (
                 customers.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                         {customers.map(customer => (

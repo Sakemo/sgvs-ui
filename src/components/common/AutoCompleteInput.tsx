@@ -1,5 +1,5 @@
 import type React from "react";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import useDebounce from "../../hooks/useDebounce";
 import { Combobox, Transition } from "@headlessui/react";
 import { LuCheck, LuChevronDown } from "react-icons/lu";
@@ -32,6 +32,8 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebounce(query, 300);
 
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
   useEffect(() => {
     onQueryChange(debouncedQuery);
   }, [debouncedQuery, onQueryChange]);
@@ -50,10 +52,17 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
             displayValue={(option: AutocompleteOption) => option?.label ?? ""}
             onChange={(event) => setQuery(event.target.value)}
             placeholder={placeholder}
+            onFocus={() => {
+              if (buttonRef.current) {
+                buttonRef.current.click();
+              }
+            }}
           />
-          <Combobox.Button className="absolute inset-y-0 right-0 flex items-center px-2">
+          <Combobox.Button ref={buttonRef} className="absolute inset-0 h-full w-full" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
             <LuChevronDown className="text-gray-400"/>
-          </Combobox.Button>
+          </div>
+
         </div>
         <Transition
             as={Fragment}

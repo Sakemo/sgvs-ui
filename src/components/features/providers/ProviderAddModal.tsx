@@ -7,6 +7,7 @@ import Modal from "../../common/Modal";
 import Input from "../../common/ui/Input";
 import Button from "../../common/ui/Button";
 import { createProvider } from "../../../api/services/provider.service";
+import { notificationService } from "../../../lib/notification.service";
 
 interface ProviderAddModalProps {
     isOpen: boolean;
@@ -20,23 +21,20 @@ const ProviderAddModal: React.FC<ProviderAddModalProps> = ({
     const { t } = useTranslation();
     const [name, setName] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         if (isOpen) {
             setName('');
-            setError(null);
         }
     }, [isOpen]);
 
     const handleSubmit = async (e:React.FormEvent) => {
         e.preventDefault();
         if (!name.trim()) {
-            setError(t('validation.nameRequired', 'Provider name is required'));
+            notificationService.error(t('validation.nameRequired', 'Provider name is required'));
             return;
         }
         setIsLoading(true);
-        setError(null);
         try {
             const payload: ProviderRequest = { name };
             const newProvider = await createProvider(payload);
@@ -44,7 +42,7 @@ const ProviderAddModal: React.FC<ProviderAddModalProps> = ({
             onClose();
         } catch (err) {
             const axiosError = err as AxiosError<{ message?: string }>;
-            setError(axiosError.response?.data?.message || t('errors.genericSave'));
+            notificationService.error(axiosError.response?.data?.message || t('errors.genericSave'));
         } finally {
             setIsLoading(false);
         }
@@ -57,7 +55,6 @@ const ProviderAddModal: React.FC<ProviderAddModalProps> = ({
                     label={t('common.name', 'Name')}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    error={error}
                     required
                     autoFocus
                 />

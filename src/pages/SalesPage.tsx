@@ -20,10 +20,10 @@ import Card from '../components/common/ui/Card';
 import Select from '../components/common/ui/Select';
 import Pagination from '../components/common/Pagination';
 import ValueTotalCard from '../components/features/sales/ValueTotalCard';
-import TotalByPaymentMethodCard from '../components/features/sales/TotalByPaymentMethodCard';
 import DateFilterDropdown, { type DateFilterOption } from '../components/common/DateFilterDropdown';
 import useDebounce from '../hooks/useDebounce';
 import AutocompleteInput from '../components/common/AutoCompleteInput';
+import { notificationService } from '../lib/notification.service';
 
 const SalesPage: React.FC = () => {
   const { t } = useTranslation();
@@ -37,7 +37,6 @@ const SalesPage: React.FC = () => {
   
   // UI State
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [saleToView, setSaleToView] = useState<SaleResponse | null>(null);
   
@@ -89,7 +88,6 @@ const SalesPage: React.FC = () => {
   // --- Data Fetching ---
   const fetchData = useCallback(async () => {
     setLoading(true);
-    setError(null);
     try {
       const params: GetSalesParams = { ...filters, page: currentPage, size: 10 };
       
@@ -122,7 +120,7 @@ const SalesPage: React.FC = () => {
         setGroupSummaries({});
       }
     } catch (err) {
-      setError(t('errors.fetchSales' + err, `Failed to load sales data: ${err}`));
+      notificationService.error(t('errors.fetchSales' + err, `Failed to load sales data: ${err}`));
     } finally {
       setLoading(false);
     }
@@ -164,7 +162,7 @@ const SalesPage: React.FC = () => {
       try {
         await deleteSalePermanently(id);
         fetchData(); // Recarrega todos os dados para refletir as mudanças nos totais
-      } catch { setError(t('errors.deleteSale')); }
+      } catch { notificationService.error(t('errors.deleteSale')); }
     }
   };
 
@@ -224,10 +222,10 @@ const SalesPage: React.FC = () => {
         </div>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
         <ValueTotalCard isLoading={loading} value={grossTotal} title={t('sale.grossTotal')} />
         <ValueTotalCard isLoading={loading} value={netProfit} title={t('sale.netProfit')} color={netProfit >= 0 ? 'green' : 'red'} />
-        <TotalByPaymentMethodCard isLoading={loading} totals={totalsByPaymentMethod} />
+        {/*<TotalByPaymentMethodCard isLoading={loading} totals={totalsByPaymentMethod} />*/}
       </div>
 
       <SalesTable

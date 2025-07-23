@@ -76,11 +76,11 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
             variant="ghost" size="icon"
             title={row.active ? t('actions.deactivate', 'Deactivate') : t('actions.activate', 'Activate')}
             onClick={(e) => { e.stopPropagation(); onToggleStatus(row.id, row.active); }}
-            className={row.active ? "text-orange-600 hover:text-orange-700" : "text-green-600 hover:text-green-700"}
+            className={row.active ? "text-orange-600 dark:text-orange-300 hover:text-orange-700 dark:hover:text-orange-400" : "text-green-600 dark:text-green-300 hover:text-green-700 dark:hover:text-green-700"}
             iconLeft={row.active ? <LuPowerOff /> : <LuPower />}
           >
           </Button>
-          <Button variant="ghost" size="icon" title={t('actions.delete', 'Delete')} className="text-red-600 hover:text-red-700" onClick={(e) => { e.stopPropagation(); onDelete(row.id); }}>
+          <Button variant="ghost" size="icon" title={t('actions.delete', 'Delete')} className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-500" onClick={(e) => { e.stopPropagation(); onDelete(row.id); }}>
             <LuTrash2 className="h-4 w-4" />
           </Button>
         </div>

@@ -19,23 +19,22 @@ const CategoryAddModal: React.FC<CategoryAddModalProps> = ({
     const { t } = useTranslation();
     const [name, setName] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         if(isOpen) {
             setName('');
-            setError(null);
+            notificationService.error(null);
         }
     }, [isOpen]);
 
     const handleSubmit = async(e: React.FormEvent) => {
         e.preventDefault();
         if(!name.trim()) {
-            setError(t('validation.nameRequired', 'Category name is required'));
+            notificationService.error(t('validation.nameRequired', 'Category name is required'));
             return;
         }
         setIsLoading(true);
-        setError(null);
+        notificationService.error(null);
         try {
             const payload: CategoryRequest = { name };
             const newCategory = await createCategory(payload);
@@ -43,7 +42,7 @@ const CategoryAddModal: React.FC<CategoryAddModalProps> = ({
             onClose();
         } catch (err) {
             const axiosError = err as AxiosError<{ message?: string }>;
-            setError(axiosError.response?.data?.message || t('errors.genericSave'));
+            notificationService.error(axiosError.response?.data?.message || t('errors.genericSave'));
         } finally {
             setIsLoading(false);
         }

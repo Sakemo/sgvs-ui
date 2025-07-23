@@ -11,6 +11,7 @@ import Select from "../../common/ui/Select";
 import Textarea from "../../common/ui/Textarea";
 import Button from "../../common/ui/Button";
 import AdvancedOptions from "../../common/AdvancedOptions";
+import { notificationService } from "../../../lib/notification.service";
 
 interface ExpenseFormModalProps {
     isOpen: boolean;
@@ -48,12 +49,10 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
 
   const [formData, setFormData] = useState<Partial<ExpenseRequest>>(getInitialFormData());
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (isOpen) {
         setFormData(getInitialFormData());
-        setErrors({});
     }
   }, [isOpen, getInitialFormData]);
 
@@ -65,7 +64,6 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setErrors({});
 
     try {
         const payload: ExpenseRequest = {
@@ -81,7 +79,9 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
         onSaveSuccess();
     } catch (error) {
         const axiosError = error as AxiosError<{ message?:string, errors?:Record<string, string> }>;
-        setErrors(axiosError.response?.data?.errors ?? { form: t('errors.genericSave') });
+        if (axiosError.response?.data?.errors){
+          notificationService.error(t('errors.genericSave'));
+        }
     } finally {
         setIsLoading(false);
     }
@@ -90,11 +90,11 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={isEditMode ? t('expense.editTitle') : t('expense.addTitle')}>
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-            <Input label={t('common.name') + ' *'} name="name" value={formData.name || ''} onChange={handleChange} error={errors.name} required />
+            <Input label={t('common.name') + ' *'} name="name" value={formData.name || ''} onChange={handleChange} required />
             
-            <Input label={t('common.value') + ' *'} name="value" type="number" step="0.01" value={formData.value  ?? ''} onChange={handleChange} error={errors.value} required />
+            <Input label={t('common.value') + ' *'} name="value" type="number" step="0.01" value={formData.value  ?? ''} onChange={handleChange}  required />
 
-            <Select label={('common.paymentMethod') + ' *'} name="paymentMethod" value={formData.paymentMethod || ''} onChange={handleChange} error={errors.paymentMethod} required>
+            <Select label={('common.paymentMethod') + ' *'} name="paymentMethod" value={formData.paymentMethod || ''} onChange={handleChange} required>
               {Object.values(PaymentMethod).map(type => (
                 <option key={type} value={type}>
                   {t(`paymentMethods.${type.toLowerCase().replace('_', ' ')}`, type.replace('_', ' '))}
@@ -107,7 +107,7 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
             <AdvancedOptions className="grid grid-cols-2 auto-rows-auto gap-4 [&>*:nth-child(3)]:col-span-2">
             <Input label={t('expense.expenseDate')} name="expenseDate" type="datetime-local" value={formData.expenseDate} required />
 
-              <Select label={t('expense.expenseType' + ' *')} name="expenseType" value={formData.expenseType || ''} onChange={handleChange} error={errors.expenseType || ''} required>
+              <Select label={t('expense.expenseType' + ' *')} name="expenseType" value={formData.expenseType || ''} onChange={handleChange} required>
                   {Object.values(ExpenseType).map(type => (
                       <option key={type} value={type}>
                           {t(`expenseCategories.${type.toLowerCase()}`, type)}
@@ -117,8 +117,6 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
 
               <Textarea label={t('common.description')} name="description" value={formData.description || ''} onChange={handleChange} rows={3} />
             </AdvancedOptions>
-
-            {errors.form && <p className="text-sm text-red-500">{errors.form}</p>}
 
             <div className="flex justify-end gap-2 pt-4 border-t border-border-light dark:border-border-dark">
                 <Button type="button" variant="secondary" onClick={onClose} disabled={isLoading}>

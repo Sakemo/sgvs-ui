@@ -8,6 +8,7 @@ import { SettingsProvider } from "./contexts/SettingsProvider";
 import SettingsPage from "./pages/SettingsPage";
 import { ConfirmationModalProvider } from "./contexts/ConfirmationModalProvider";
 import { ThemeProvider } from "./contexts/ThemeProvider";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
@@ -15,7 +16,31 @@ function App() {
     <ThemeProvider>
       <SettingsProvider>
         <ConfirmationModalProvider>
-          <Routes>
+            <Toaster
+              position="bottom-right"
+              toastOptions={{
+                className: '',
+                style: {
+                  border: '1px solid #E5E7EB', // border-border-light
+                  padding: '16px',
+                  color: '#1F2937', // text-text-primary
+                  boxShadow: '0 4px 16px -2px rgba(0, 0, 0, 0.08)',
+                },
+                success: {
+                  iconTheme: {
+                    primary: '#16A34A', // green-600
+                    secondary: 'white',
+                  },
+                },
+                error: {
+                  iconTheme: {
+                    primary: '#DC2626', // red-600
+                    secondary: 'white',
+                  },
+                },
+              }}
+            />          
+            <Routes>
             <Route element={<MainLayout />}>
               <Route path="/" element={<div>Dashboard Page</div>} />
               <Route path="/sales" element={<SalesPage />} />

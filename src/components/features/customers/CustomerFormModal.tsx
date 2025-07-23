@@ -9,6 +9,7 @@ import Input from "../../common/ui/Input";
 import Textarea from "../../common/ui/Textarea";
 import Button from "../../common/ui/Button";
 import AdvancedOptions from "../../common/AdvancedOptions";
+import { notificationService } from "../../../lib/notification.service";
 
 interface CustomerFormModalProps {
     isOpen: boolean;
@@ -40,12 +41,10 @@ const CustomerFormModal: React.FC<CustomerFormModalProps> = ({
 
     const [formData, setFormData] = useState<Partial<CustomerRequest>>(getInitalFormData());
     const [isLoading, setIsLoading] = useState(false);
-    const [errors, setErrors] = useState<Record<string, string>>({});
 
     useEffect(() => {
         if(isOpen) {
             setFormData(getInitalFormData());
-            setErrors({});
         }
     }, [isOpen, getInitalFormData]);
 
@@ -60,8 +59,6 @@ const CustomerFormModal: React.FC<CustomerFormModalProps> = ({
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
-        setErrors({});
-
         try {
             const payload = formData as CustomerRequest;
             console.log(payload);
@@ -73,7 +70,10 @@ const CustomerFormModal: React.FC<CustomerFormModalProps> = ({
             onSaveSucess();
         } catch (error) {
             const axiosError = error as AxiosError<{ message?: string, errors?: Record<string, string> }>;
-            setErrors(axiosError.response?.data?.errors ?? { form: t('errors.genericSave') })
+            const errorStr = t('errors.genericSave' + ` - ${error}`)
+            if (axiosError.response?.data?.errors){
+                notificationService.error(errorStr)
+            }
         } finally {
             setIsLoading(false);
         }
@@ -82,7 +82,7 @@ const CustomerFormModal: React.FC<CustomerFormModalProps> = ({
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={isEditMode ? t('customer.editTitle') : t('customer.addTitle')} >
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                <Input label={t('common.name') + ' *'} name="name" value={formData.name || ''} onChange={handleChange} error={errors.name} />
+                <Input label={t('common.name') + ' *'} name="name" value={formData.name || ''} onChange={handleChange} />
 
                 <div className="pt-4 border-t border-border-light dark:border-border-dark space-y-3">
                     <div className="flex items-center gap-2">
@@ -92,20 +92,15 @@ const CustomerFormModal: React.FC<CustomerFormModalProps> = ({
                         </label>
                     </div>
                     {formData.creditEnabled && (
-                        <Input label={t('customer.creditLimit')} name="creditLimit" type="number" step="0.01" value={formData.creditLimit ?? ''} onChange={handleChange} error={errors.creditLimit} />
+                        <Input label={t('customer.creditLimit')} name="creditLimit" type="number" step="0.01" value={formData.creditLimit ?? ''} onChange={handleChange} />
                     )}
                 </div>
 
                 <AdvancedOptions className="grid grid-cols-2 [&>*:nth-child(3)]:col-span-2 gap-4">
-                    <Input label={t('customer.taxId')} name="taxId" value={formData.taxId || ''} onChange={handleChange} error={errors.taxId} />
-                    <Input label={t('customer.phone')} name="phone" value={formData.phone || ''} onChange={handleChange} error={errors.phone} />
-                    <Textarea label={t('customer.address')} name="address" value={formData.address || ''} onChange={handleChange} error={errors.address} rows={2} />
+                    <Input label={t('customer.taxId')} name="taxId" value={formData.taxId || ''} onChange={handleChange}/>
+                    <Input label={t('customer.phone')} name="phone" value={formData.phone || ''} onChange={handleChange} />
+                    <Textarea label={t('customer.address')} name="address" value={formData.address || ''} onChange={handleChange} rows={2} />
                 </AdvancedOptions>
-
-                {errors.form && 
-                <p className="text-sm text-red-500">
-                    {errors.form}
-                </p>}
 
                 <div className="flex justify-end gap-2 pt-4">
                     <Button type="button" variant="secondary" onClick={onClose} disabled={isLoading}>

@@ -16,6 +16,7 @@ import ExpenseDetailsDrawer from "../components/features/expenses/ExpenseDetails
 import ExpenseFormModal from "../components/features/expenses/ExpenseFormModal";
 
 import { useConfirmation } from "../contexts/utils/UseConfirmation";
+import { notificationService } from "../lib/notification.service";
 
 const ExpensesPage: React.FC = () => {
     const { t } = useTranslation();
@@ -23,7 +24,6 @@ const ExpensesPage: React.FC = () => {
     const showConfirmation = useConfirmation();
 
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [expenseToEdit, setExpenseToEdit] = useState<ExpenseResponse | null>(null);
     const [selectedExpense, setSelectedExpense] = useState<ExpenseResponse | null>(null);
@@ -38,7 +38,6 @@ const ExpensesPage: React.FC = () => {
     const debouncedNameFilter = useDebounce(filters.name, 400);
     const fetchExpenses = useCallback(async () => {
         setLoading(true);
-        setError(null);
         try {
             const params: GetExpensesParams = {
                 ...filters,
@@ -49,7 +48,7 @@ const ExpensesPage: React.FC = () => {
             const data = await getExpenses(params);
             setExpensesPage(data);
         } catch(err) {
-            setError(t('errors.fetchExpenses' + err, 'Failed to load expenses'));
+            notificationService.error(t('errors.fetchExpenses' + err, 'Failed to load expenses'));
         } finally {
             setLoading(false);
         }
@@ -84,6 +83,7 @@ const ExpensesPage: React.FC = () => {
     const handleSaveSuccess = () => {
         setIsModalOpen(false);
         fetchExpenses();
+        notificationService.success(t('expense.saveSucess', 'Product saved successfully!'))
     };
 
     const handleDelete = async (id: number) => {
@@ -96,8 +96,9 @@ const ExpensesPage: React.FC = () => {
                     await deleteExpense(id);
                     if (selectedExpense?.id === id) setSelectedExpense(null);
                     fetchExpenses();
+                    notificationService.success(t('expense.deleteSuccess', 'Expense deleted'))
                 } catch {
-                    setError(t('errors.deleteExpense', 'Failed to delete expense.'))
+                    notificationService.error(t('errors.deleteExpense', 'Failed to delete expense.'))
                 }
             }
         });
@@ -141,8 +142,6 @@ const ExpensesPage: React.FC = () => {
 
             <div className={clsx("flex flex-col lg:flex-row", selectedExpense ? "gap-6" : "gap-0")}>
                 <div className={clsx("transition-all duration-300 ease-in-out", selectedExpense ? "lg:w-2/3" : "w-full")}>
-                {error && <p className="text-red-500 mb-4">{error}</p>}
-
                 <ExpensesTable
                     expenses={expensesPage?.content ?? []}
                     isLoading={loading}

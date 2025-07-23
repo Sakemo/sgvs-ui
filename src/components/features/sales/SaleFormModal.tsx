@@ -27,6 +27,8 @@ import { formatCurrency } from "../../../utils/formatters";
 import AutocompleteInput, {
   type AutocompleteOption,
 } from "../../common/AutoCompleteInput";
+import ToggleSwitch from "../../common/ui/ToggleSwitch";
+import { notificationService } from "../../../lib/notification.service";
 
 interface SaleFormModalProps {
   isOpen: boolean;
@@ -48,13 +50,13 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
   const { t } = useTranslation();
 
   // State
+  const [keepCreatingSales, setKeepCreatingSales] = useState(false);
   const [items, setItems] = useState<FormSaleItem[]>([]);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(
     PaymentMethod.CASH
   );
   const [description, setDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
   const [quantity, setQuantity] = useState("1");
 
   // --- Autocomplete States ---
@@ -87,7 +89,6 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
     setSelectedCustomerOption(null);
     setCustomerQuery("");
     setQuantity("1");
-    setErrors({});
   }, [setCustomerQuery, setProductQuery]);
 
   useEffect(() => {
@@ -104,7 +105,7 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
               const initialProductCache = productSuggestions.reduce((acc, p) => ({ ...acc, [p.id]: p }), {});
               setProductDetailsCache(initialProductCache);
           }).catch(() => {
-              setErrors({ form: t('errors.fetchInitialData') });
+              notificationService.error(t('errors.fetchInitialData'));
           }).finally(() => {
               setIsLoading(false);
           });
@@ -145,16 +146,17 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
   const customerAutocompleteOptions = customerQuery ? searchedCustomerOptions : initialCustomerOptions;
   const productAutocompleteOptions = productQuery ? searchedProductOptions : initialProductOptions;
 
+  // handlers
 
   const handleAddItem = () => {
     const numQuantity = parseFloat(quantity);
     if (!selectedProductOption || isNaN(numQuantity) || numQuantity <= 0) {
-      setErrors({ item: t("validation.invalidQuantity") });
+      notificationService.warning(t("validation.invalidQuantity"));
       return;
     }
 
     if (!selectedProductDetails) {
-      setErrors({ item: t("validation.details") });
+      notificationService.warning(t("validation.details"));
       return;
     }
 
@@ -162,11 +164,11 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
       selectedProductDetails.managesStock &&
       selectedProductDetails.stockQuantity < numQuantity
     ) {
-      setErrors({
-        item: t("validation.insufficientStock", {
+      notificationService.warning(
+        t("validation.insufficientStock", {
           available: selectedProductDetails?.stockQuantity,
         }),
-      });
+      );
       return;
     }
 
@@ -174,7 +176,7 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
       selectedProductDetails?.unitOfSale === UnitOfSale.UNIT &&
       !Number.isInteger(numQuantity)
     ) {
-      setErrors({ item: t("validation.integerQuantityRequired") });
+      notificationService.error(t("validation.integerQuantityRequired"));
       return;
     }
 
@@ -205,7 +207,6 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
     setSelectedProductOption(null);
     setProductQuery("");
     setQuantity("1");
-    setErrors({});
   };
 
   const handleRemoveItem = (productId: number) => {
@@ -219,28 +220,25 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrors({});
 
     const customerId = selectedCustomerOption
       ? Number(selectedCustomerOption.value)
       : undefined;
 
     if (items.length === 0) {
-      setErrors({
-        form: t(
+      notificationService.error(t(
           "validation.saleItemsRequired",
           `At least one item is required for the sale.`
         ),
-      });
+      );
       return;
     }
     if (paymentMethod === PaymentMethod.ON_CREDIT && !customerId) {
-      setErrors({
-        form: t(
+      notificationService.error(t(
           "validation.customerRequiredForCredit",
           "A customer is required for ON_CREDIT sales."
         ),
-      });
+      );
       return;
     }
 
@@ -258,7 +256,13 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
       };
 
       await registerSale(payload);
-      onSaveSuccess();
+      if (keepCreatingSales) {
+        resetForm();
+        onSaveSuccess();
+      } else {
+        onSaveSuccess();
+        onClose();
+      }
     } catch (error) {
       const axiosError = error as AxiosError<{
         message?: string;
@@ -266,11 +270,10 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
       }>;
       const apiErrors = axiosError.response?.data?.errors;
       if (apiErrors) {
-        setErrors(apiErrors);
+        notificationService.error(`${apiErrors}`);
       } else {
-        setErrors({
-          form: axiosError.response?.data?.message || t("errors.genericSave"),
-        });
+        notificationService.error(axiosError.response?.data?.message || t("errors.genericSave"),
+        );
       }
     } finally {
       setIsLoading(false);
@@ -355,9 +358,6 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
                 {t("actions.add", "Add")}
               </Button>
             </div>
-            {errors.item && (
-              <p className="text-xs text-red-500 mt-1">{errors.item}</p>
-            )}
           </Card>
 
           {items.length > 0 && (
@@ -412,6 +412,7 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
         </div>
 
         <footer className="bg-gray-50 dark:bg-card-dark/50 px-6 py-4 flex justify-end gap-2">
+          <ToggleSwitch enabled={keepCreatingSales} onChange={setKeepCreatingSales} label={t('actions.keepCreatingSales', 'Register and start new sale')} />
           <Button
             type="button"
             variant="secondary"

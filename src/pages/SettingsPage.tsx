@@ -7,15 +7,14 @@ import StockControlSettings from '../components/features/settings/StockControlSe
 import Button from '../components/common/ui/Button';
 import { LuSave } from 'react-icons/lu';
 import { useSettings } from '../contexts/utils/UseSettings';
+import { notificationService } from '../lib/notification.service';
 
 const SettingsPage: React.FC = () => {
   const { t } = useTranslation();
   
   const { settings: initialSettings, isLoading, refetchSettings } = useSettings();
   const [formData, setFormData] = useState<Partial<GeneralSettingsRequest>>({});
-  const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  
+  const [isSaving, setIsSaving] = useState(false);  
 
   useEffect(() => {
     if(initialSettings) {
@@ -33,16 +32,16 @@ const SettingsPage: React.FC = () => {
     if (!isDirty) return;
     
     setIsSaving(true);
-    setError(null);
     try {
       const payload = formData as GeneralSettingsRequest;
       const updatedSettings = await updateGeneralSettings(payload);
       
       refetchSettings();
       setFormData(updatedSettings);
+      notificationService.success(t('settings.saveSuccess', 'Settings saved'))
       
     } catch (err) {
-      setError(t('errors.saveSettings' + err, 
+      notificationService.error(t('errors.saveSettings' + err, 
         `Failed to save settings: ${err}`));
     } finally {
       setIsSaving(false);
@@ -52,11 +51,6 @@ const SettingsPage: React.FC = () => {
   if (isLoading) {
     return <p>{t('common.loading', 'Loading...')}</p>;
   }
-
-  if (error) {
-    return <p className="text-red-500">{error}</p>;
-  }
-
   return (
     <div className="space-y-6">
       <header className="flex justify-between items-center">

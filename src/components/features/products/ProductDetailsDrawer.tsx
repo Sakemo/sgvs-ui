@@ -15,8 +15,8 @@ interface ProductDetailsDrawerProps {
 const DetailRow: React.FC<{ label: string; value?: React.ReactNode }> = ({
     label, value
 }) => (
-    <div className="flex flex-col py-3 sm:flex-row sm:items-start">
-        <dt className="w-1/3 text-sm font-medium text-text-secondary">
+    <div className="dark:text-gray-300 flex flex-col py-3 sm:flex-row sm:items-start">
+        <dt className="dark:text-gray-500 w-1/3 text-sm font-medium text-text-secondary">
             {label}
         </dt>
         <dd className="mt-1 text-sm text-text-primary dark:text-gray-100 sm:mt-0 sm:w-2/3">
@@ -33,7 +33,7 @@ const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({
     const { t } = useTranslation();
 
     return (
-    <aside className="h-full flex flex-col rounded-card border border-border-light bg-card-light shadow-soft dark:border-border-dark dark:bg-card-dark !bg-brand-primary/10 dark:!bg-brand-accent/10">
+    <aside className="dark:text-gray-300 h-full flex flex-col rounded-card border border-border-light bg-card-light shadow-soft dark:border-border-dark dark:bg-card-dark !bg-brand-primary/10 dark:!bg-brand-accent/10">
       
       {/* Cabeçalho do Drawer */}
       <header className="flex items-center justify-between p-4 border-b border-border-light dark:border-border-dark">

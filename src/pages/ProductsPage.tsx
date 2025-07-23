@@ -21,6 +21,7 @@ import clsx from 'clsx';
 import Pagination from '../components/common/Pagination';
 import { getProviders } from '../api/services/provider.service';
 import { useConfirmation } from '../contexts/utils/UseConfirmation';
+import { notificationService } from '../lib/notification.service';
 
 const ProductsPage: React.FC = () => {
     const { t } = useTranslation();
@@ -34,7 +35,6 @@ const ProductsPage: React.FC = () => {
     // UI State
     const [isLoadingPage, setIsLoadingPage] = useState(true);
     const [isLoadingTable, setIsLoadingTable] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [productToEdit, setProductToEdit] = useState<ProductResponse | null>(null);
     const [selectedProduct, setSelectedProduct] = useState<ProductResponse | null>(null);
@@ -67,7 +67,7 @@ const ProductsPage: React.FC = () => {
             setCategories(categoriesData);
             setProviders(providersData);
         } catch (err) {
-            setError(t(`errors.fetchInitialData` + err ));
+            notificationService.error(t(`errors.fetchInitialData` + err ));
         } finally {
             setIsLoadingPage(false);
         }
@@ -85,7 +85,7 @@ const ProductsPage: React.FC = () => {
             const data = await getProducts(params);
             setProductsPage(data);
         } catch (err) {
-            setError(t('errors.fetchProducts' + err));
+            notificationService.error(t('errors.fetchProducts' + err));
         } finally {
             setIsLoadingTable(false);
         }
@@ -119,10 +119,13 @@ const ProductsPage: React.FC = () => {
     const handleSaveSuccess = () => {
         handleCloseModal();
         fetchProducts();
+        notificationService.success(t('product.saveSuccess', 'Product saved successfully!'))
     };
 
     const handleDataRefresh = () => {
         fetchDependencies();
+        fetchProducts();
+        notificationService.success(t('product.saveSuccess', 'Product saved successfully!'))
     }
     
     const handleToggleStatus = async (id: number, currentStatus: boolean) => {
@@ -135,8 +138,9 @@ const ProductsPage: React.FC = () => {
                 try {
                     await toggleProductStatus(id);
                     fetchProducts();
-                } catch {
-                    setError(t('errors.toggleStatus'));
+                    notificationService.success(t('product.statusUpdated' + `-  ${actionText}`, `Status updated!: ${actionText}`));            
+        } catch {
+                    notificationService.error(t('errors.toggleStatus'));
                 }
             }
         });
@@ -151,8 +155,9 @@ const ProductsPage: React.FC = () => {
                 try {
                     await copyProduct(id);
                     fetchProducts();
+                    notificationService.success(t('product.copySucess', 'Product copied with sucess!'));
                 } catch {
-                    setError(t('errors.copyProduct'));
+                    notificationService.error(t('errors.copyProduct'));
                 }
             }
         });
@@ -168,8 +173,9 @@ const ProductsPage: React.FC = () => {
                     await deleteProductPermanently(id);
                     if (selectedProduct?.id === id) setSelectedProduct(null);
                     fetchProducts();
+                    notificationService.success(t('product.deleteSucess', 'Product deleted with sucess!'));
                 } catch {
-                    setError(t('errors.deleteProduct'));
+                    notificationService.error(t('errors.deleteProduct'));
                 }
             }
         });
@@ -185,8 +191,7 @@ const ProductsPage: React.FC = () => {
                 <h1 className="text-2xl font-semibold text-text-primary dark:text-gray-200">
                     {t('product.pageTitle', 'Products Management')}
                 </h1>
-                <Button onClick={() => handleOpenModal(null)}>
-                    <LuPlus className='mr-2 h-4 w-4'/>
+                <Button onClick={() => handleOpenModal(null)} iconLeft={<LuPlus />}>
                     {t('product.addProduct', 'Add Product')}
                 </Button>
             </header>
@@ -217,11 +222,8 @@ const ProductsPage: React.FC = () => {
                 </div>
             </Card>
 
-            <div className="flex flex-col lg:flex-row gap-6">
-                <div className={clsx("transition-all duration-300 ease-in-out", selectedProduct ? "lg:w-2/3" : "w-full")}>
-                    {/* A cor do erro já é explícita (text-red-500), então não precisa de modo dark */}
-                    {error && <p className="text-red-500 mb-4">{error}</p>}
-                    
+            <div className={clsx("flex flex-col lg:flex-row", selectedProduct ? "gap-6" : "gap-0")}>
+                <div className={clsx("transition-all duration-300 ease-in-out", selectedProduct ? "lg:w-2/3" : "w-full")}>                    
                     <ProductsTable
                         products={productsPage?.content ?? []}
                         isLoading={isLoadingTable}
