@@ -39,7 +39,7 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
-      <div className="rounded-card border border-border-light bg-card-light/80 p-2 shadow-lg backdrop-blur-sm">
+      <div className="rounded-card border border-border-light dark:border-border-dark bg-card-light/80 p-2 shadow-lg backdrop-blur-sm dark:bg-card-dark/80">
         <p className="text-sm font-semibold">{data.label}</p>
         <p className="text-sm text-text-secondary">{`${formatCurrency(data.value)} (${data.percent}%)`}</p>
       </div>
@@ -68,7 +68,7 @@ const PaymentMethodDonut: React.FC<PaymentMethodDonutProps> = ({ data, isLoading
   return (
     <Card className="h-full flex flex-col">
       <h2 className="text-lg font-semibold mb-4">{t('dashboard.salesByPaymentMethod', 'Sales by Payment Method')}</h2>
-      <div className="flex-grow h-64"> {/* Container com altura fixa */}
+      <div className="flex-grow h-64">
         {isLoading ? (
           <div className="w-full h-full flex items-center justify-center">
             <div className="w-48 h-48 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse" />

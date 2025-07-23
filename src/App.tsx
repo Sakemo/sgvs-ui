@@ -9,6 +9,7 @@ import SettingsPage from "./pages/SettingsPage";
 import { ConfirmationModalProvider } from "./contexts/ConfirmationModalProvider";
 import { ThemeProvider } from "./contexts/ThemeProvider";
 import { Toaster } from "react-hot-toast";
+import DashboardPage from "./pages/DashboardPage";
 
 function App() {
   return (
@@ -42,7 +43,7 @@ function App() {
             />          
             <Routes>
             <Route element={<MainLayout />}>
-              <Route path="/" element={<div>Dashboard Page</div>} />
+              <Route path="/" element={<DashboardPage />} />
               <Route path="/sales" element={<SalesPage />} />
               <Route path="/products" element={<ProductsPage />} />
               <Route path="/customers" element={<CustomersPage />} />

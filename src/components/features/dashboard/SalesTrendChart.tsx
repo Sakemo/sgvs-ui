@@ -39,11 +39,11 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label })
 
 const SalesTrendChart: React.FC<SalesTrendChartProps> = ({ data, isLoading }) => {
   const { t } = useTranslation();
-
+  console.log("SalesTrendChart received data:", data);
   return (
     <Card>
       <h2 className="text-lg font-semibold mb-4">{t('dashboard.revenueProfitTrend', 'Revenue & Profit Trend')}</h2>
-      <div className="h-8         b tg ht y6trtyhyyyyyyyyyyyyyyyyyhgnbbvbvb vbvgb0">
+      <div className="h-80">
         {isLoading ? (
           <div className="w-full h-full bg-gray-200 dark:bg-gray-700 rounded-md animate-pulse" />
         ) : (

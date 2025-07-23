@@ -60,9 +60,11 @@ export interface DashboardResponse {
   grossRevenue: MetricCardData;
   netProfit: MetricCardData;
   totalExpense: MetricCardData;
+  newCustomers: MetricCardData;
+  averageTicket: MetricCardData;
   salesByPaymentMethod: ChartDataPoint[];
   topSellingProducts: ChartDataPoint[];
-  revenueProfitTrend: TimeSeriesDataPoint[];
+  revenueAndProfitTrend: TimeSeriesDataPoint[];
 }
 
 // --- Settings Domain ---

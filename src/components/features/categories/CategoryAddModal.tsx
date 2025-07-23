@@ -6,6 +6,7 @@ import type { AxiosError } from "axios";
 import Modal from "../../common/Modal";
 import Input from "../../common/ui/Input";
 import Button from "../../common/ui/Button";
+import { notificationService } from "../../../lib/notification.service";
 
 interface CategoryAddModalProps {
     isOpen: boolean;
@@ -23,7 +24,6 @@ const CategoryAddModal: React.FC<CategoryAddModalProps> = ({
     useEffect(() => {
         if(isOpen) {
             setName('');
-            notificationService.error(null);
         }
     }, [isOpen]);
 
@@ -34,11 +34,11 @@ const CategoryAddModal: React.FC<CategoryAddModalProps> = ({
             return;
         }
         setIsLoading(true);
-        notificationService.error(null);
         try {
             const payload: CategoryRequest = { name };
             const newCategory = await createCategory(payload);
             onCategoryAdded(newCategory);
+            notificationService.success(t('category.saveSuccess', 'Category added'))
             onClose();
         } catch (err) {
             const axiosError = err as AxiosError<{ message?: string }>;
@@ -55,7 +55,6 @@ const CategoryAddModal: React.FC<CategoryAddModalProps> = ({
                     label={t('common.name', "Name")}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    error={error}
                     required
                     autoFocus
                 />
