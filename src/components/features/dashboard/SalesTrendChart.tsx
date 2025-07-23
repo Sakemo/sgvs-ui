@@ -1,4 +1,3 @@
-// src/components/features/dashboard/SalesTrendChart.tsx
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
@@ -44,7 +43,7 @@ const SalesTrendChart: React.FC<SalesTrendChartProps> = ({ data, isLoading }) =>
   return (
     <Card>
       <h2 className="text-lg font-semibold mb-4">{t('dashboard.revenueProfitTrend', 'Revenue & Profit Trend')}</h2>
-      <div className="h-80">
+      <div className="h-8         b tg ht y6trtyhyyyyyyyyyyyyyyyyyhgnbbvbvb vbvgb0">
         {isLoading ? (
           <div className="w-full h-full bg-gray-200 dark:bg-gray-700 rounded-md animate-pulse" />
         ) : (
