@@ -7,7 +7,7 @@ import { type ProductResponse, UnitOfSale } from '../../../api/types/domain';
 import Table, { type TableColumn } from '../../common/Table';
 import Button from '../../common/ui/Button';
 import Badge from '../../common/ui/Badge';
-import { formatCurrency, formatTimeAgo } from '../../../utils/formatters';
+import { calculateProfitMargin, formatCurrency, formatTimeAgo, type ProfitMarginStatus } from '../../../utils/formatters';
 import { LuCopy, LuPencil, LuPower, LuPowerOff, LuTrash2 } from 'react-icons/lu';
 
 interface ProductsTableProps {
@@ -20,6 +20,14 @@ interface ProductsTableProps {
   onRowClick: (product: ProductResponse) => void;
   selectedProductId?: number | null;
 }
+
+const marginBadgeColors: Record<ProfitMarginStatus, 'green' | 'yellow' | 'blue' | 'red' | 'gray'> = {
+  high: 'green',
+  medium: 'blue',
+  low: 'yellow',
+  loss: 'red',
+  'n/a': 'gray',
+};
 
 const ProductsTable: React.FC<ProductsTableProps> = ({
   products,
@@ -37,6 +45,15 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
     { header: t('product.table.name'), accessor: 'name', headerClassName: 'w-1/3' },
     { header: t('product.table.category'), accessor: (row) => row.category?.name || '—' },
     { header: t('product.table.salePrice'), accessor: (row) => formatCurrency(row.salePrice), className: 'text-right font-medium' },
+    { header: t('product.table.margin', 'Profit Margin'), accessor: (row) => {
+      const margin = calculateProfitMargin(row.salePrice, row.costPrice);
+      return (
+        <Badge variant="subtle" colorScheme={marginBadgeColors[margin.status]}>
+          {margin.formatted}
+        </Badge>
+      )
+    }, className: 'text-center',
+    headerClassName: 'text-center', },
     { header: t('product.table.stock'), accessor: (row) => `${row.stockQuantity} ${row.unitOfSale === UnitOfSale.UNIT ? 'un' : 'kg/L'}`, className: 'text-center' },
     { header: t('product.table.status'), accessor: (row) => ( <Badge variant="outline" colorScheme={row.active ? 'green' : 'gray'}>{row.active ? t('common.active') : t('common.inactive')}</Badge> ), className: 'text-center' },
     { header: t('product.table.lastUpdated'), accessor: (row) => formatTimeAgo(row.updatedAt) },

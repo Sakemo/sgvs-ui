@@ -2,6 +2,44 @@ import { format, formatDistanceToNowStrict, isToday, isYesterday, parseISO, type
 import { ptBR, enUS } from 'date-fns/locale';
 import i18n from '../i18n';
 
+export type ProfitMarginStatus = 'high' | 'medium' | 'low' | 'loss' | 'n/a'
+
+export interface ProfitMarginResult {
+  percentage: number | null;
+  formatted: string;
+  status: ProfitMarginStatus;
+}
+
+/**
+ * Calculates the profit margin percentage for a product.
+ * Formula: ((salePrice - costPrice) / costPrice) * 100
+ * @param salePrice - The selling price of the product.
+ * @param costPrice - The cost price of the product.
+ * @returns An object with the calculated percentage, formatted string, and status.
+ */
+export const calculateProfitMargin = (
+  salePrice: number | null | undefined,
+  costPrice: number | null | undefined
+): ProfitMarginResult => {
+  if (costPrice === null || costPrice === undefined || costPrice <= 0 || salePrice === null || salePrice === undefined) {
+    return { percentage: null, formatted: '—', status: 'n/a' };
+  }
+
+  const profit = salePrice - costPrice;
+  const margin = (profit / costPrice) * 100;
+  
+  let status: ProfitMarginStatus = 'loss';
+  if (margin > 50) status = 'high';
+  else if (margin > 20) status = 'medium';
+  else if (margin >= 0) status = 'low';
+
+  return {
+    percentage: margin,
+    formatted: `${margin.toFixed(1)}%`,
+    status: status,
+  };
+};
+
 /**
  * Retorna o 'locale' do date-fns com base no idioma atual do i18n.
  * @returns {Locale} O objeto de locale para pt-BR ou en-US.
