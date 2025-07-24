@@ -5,7 +5,7 @@ import { LuCalendar, LuChevronDown } from 'react-icons/lu';
 import Button from './ui/Button';
 import clsx from 'clsx';
 
-export type DateFilterOption = 'today' | 'this_month' | 'this_year' | 'all';
+export type DateFilterOption = 'today' | 'this_week' | 'this_month' | 'this_year' | 'all';
 
 interface DateFilterDropdownProps {
   selectedOption: DateFilterOption;

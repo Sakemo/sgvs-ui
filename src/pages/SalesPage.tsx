@@ -1,5 +1,5 @@
 // src/pages/SalesPage.tsx
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { startOfMonth, endOfMonth, startOfYear, endOfYear } from 'date-fns';
 import { LuPlus } from 'react-icons/lu';
@@ -12,7 +12,7 @@ import { getCustomers } from '../api/services/customer.service';
 import { type SaleResponse, type EntitySummary, type Page, PaymentMethod } from '../api/types/domain';
 
 // Components
-import SalesTable from '../components/features/sales/SalesTable';
+import SalesTable, { type SaleTableRow } from '../components/features/sales/SalesTable';
 import SaleFormModal from '../components/features/sales/SaleFormModal';
 import SaleDetailsModal from '../components/features/sales/SaleDetailModal';
 import Button from '../components/common/ui/Button';
@@ -24,6 +24,7 @@ import DateFilterDropdown, { type DateFilterOption } from '../components/common/
 import useDebounce from '../hooks/useDebounce';
 import AutocompleteInput from '../components/common/AutoCompleteInput';
 import { notificationService } from '../lib/notification.service';
+import { formatDate } from '../utils/formatters';
 
 const SalesPage: React.FC = () => {
   const { t } = useTranslation();
@@ -60,6 +61,47 @@ const SalesPage: React.FC = () => {
   
   const debouncedCustomerQuery = useDebounce(customerQuery, 400);
   const debouncedProductQuery = useDebounce(productQuery, 400);
+
+  const processedSales: SaleTableRow[] = useMemo(() => {
+        const sales = salesPage?.content ?? [];
+        if (sales.length === 0) return [];
+
+        const orderProperty = filters.orderBy?.split(',')[0];
+        if (orderProperty !== "saleDate" && orderProperty !== 'customer.name') {
+            return sales;
+        }
+
+        const newRows: SaleTableRow[] = [];
+        const addedHeaders = new Set<string>();
+
+        for (const sale of sales) {
+            let itemGroupKey = '';
+            if (orderProperty === 'saleDate') {
+                itemGroupKey = sale.saleDate.split('T')[0];
+            } else if (orderProperty === 'customer.name') {
+                itemGroupKey = sale.customer?.id.toString() || 'anonymous';
+            }
+
+            if (itemGroupKey && !addedHeaders.has(itemGroupKey)) {
+                const summary = groupSummaries[itemGroupKey];
+                if (summary) {
+                    const headerTitle = orderProperty === 'saleDate'
+                        ? formatDate(summary.groupTitle, { showTime: false })
+                        : `Total for ${summary.groupTitle}`;
+                    
+                    newRows.push({
+                        isGroupHeader: true,
+                        groupKey: summary.groupKey,
+                        title: headerTitle,
+                        value: summary.totalValue,
+                    });
+                    addedHeaders.add(itemGroupKey);
+                }
+            }
+            newRows.push(sale);
+        }
+        return newRows;
+    }, [salesPage, filters.orderBy, groupSummaries]);
 
   // search customers for autocomplete
   useEffect(() => {
@@ -161,7 +203,7 @@ const SalesPage: React.FC = () => {
     if (window.confirm(t('actions.confirmDeletePermanent'))) {
       try {
         await deleteSalePermanently(id);
-        fetchData(); // Recarrega todos os dados para refletir as mudanças nos totais
+        fetchData();
       } catch { notificationService.error(t('errors.deleteSale')); }
     }
   };
@@ -229,7 +271,7 @@ const SalesPage: React.FC = () => {
       </div>
 
       <SalesTable
-        sales={salesPage?.content ?? []}
+        sales={processedSales}
         isLoading={loading}
         onViewDetails={setSaleToView}
         onDelete={handleDelete}

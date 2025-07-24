@@ -6,6 +6,7 @@ import Badge from "../../common/ui/Badge";
 import Button from "../../common/ui/Button";
 import { LuPencil, LuTrash2 } from "react-icons/lu";
 import Table from "../../common/Table";
+import clsx from "clsx";
 
 interface ExpensesTableProps {
     expenses: ExpenseResponse[];
@@ -61,13 +62,25 @@ const ExpensesTable: React.FC<ExpensesTableProps> = ({
 
     return (
         <Table<ExpenseResponse>
-            columns={columns}
-            data={expenses}
-            isLoading={isLoading}
-            emptyMessage={t('expense.noExpensesFound', "No expenses found")}
-            onRowClick={onRowClick}
-            selectedRowId={selectedRowId}
-        />
+                columns = {columns}
+                data={expenses}
+                keyExtractor={(expense) => expense.id}
+                isLoading={isLoading}
+                emptyMessage={t('expense.noExpenseFound')}
+            >
+                {(expense) => (
+                    <tr key={expense.id}
+                        onClick={() => onRowClick(expense)}
+                        className={clsx('transition-colors duration-150 cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5', selectedRowId === expense.id && '!bg-brand-primary/10 dark:!bg-brand-accent/10')}>
+                        {columns.map((col, index) => (
+                            <td key={`${expense.id}-${index}`} className={clsx('px-4 py-3 whitespace-nowrap text-sm', col.className)}>
+                                {typeof col.accessor === 'function' ? col.accessor(expense) : String(expense[col.accessor as keyof ExpenseResponse] ?? '-')}
+                            </td>
+                        ))}
+                    </tr>
+                )}
+            </Table>
+
     );
 };
 export default ExpensesTable;

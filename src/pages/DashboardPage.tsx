@@ -132,11 +132,11 @@ const DashboardPage: React.FC = () => {
             isLoading={isLoading}
           />
           <MetricCard
-            title={t('dashboard.newCustomers', 'New Customers')}
-            value={dashboardData?.newCustomers.value ?? 0}
-            percentageChange={dashboardData?.newCustomers.percentageChange ?? 0}
-            sparklineData={dashboardData?.newCustomers.sparklineData ?? []}
-            isLoading={isLoading}
+              title={t('dashboard.totalReceivables', 'Total Receivables')}
+              value={dashboardData?.totalReceivables.value ?? 0}
+              percentageChange={dashboardData?.totalReceivables.percentageChange ?? 0}
+              sparklineData={dashboardData?.totalReceivables.sparklineData ?? []}
+              isLoading={isLoading}
           />
           <MetricCard
             title={t('dashboard.averageTicket', 'Average Ticket')}

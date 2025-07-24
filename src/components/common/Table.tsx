@@ -1,10 +1,9 @@
 import React from 'react';
 import clsx from 'clsx';
-import { LuLoader } from 'react-icons/lu';
 
-type DataObject = { id: string | number };
+// [DESUSED ]type DataObject = { id: string | number };
 
-export interface TableColumn<T extends DataObject> {
+export interface TableColumn<T> {
   header: string;
   accessor: keyof T | ((row: T) => React.ReactNode);
   className?: string;
@@ -12,29 +11,31 @@ export interface TableColumn<T extends DataObject> {
   width?: string;
 }
 
-interface TableProps<T extends DataObject> {
+interface TableProps<T> {
   columns: TableColumn<T>[];
   data: T[];
+  keyExtractor: (item: T) => string | number; 
+  children: (item: T) => React.ReactNode;
   isLoading?: boolean;
   emptyMessage?: string;
-  onRowClick?: (row: T) => void;
-  selectedRowId?: string | number | null;
 }
 
-function Table<T extends DataObject>({
+function Table<T>({
   columns,
   data,
+  keyExtractor,
+  children,
   isLoading = false,
   emptyMessage = 'No items found',
-  onRowClick,
-  selectedRowId,
 }: TableProps<T>) {
+  /*[DESUSED]
   const renderCellContent = (row: T, column: TableColumn<T>) => {
     if (typeof column.accessor === 'function') {
       return column.accessor(row);
     }
     return String(row[column.accessor] ?? '—');
   };
+  */
 
   return (
     <div className="overflow-hidden rounded-card border border-border-light dark:border-border-dark shadow-soft dark:text-gray-200">
@@ -57,45 +58,20 @@ function Table<T extends DataObject>({
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-border-light dark:divide-border-dark bg-card-light dark:bg-card-dark">
-            {isLoading ? (
-              <tr>
-                <td colSpan={columns.length} className="p-8 text-center text-text-secondary">
-                  <div className="flex items-center justify-center gap-2">
-                    <LuLoader className="h-5 w-5 animate-spin" />
-                    <span>Loading...</span>
-                  </div>
-                </td>
-              </tr>
-            ) : data.length === 0 ? (
-              <tr>
-                <td colSpan={columns.length} className="p-8 text-center text-text-secondary">
-                  {emptyMessage}
-                </td>
-              </tr>
-            ) : (
-              data.map((row) => (
-                <tr
-                  key={row.id}
-                  className={clsx(
-                    'transition-colors duration-150',
-                    onRowClick && 'cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5',
-                    selectedRowId === row.id && '!bg-brand-primary/10 dark:!bg-brand-accent/10'
-                  )}
-                  onClick={() => onRowClick?.(row)}
-                >
-                  {columns.map((col, index) => (
-                    <td
-                      key={`${row.id}-${index}`}
-                      className={clsx('px-4 py-3 whitespace-nowrap text-sm', col.className)}
-                    >
-                      {renderCellContent(row, col)}
-                    </td>
-                  ))}
-                </tr>
-              ))
-            )}
-          </tbody>
+            <tbody>
+              {isLoading ? (
+                <tr><td colSpan={columns.length} className="p-8 text-center">...Loading...</td></tr>
+              ) : data.length === 0 ? (
+                <tr><td colSpan={columns.length} className="p-8 text-center">{emptyMessage}</td></tr>
+              ) : (
+                // Mapeia os dados aqui e chama a função children para renderizar cada linha
+                data.map((item) => (
+                  <React.Fragment key={keyExtractor(item)}>
+                    {children(item)}
+                  </React.Fragment>
+                ))
+              )}
+            </tbody>
         </table>
       </div>
     </div>

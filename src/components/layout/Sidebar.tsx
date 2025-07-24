@@ -9,6 +9,7 @@ import {
   LuShoppingCart,
   LuDollarSign,
   LuSettings,
+  LuChartBar,
 } from 'react-icons/lu';
 
 import { type IconType } from 'react-icons';
@@ -26,17 +27,17 @@ const Sidebar: React.FC = () => {
 
   const mainNavItems: NavItem[] = [
     { path: '/', labelKey: 'sidebar.dashboard', defaultLabel: 'Dashboard', icon: LuLayoutDashboard },
+    { path: '/reports', labelKey: 'sidebar.reports', defaultLabel: 'Reports', icon: LuChartBar },
     { path: '/sales', labelKey: 'sidebar.sales', defaultLabel: 'Sales', icon: LuShoppingCart },
+    { path: '/expenses', labelKey: 'sidebar.expenses', defaultLabel: 'Expenses', icon: LuDollarSign },
     { path: '/products', labelKey: 'sidebar.products', defaultLabel: 'Products', icon: LuPackage },
     { path: '/customers', labelKey: 'sidebar.customers', defaultLabel: 'Customers', icon: LuUsers },
-    { path: '/expenses', labelKey: 'sidebar.expenses', defaultLabel: 'Expenses', icon: LuDollarSign },
   ];
   
   const footerNavItem: NavItem = {
     path: '/settings', labelKey: 'sidebar.settings', defaultLabel: 'Settings', icon: LuSettings,
   };
 
-  // Estilos reutilizáveis para os links
   const linkBaseClasses = 'flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium transition-colors duration-150';
   const linkInactiveClasses = 'text-text-secondary hover:bg-gray-100 hover:text-text-primary dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white';
   const linkActiveClasses = 'bg-brand-primary/10 text-brand-primary dark:bg-brand-accent/10 dark:text-brand-accent font-semibold';

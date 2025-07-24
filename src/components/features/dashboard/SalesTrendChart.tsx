@@ -58,6 +58,10 @@ const SalesTrendChart: React.FC<SalesTrendChartProps> = ({ data, isLoading }) =>
                   <stop offset="5%" stopColor="#22C55E" stopOpacity={0.4} />
                   <stop offset="95%" stopColor="#22C55E" stopOpacity={0.05} />
                 </linearGradient>
+                <linearGradient id="colorReceivables" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.4} />
+                  <stop offset="95%" stopColor="#F59E0B" stopOpacity={0.05} />
+                </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(128, 128, 128, 0.2)" />
               <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="rgba(128, 128, 128, 0.5)" />
@@ -81,6 +85,15 @@ const SalesTrendChart: React.FC<SalesTrendChartProps> = ({ data, isLoading }) =>
                 strokeWidth={2}
                 fillOpacity={1}
                 fill="url(#colorProfit)"
+              />
+              <Area
+                type="monotone"
+                dataKey="receivables"
+                name={t('dashboard.receivables', 'Receivables')}
+                stroke="#F59E0B"
+                strokeWidth={2}
+                fillOpacity={1}
+                fill="url(#colorReceivables)"
               />
             </AreaChart>
           </ResponsiveContainer>

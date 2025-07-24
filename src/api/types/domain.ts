@@ -54,13 +54,14 @@ export interface TimeSeriesDataPoint {
   date: string;
   revenue: number;
   profit: number;
+  receivables: number;
 }
 
 export interface DashboardResponse {
   grossRevenue: MetricCardData;
   netProfit: MetricCardData;
   totalExpense: MetricCardData;
-  newCustomers: MetricCardData;
+  totalReceivables: MetricCardData;
   averageTicket: MetricCardData;
   salesByPaymentMethod: ChartDataPoint[];
   topSellingProducts: ChartDataPoint[];
@@ -190,6 +191,16 @@ export interface ExpenseRequest {
   expenseType: ExpenseType;
   paymentMethod: PaymentMethod;
   description?: string | null;
+}
+
+// --- Reports Domain ---
+export interface AbcAnalysisRow {
+  productId: number;
+  productName: string;
+  totalRevenue: number;
+  percentageOfTotalRevenue: number;
+  cumulativePercentage: number;
+  abcClass: 'A' | 'B' | 'C';
 }
 
 // --- Category ---

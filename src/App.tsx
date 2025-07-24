@@ -10,6 +10,7 @@ import { ConfirmationModalProvider } from "./contexts/ConfirmationModalProvider"
 import { ThemeProvider } from "./contexts/ThemeProvider";
 import { Toaster } from "react-hot-toast";
 import DashboardPage from "./pages/DashboardPage";
+import ReportsPage from "./pages/ReportsPage";
 
 function App() {
   return (
@@ -45,9 +46,10 @@ function App() {
             <Route element={<MainLayout />}>
               <Route path="/" element={<DashboardPage />} />
               <Route path="/sales" element={<SalesPage />} />
+              <Route path="/expenses" element={<ExpensesPage />} />
+              <Route path="/reports" element={<ReportsPage/>} />
               <Route path="/products" element={<ProductsPage />} />
               <Route path="/customers" element={<CustomersPage />} />
-              <Route path="/expenses" element={<ExpensesPage />} />
               <Route path="/settings" element={<SettingsPage />} />
             </Route>
           </Routes>
