@@ -4,7 +4,8 @@ import { useTranslation } from "react-i18next";
 import Button from "../../common/ui/Button";
 import { LuPencil, LuX } from "react-icons/lu";
 import Badge from "../../common/ui/Badge";
-import { formatCurrency, formatDate } from "../../../utils/formatters";
+import { calculateProfitMargin, formatCurrency, formatDate } from "../../../utils/formatters";
+import { marginBadgeColors } from "./utils/MarginBadgeColors";
 
 interface ProductDetailsDrawerProps {
     product: ProductResponse;
@@ -27,10 +28,13 @@ const DetailRow: React.FC<{ label: string; value?: React.ReactNode }> = ({
     </div>
 );
 
+
 const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({
     product, onClose, onEdit
 }) => {
     const { t } = useTranslation();
+
+    const margin = calculateProfitMargin(product.salePrice, product.costPrice);
 
     return (
     <aside className="dark:text-gray-300 h-full flex flex-col rounded-card border border-border-light bg-card-light shadow-soft dark:border-border-dark dark:bg-card-dark !bg-brand-primary/10 dark:!bg-brand-accent/10">
@@ -51,24 +55,29 @@ const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({
       {/* Corpo do Drawer com scroll */}
       <div className="flex-grow overflow-y-auto p-4">
         <dl className="divide-y divide-border-light dark:divide-border-dark">
-          <DetailRow label={t('common.name', 'Name')} value={product.name} />
-          <DetailRow label={t('common.category', 'Category')} value={product.category.name} />
-          <DetailRow label={t('common.description', 'Description')} value={product.description} />
-          <DetailRow label={t('product.barcode', 'Barcode')} value={product.barcode} />
-          <DetailRow label={t('product.salePrice', 'Sale Price')} value={formatCurrency(product.salePrice)} />
-          <DetailRow label={t('product.costPrice', 'Cost Price')} value={product.costPrice ? formatCurrency(product.costPrice) : undefined} />
-          <DetailRow label={t('product.unitOfSale', 'Unit of Sale')} value={
-              <span className="capitalize">{product.unitOfSale.toLowerCase()}</span>
-            } 
-          />
           <DetailRow label={t('common.status', 'Status')} value={
               <Badge variant="outline" colorScheme={product.active ? 'green' : 'gray'}>
                 {product.active ? t('common.active', 'Active') : t('common.inactive', 'Inactive')}
               </Badge>
             } 
           />
+          <DetailRow label={t('common.name', 'Name')} value={product.name} />
+          <DetailRow label={t('common.category', 'Category')} value={product.category.name} />
+          <DetailRow label={t('product.margin', 'Profit Margin')} value={     <Badge variant="subtle" colorScheme={marginBadgeColors[margin.status]}>
+              {margin.formatted}
+            </Badge>} />
+          <DetailRow label={t('product.salePrice', 'Sale Price')} value={
+            formatCurrency(product.salePrice)
+          } />
+          <DetailRow label={t('product.costPrice', 'Cost Price')} value={product.costPrice ? formatCurrency(product.costPrice) : undefined} />
           <DetailRow label={t('common.stock', 'Stock')} value={`${product.stockQuantity} ${product.unitOfSale.toLowerCase()}`} />
+          <DetailRow label={t('product.unitOfSale', 'Unit of Sale')} value={
+              <span className="capitalize">{product.unitOfSale.toLowerCase()}</span>
+            } 
+          />
+          <DetailRow label={t('product.barcode', 'Barcode')} value={product.barcode} />
           <DetailRow label={t('product.provider', 'Provider')} value={product.provider?.name} />
+          <DetailRow label={t('common.description', 'Description')} value={product.description} />
           <DetailRow label={t('common.createdAt', 'Created At')} value={formatDate(product.createdAt)} />
           <DetailRow label={t('common.updatedAt', 'Last Updated')} value={formatDate(product.updatedAt)} />
         </dl>

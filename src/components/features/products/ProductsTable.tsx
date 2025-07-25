@@ -7,8 +7,9 @@ import { type ProductResponse, UnitOfSale } from '../../../api/types/domain';
 import Table, { type TableColumn } from '../../common/Table';
 import Button from '../../common/ui/Button';
 import Badge from '../../common/ui/Badge';
-import { calculateProfitMargin, formatCurrency, formatTimeAgo, type ProfitMarginStatus } from '../../../utils/formatters';
+import { calculateProfitMargin, formatCurrency, formatTimeAgo } from '../../../utils/formatters';
 import { LuCopy, LuPencil, LuPower, LuPowerOff, LuTrash2 } from 'react-icons/lu';
+import { marginBadgeColors } from './utils/MarginBadgeColors';
 
 interface ProductsTableProps {
   products: ProductResponse[];
@@ -20,14 +21,6 @@ interface ProductsTableProps {
   onRowClick: (product: ProductResponse) => void;
   selectedProductId?: number | null;
 }
-
-const marginBadgeColors: Record<ProfitMarginStatus, 'green' | 'yellow' | 'blue' | 'red' | 'gray'> = {
-  high: 'green',
-  medium: 'blue',
-  low: 'yellow',
-  loss: 'red',
-  'n/a': 'gray',
-};
 
 const ProductsTable: React.FC<ProductsTableProps> = ({
   products,
