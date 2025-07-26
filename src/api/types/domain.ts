@@ -11,7 +11,7 @@ export type UnitOfSale = typeof UnitOfSale[keyof typeof UnitOfSale];
 export const PaymentMethod = { CASH: "CASH", DEBIT: "DEBIT", CREDIT: "CREDIT", ON_CREDIT: "ON_CREDIT", BANK_TRANSFER: "BANK_TRANSFER" } as const;
 export type PaymentMethod = typeof PaymentMethod[keyof typeof PaymentMethod];
 
-export const ExpenseType = { PERSONAL: "PERSONAL", BUSINESS: "BUSINESS", INVESTMENT: "INVESTMENT", OTHERS: "OTHERS" } as const;
+export const ExpenseType = { RESTOCKING: "RESTOCKING", PERSONAL: "PERSONAL", BUSINESS: "BUSINESS", INVESTMENT: "INVESTMENT", OTHERS: "OTHERS" } as const;
 export type ExpenseType = typeof ExpenseType[keyof typeof ExpenseType];
 
 // =================================================================
@@ -184,14 +184,20 @@ export interface ExpenseResponse {
   updatedAt: string;
 }
 
+export interface RestockItemRequest {
+  productId: number;
+  quantity: number;
+  unitCostPrice: number;
+}
+
 export interface ExpenseRequest {
   name: string;
-  value: number | undefined;
+  value?: number | undefined;
   expenseDate: string;
   expenseType: ExpenseType;
   paymentMethod: PaymentMethod;
   description?: string | null;
-  restockItems: FormRestockItem[];
+  restockItems: RestockItemRequest[];
 }
 
 // --- Reports Domain ---
