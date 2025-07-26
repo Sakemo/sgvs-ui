@@ -1,5 +1,5 @@
 import type React from "react";
-import { ExpenseType, PaymentMethod, type ExpenseRequest, type ExpenseResponse } from "../../../api/types/domain";
+import { ExpenseType, PaymentMethod, type EntitySummary, type ExpenseRequest, type ExpenseResponse } from "../../../api/types/domain";
 import { useTranslation } from "react-i18next";
 import { useCallback, useEffect, useState } from "react";
 import { format } from "date-fns";
@@ -12,6 +12,9 @@ import Textarea from "../../common/ui/Textarea";
 import Button from "../../common/ui/Button";
 import AdvancedOptions from "../../common/AdvancedOptions";
 import { notificationService } from "../../../lib/notification.service";
+import useDebounce from "../../../hooks/useDebounce";
+import type { AutocompleteOption } from "../../common/AutoCompleteInput";
+import { getProducts } from "../../../api/services/product.service";
 
 interface ExpenseFormModalProps {
     isOpen: boolean;
@@ -50,6 +53,46 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
   const [formData, setFormData] = useState<Partial<ExpenseRequest>>(getInitialFormData());
   const [isLoading, setIsLoading] = useState(false);
 
+  const [restockItems, setRestockItems] = useState<FormRestockItem[]>([]);
+  const [productQuery, setProductQuery] = useState('');
+  const [productOptions, setProductOptions] = useState<EntitySummary[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<AutocompleteOption | null>(null);
+  const [quantity, setQuantity] = useState('1');
+  const [unitCostPrice, setUnitCostPrice] = useState('');
+  const [isSearchingProducts, setIsSearchingProducts] = useState(false);
+  const debouncedProductQuery = useDebounce(productQuery, 400);
+
+  const isRestocking = formData.expenseType === ExpenseType.RESTOCKING;
+  useEffect(() => {
+    if (debouncedProductQuery.length < 1) {
+      setProductOptions([]);
+      return;
+    }
+    setIsSearchingProducts(true);
+    getProducts({ name: debouncedProductQuery , size: 10 })
+      .then(page => setProductOptions(page.content.map(p => ({ id: p.id, name: p.name }))))
+      .finally(() => setIsSearchingProducts(false));
+  }, [debouncedProductQuery]);
+
+  const handleAddItem = () => {
+    if (!selectedProduct || !quantity || !unitCostPrice) return;
+    const newRestockItem: FormRestockItem = {
+      productId: Number(selectedProduct.value),
+      name: selectedProduct.label,
+      quantity: parseFloat(quantity),
+      unitCostPrice: parseFloat(unitCostPrice),
+    };
+    setRestockItems(prev => [...prev, newRestockItem]);
+    setSelectedProduct(null);
+    setProductQuery('');
+    setQuantity('1');
+    setUnitCostPrice('');
+  };
+
+  const handleRemoveItem = (productId: number) => {
+    setRestockItems(prev => prev.filter(item => item.productId !== productId));
+  };
+
   useEffect(() => {
     if (isOpen) {
         setFormData(getInitialFormData());
@@ -68,7 +111,9 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
     try {
         const payload: ExpenseRequest = {
             ...formData,
+            value: isRestocking ? undefined : formData.value,
             expenseDate: new Date(formData.expenseDate!).toISOString(),
+            restockItems: isRestocking ? restockItems : [],
         } as ExpenseRequest;
 
         if (isEditMode && expenseToEdit) {

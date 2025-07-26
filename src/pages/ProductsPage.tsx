@@ -125,7 +125,6 @@ const ProductsPage: React.FC = () => {
     const handleDataRefresh = () => {
         fetchDependencies();
         fetchProducts();
-        notificationService.success(t('product.saveSuccess', 'Product saved successfully!'))
     }
     
     const handleToggleStatus = async (id: number, currentStatus: boolean) => {

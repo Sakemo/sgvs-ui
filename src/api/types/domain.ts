@@ -186,11 +186,12 @@ export interface ExpenseResponse {
 
 export interface ExpenseRequest {
   name: string;
-  value: number;
+  value: number | undefined;
   expenseDate: string;
   expenseType: ExpenseType;
   paymentMethod: PaymentMethod;
   description?: string | null;
+  restockItems: FormRestockItem[];
 }
 
 // --- Reports Domain ---
