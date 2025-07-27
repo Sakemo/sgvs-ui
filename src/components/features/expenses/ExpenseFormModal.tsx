@@ -328,7 +328,7 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
             <option key={type} value={type}>
               {t(
                 `paymentMethods.${type.toLowerCase().replace("_", " ")}`,
-                type.replace("_", " ")
+                type.replace(/_/g, " ")
               )}
             </option>
           ))}
