@@ -73,7 +73,7 @@ const Sidebar: React.FC = () => {
   const linkActiveClasses = 'bg-brand-primary/10 text-brand-primary dark:bg-brand-accent/10 dark:text-brand-accent font-semibold';
 
   const childLinkBaseClasses = 'flex items-center gap-2 pr-3 py-2 rounded-btn text-sm transition-colors duration-150';
-  const childLinkInactiveClasses = 'text-text-secondary hover:bg-gray-100 hover:text-text-primary dark-text-gray-300 dark:hover:bg-white/5 dark:hover:text-white';
+  const childLinkInactiveClasses = 'text-text-secondary hover:bg-gray-100 hover:text-text-primary dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white';
   const childLinkActiveClasses = 'bg-brand-primary/10 text-brand-primary dark:bg-brand-accent/10 dark:text-brand-accent font-semibold';
   
   return (
