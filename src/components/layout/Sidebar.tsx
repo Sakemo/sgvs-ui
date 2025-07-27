@@ -85,9 +85,9 @@ const Sidebar: React.FC = () => {
       </div>
       
       <nav className="flex-1 p-2 space-y-1">
-        {mainNavItems.map((item, idx) =>
+        {mainNavItems.map((item) =>
           'groupLabel' in item ? (
-            <div key={`group-${idx}`}>
+            <div key={`group-${item.groupLabel}`}>
               <div
                 onClick={() => toggleGroup(item.groupLabel)}
                 className={clsx(
