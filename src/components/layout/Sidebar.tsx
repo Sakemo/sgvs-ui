@@ -98,9 +98,9 @@ const Sidebar: React.FC = () => {
               >
                 <span className = "text-base">{item.groupLabel}</span>
                 {openGroups[item.groupLabel] ? (
-                  <LuChevronDown className="ml-auto h-4 w-4 opacity-60" />
+                  <LuChevronDown className="ml-auto h-4 w-4 opacity-60" aria-hidden="true" />
                 ) : (
-                  <LuChevronRight className="ml-auto h-4 w-4 opacity-60" />
+                  <LuChevronRight className="ml-auto h-4 w-4 opacity-60" aria-hidden="true"/>
                 )}
               </div>
 
