@@ -170,7 +170,7 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
     try {
       const payload: ExpenseRequest = {
         name: formData.name || "",
-        value: isRestocking ? undefined : formData.value,
+        value: isRestocking ? 0 : formData.value,
         expenseDate: new Date(formData.expenseDate!).toISOString(),
         expenseType: formData.expenseType!,
         paymentMethod: formData.paymentMethod!,
@@ -183,6 +183,7 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
             }))
           : [],
       };
+      console.info(`${formData.value}`);
 
       if (isEditMode && expenseToEdit) {
         await updateExpense(expenseToEdit.id, payload);
