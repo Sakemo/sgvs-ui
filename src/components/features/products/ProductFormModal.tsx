@@ -10,13 +10,15 @@ import Input from '../../common/ui/Input';
 import Select from '../../common/ui/Select';
 import Textarea from '../../common/ui/Textarea';
 import { AxiosError } from 'axios';
-import { LuPlus } from 'react-icons/lu';
+import { LuPencil, LuPlus, LuTrash } from 'react-icons/lu';
 import CategoryAddModal from '../categories/CategoryAddModal';
 import ProviderAddModal from '../providers/ProviderAddModal';
 import AdvancedOptions from '../../common/AdvancedOptions';
 import { useSettings } from '../../../contexts/utils/UseSettings';
 import ToggleSwitch from '../../common/ui/ToggleSwitch';
 import { notificationService } from '../../../lib/notification.service';
+import AutocompleteInput from '../../common/AutoCompleteInput';
+import { useConfirmation } from '../../../contexts/utils/UseConfirmation';
 
 interface ProductFormModalProps {
   isOpen: boolean;
@@ -39,12 +41,31 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const { settings } = useSettings();
+  const showConfirmation = useConfirmation();
   const isEditMode = !!productToEdit;
 
+  const [categoryQuery, setCategoryQuery] = useState('');
+  const [categoryOptions, setCategoryOptions] = useState<EntitySummary[]>([]);
+  const [isSearchingCategories, setIsSearchingCategories] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isProviderModalOpen, setIsProviderModalOpen] = useState(false);
 
   const [keepAdding, setKeepAdding] = useState(false);
+
+  const handleDeleteCategory = (categoryId: number) => {
+    showConfirmation({
+      title: "Delete Category?",
+      description: "Are you sure? This will affect all products in this category.",
+      onConfirm: async () => {
+        console.log("Delete category");
+        onDataRefresh();
+      }
+    });
+  };
+
+  const handleEditCategory = (category: EntitySummary) => {
+    console.log("Editing category: ", category);
+  };
 
   const handleNewCategory = (newCategory: CategoryResponse) => {
     setIsCategoryModalOpen(false);
@@ -100,6 +121,20 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
     }
   }, [isOpen, getInitialFormData, productToEdit]);
   
+useEffect(() => {
+  if (
+    isOpen &&
+    !isEditMode &&
+    categories.length > 0 &&
+    (formData.categoryId === undefined || formData.categoryId === null)
+  ) {
+    setFormData(prev => ({
+      ...prev,
+      categoryId: categories[0].id,
+    }));
+  }
+}, [isOpen, isEditMode, categories, formData.categoryId]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
     const isCheckbox = type === 'checkbox';
@@ -176,11 +211,27 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
           <Input label={t('product.salePrice', 'Sale Price') + ' *'} name="salePrice" type="number" step="0.01" value={formData.salePrice ?? ''} onChange={handleChange} required />
         
           <div className='flex items-end gap-2'>
-            <Select label={t('common.category', 'Category') + ' *'} name="categoryId" value={formData.categoryId ?? ''} onChange={handleChange}  required>
-              <option value="" disabled>{t('common.select', 'Select...')}</option>
-              {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
-            </Select>
-
+            <AutocompleteInput
+              label={t('common.category' + ' *')}
+              placeholder={t('actions.searchByName')}
+              options={categories.map(c => ({ value: c.id, label: c.name }))}
+              selected={formData.categoryId ? { value: formData.categoryId, label: categories.find(c => c.id === formData.categoryId)?.name || '' } : null}
+              onSelect={(option) => setFormData(prev => ({ ...prev, categoryId: option ? Number(option.value) : undefined }))}
+              onQueryChange={setCategoryQuery}
+              isLoading={isSearchingCategories}
+              renderOption={(option) => (
+                <div className='flex items-center justify-between w-full'>
+                  <span className='block truncate'>
+                    {option.label}
+                  </span>
+                  <div className='flex-shrink-0'>
+                    <Button variant="ghost" size="icon" className='h-7 w-7' onClick={(e) => { e.stopPropagation(); handleEditCategory(option as unknown as EntitySummary) }} iconLeft={<LuPencil />} />
+                    <Button variant="ghost" size="icon" className='h-7 w-7 text-red-600' onClick={(e) => { e.stopPropagation(); handleDeleteCategory(Number(option.value)); }} iconLeft={<LuTrash />} />
+                  </div>
+                </div>
+              )}
+            />
+            
             <Button type='button' variant="ghost" size="icon" onClick={() => setIsCategoryModalOpen(true)} title={t('category.addTitle')} iconLeft={<LuPlus />} />
           </div>
         </div>

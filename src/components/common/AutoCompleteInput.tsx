@@ -8,6 +8,7 @@ import clsx from "clsx";
 export interface AutocompleteOption {
   value: number | string;
   label: string;
+  [key: string]: unknown;
 }
 
 interface AutocompleteInputProps {
@@ -17,6 +18,7 @@ interface AutocompleteInputProps {
   selected: AutocompleteOption | null;
   onSelect: (option: AutocompleteOption | null) => void;
   onQueryChange: (query: string) => void;
+  renderOption?: (option: AutocompleteOption) => React.ReactNode;
   isLoading?: boolean;
 }
 
@@ -27,6 +29,7 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
   selected,
   onSelect,
   onQueryChange,
+  renderOption,
   isLoading = false,
 }) => {
   const [query, setQuery] = useState("");
@@ -80,24 +83,26 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
                     </div>
                 ) : (
                     options.map((option) => (
-                        <Combobox.Option
-                            key={option.value}
-                            className={({ active }) => clsx('relative cursor-default select-none py-2 pl-10 pr-4', active ? 'bg-brand-primary/10 text-brand-primary' : 'text-text-primary dark:text-gray-200')}
-                            value={option}
-                            >
-                                {({ selected }) => (
-                                    <>
-                                    <span className={clsx('block truncate', selected ? 'font-medium' : 'font-normal')}>
-                                        {option.label}
-                                    </span>
-                                    {selected ? (
-                                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-brand-primary">
-                                            <LuCheck />
-                                        </span>
-                                    ) : null}
-                                    </>
-                                )}
-                            </Combobox.Option>
+            <Combobox.Option
+              key={option.value}
+              className={({ active }) => clsx('relative cursor-default select-none py-2 px-4', active ? 'bg-brand-primary/10' : '')}
+              value={option}
+            >
+              {() =>
+                renderOption ? (
+                  renderOption(option) as React.ReactElement
+                ) : (
+                  <div className="flex items-center">
+                    <span className={clsx("flex-shrink-0 w-5", selected ? 'opacity-100' : 'opacity-0')}>
+                      <LuCheck className="h-5 w-5 text-brand-primary" />
+                    </span>
+                    <span className={clsx('ml-2 block truncate', selected ? 'font-semibold' : 'font-normal')}>
+                      {option.label}
+                    </span>
+                  </div>
+                )
+              }
+            </Combobox.Option>
                     ))
                 )}
             </Combobox.Options>
