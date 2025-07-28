@@ -2,13 +2,12 @@ import type React from "react";
 import {
   ExpenseType,
   PaymentMethod,
-  type EntitySummary,
   type ExpenseRequest,
   type ExpenseResponse,
   type RestockItemRequest,
 } from "../../../api/types/domain";
 import { useTranslation } from "react-i18next";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
 import {
   createExpense,
@@ -29,6 +28,7 @@ import AutocompleteInput from "../../common/AutoCompleteInput";
 import Card from "../../common/ui/Card";
 import { LuTrash2 } from "react-icons/lu";
 import { formatCurrency } from "../../../utils/formatters";
+import { type ProductResponse } from "../../../api/types/domain";
 
 interface FormRestockItem extends RestockItemRequest {
   name: string;
@@ -59,7 +59,7 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
 
   // -- add items states --
   const [productQuery, setProductQuery] = useState("");
-  const [productOptions, setProductOptions] = useState<EntitySummary[]>([]);
+  const [productOptions, setProductOptions] = useState<ProductResponse[]>([]);
   const [selectedProduct, setSelectedProduct] =
     useState<AutocompleteOption | null>(null);
   const [quantity, setQuantity] = useState("1");
@@ -104,6 +104,12 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
     setUnitCostPrice("");
   }, [getInitialFormData]);
 
+  // -- product value get --
+  const selectedProductDetails = useMemo(() => {
+    if (!selectedProduct) return null;
+    return productOptions.find(p => p.id === selectedProduct.value);
+  }, [selectedProduct, productOptions])
+
   // -- effects --
   useEffect(() => {
     if (debouncedProductQuery.length < 1) {
@@ -113,10 +119,18 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
     setIsSearchingProducts(true);
     getProducts({ name: debouncedProductQuery, size: 10 })
       .then((page) =>
-        setProductOptions(page.content.map((p) => ({ id: p.id, name: p.name })))
+        setProductOptions(page.content)
       )
       .finally(() => setIsSearchingProducts(false));
   }, [debouncedProductQuery]);
+
+  useEffect(() => {
+    if(selectedProductDetails && selectedProductDetails.costPrice) {
+      setUnitCostPrice(String(selectedProductDetails.costPrice));
+    } else {
+      setUnitCostPrice('');
+    }
+  }, [selectedProductDetails])
 
   useEffect(() => {
     if (isOpen) {
@@ -265,6 +279,7 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
                   step="0.01"
                   value={unitCostPrice}
                   onChange={(e) => setUnitCostPrice(e.target.value)}
+                  disabled={!selectedProduct}
                 />
               </div>
               <Button
