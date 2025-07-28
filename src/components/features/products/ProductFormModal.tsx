@@ -11,7 +11,6 @@ import Select from '../../common/ui/Select';
 import Textarea from '../../common/ui/Textarea';
 import { AxiosError } from 'axios';
 import { LuPencil, LuPlus, LuTrash } from 'react-icons/lu';
-import CategoryAddModal from '../categories/CategoryAddModal';
 import ProviderAddModal from '../providers/ProviderAddModal';
 import AdvancedOptions from '../../common/AdvancedOptions';
 import { useSettings } from '../../../contexts/utils/UseSettings';
@@ -19,6 +18,8 @@ import ToggleSwitch from '../../common/ui/ToggleSwitch';
 import { notificationService } from '../../../lib/notification.service';
 import AutocompleteInput from '../../common/AutoCompleteInput';
 import { useConfirmation } from '../../../contexts/utils/UseConfirmation';
+import { deleteCategory } from '../../../api/services/category.service';
+import CategoryFormModal from '../categories/CategoryFormModal';
 
 interface ProductFormModalProps {
   isOpen: boolean;
@@ -48,6 +49,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
   const [categoryOptions, setCategoryOptions] = useState<EntitySummary[]>([]);
   const [isSearchingCategories, setIsSearchingCategories] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [categoryToEdit, setCategoryToEdit] = useState<EntitySummary | null>(null);
   const [isProviderModalOpen, setIsProviderModalOpen] = useState(false);
 
   const [keepAdding, setKeepAdding] = useState(false);
@@ -57,20 +59,28 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
       title: "Delete Category?",
       description: "Are you sure? This will affect all products in this category.",
       onConfirm: async () => {
-        console.log("Delete category");
-        onDataRefresh();
+        try {
+          await deleteCategory(categoryId);
+          notificationService.success(t('category.deleteSucess'));
+          onDataRefresh();
+        } catch (err) {
+          notificationService.error(t('errors.deleteCategory' + err));
+        }
       }
     });
   };
 
   const handleEditCategory = (category: EntitySummary) => {
-    console.log("Editing category: ", category);
+    setCategoryToEdit(category);
+    setIsCategoryModalOpen(true);
   };
 
-  const handleNewCategory = (newCategory: CategoryResponse) => {
+  const handleCategorySaveSuccess = (savedCategory: CategoryResponse) => {
     setIsCategoryModalOpen(false);
     onDataRefresh();
-    setFormData(prev => ({ ...prev, categoryId: newCategory.id }));
+    if (!categoryToEdit) {
+      setFormData(prev => ({ ...prev, categoryId: savedCategory.id }));
+    }
   };
 
   const handleNewProvider = (newProvider: ProviderResponse) => {
@@ -294,10 +304,11 @@ useEffect(() => {
       </form>
     </Modal>
 
-    <CategoryAddModal
+    <CategoryFormModal
       isOpen={isCategoryModalOpen}
       onClose={() => setIsCategoryModalOpen(false)}
-      onCategoryAdded={handleNewCategory}
+      onSaveSuccess={handleCategorySaveSuccess}
+      categoryToEdit={categoryToEdit}
     />
     <ProviderAddModal
       isOpen={isProviderModalOpen}

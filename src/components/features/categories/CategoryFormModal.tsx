@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
-import type { CategoryRequest, CategoryResponse } from "../../../api/types/domain";
+import type { CategoryRequest, CategoryResponse, EntitySummary } from "../../../api/types/domain";
 import { useEffect, useState } from "react";
-import { createCategory } from "../../../api/services/category.service";
+import { createCategory, updateCategory } from "../../../api/services/category.service";
 import type { AxiosError } from "axios";
 import Modal from "../../common/Modal";
 import Input from "../../common/ui/Input";
@@ -11,21 +11,23 @@ import { notificationService } from "../../../lib/notification.service";
 interface CategoryAddModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onCategoryAdded: (newCategory: CategoryResponse) => void;
+    onSaveSuccess: (category: CategoryResponse) => void;
+    categoryToEdit?: EntitySummary | null;
 }
 
-const CategoryAddModal: React.FC<CategoryAddModalProps> = ({
-    isOpen, onClose, onCategoryAdded
+const CategoryFormModal: React.FC<CategoryAddModalProps> = ({
+    isOpen, onClose, onSaveSuccess, categoryToEdit
 }) => {
     const { t } = useTranslation();
+    const isEditMode = !!categoryToEdit;
     const [name, setName] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         if(isOpen) {
-            setName('');
+            setName(isEditMode ? categoryToEdit.name : '');
         }
-    }, [isOpen]);
+    }, [isOpen, isEditMode, categoryToEdit]);
 
     const handleSubmit = async(e: React.FormEvent) => {
         e.preventDefault();
@@ -36,8 +38,13 @@ const CategoryAddModal: React.FC<CategoryAddModalProps> = ({
         setIsLoading(true);
         try {
             const payload: CategoryRequest = { name };
-            const newCategory = await createCategory(payload);
-            onCategoryAdded(newCategory);
+            let savedCategory : CategoryResponse;
+            if (isEditMode) {
+                savedCategory = await updateCategory(categoryToEdit.id, payload);
+            } else {
+                savedCategory = await createCategory(payload);
+            }
+            onSaveSuccess(savedCategory);
             notificationService.success(t('category.saveSuccess', 'Category added'))
             onClose();
         } catch (err) {
@@ -71,4 +78,4 @@ const CategoryAddModal: React.FC<CategoryAddModalProps> = ({
     )
 }
 
-export default CategoryAddModal;
+export default CategoryFormModal;
