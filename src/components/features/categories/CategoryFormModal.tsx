@@ -25,7 +25,11 @@ const CategoryFormModal: React.FC<CategoryAddModalProps> = ({
 
     useEffect(() => {
         if(isOpen) {
-            setName(isEditMode ? categoryToEdit.name : '');
+            if (isEditMode && categoryToEdit){
+                setName(isEditMode ? categoryToEdit.name : '');
+            } else {
+                setName('');
+            }
         }
     }, [isOpen, isEditMode, categoryToEdit]);
 
@@ -45,7 +49,7 @@ const CategoryFormModal: React.FC<CategoryAddModalProps> = ({
                 savedCategory = await createCategory(payload);
             }
             onSaveSuccess(savedCategory);
-            notificationService.success(t('category.saveSuccess', 'Category added'))
+            notificationService.success(isEditMode ? t('category.editSuccess', 'Category edited') : t('category.addSuccess', 'Category added'))
             onClose();
         } catch (err) {
             const axiosError = err as AxiosError<{ message?: string }>;
@@ -56,7 +60,7 @@ const CategoryFormModal: React.FC<CategoryAddModalProps> = ({
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title={t('category.addTitle', 'Add New Category')}>
+        <Modal isOpen={isOpen} onClose={onClose} title={isEditMode ? t('category.editTitle', 'Edit Category') : t('category.addTitle', 'Add New Category')}>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
                 <Input
                     label={t('common.name', "Name")}
