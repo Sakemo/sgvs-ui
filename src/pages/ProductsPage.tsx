@@ -1,12 +1,14 @@
 // React and hooks
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useDebounce from '../hooks/useDebounce';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 
 // API & Types
 import { getProducts, toggleProductStatus, deleteProductPermanently, copyProduct, type GetProductsParams } from '../api/services/product.service';
 import { getCategories } from '../api/services/category.service';
-import type { ProductResponse, EntitySummary, Page } from '../api/types/domain';
+import { getProviders } from '../api/services/provider.service';
+import type { ProductResponse } from '../api/types/domain';
 
 // Components
 import ProductsTable from '../components/features/products/ProductsTable';
@@ -19,26 +21,19 @@ import Select from '../components/common/ui/Select';
 import { LuPlus, LuSearch } from 'react-icons/lu';
 import clsx from 'clsx';
 import Pagination from '../components/common/Pagination';
-import { getProviders } from '../api/services/provider.service';
 import { useConfirmation } from '../contexts/utils/UseConfirmation';
 import { notificationService } from '../lib/notification.service';
 
 const ProductsPage: React.FC = () => {
     const { t } = useTranslation();
     const showConfirmation = useConfirmation();
-
-    // Data State
-    const [productsPage, setProductsPage] = useState<Page<ProductResponse> | null>(null);
-    const [categories, setCategories] = useState<EntitySummary[]>([]);
-    const [providers, setProviders] = useState<EntitySummary[]>([]);
+    const queryClient = useQueryClient();
 
     // UI State
-    const [isLoadingPage, setIsLoadingPage] = useState(true);
-    const [isLoadingTable, setIsLoadingTable] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [productToEdit, setProductToEdit] = useState<ProductResponse | null>(null);
     const [selectedProduct, setSelectedProduct] = useState<ProductResponse | null>(null);
-    
+
     // Filters & Sorting State
     const [filters, setFilters] = useState<Omit<GetProductsParams, 'page' | 'size'>>({
         name: '',
@@ -47,7 +42,6 @@ const ProductsPage: React.FC = () => {
     });
     const [currentPage, setCurrentPage] = useState(0);
     const debouncedNameFilter = useDebounce(filters.name, 400);
-
     const orderOptions = [
         { value: 'name_asc', label: t('product.sort.az', 'Name (A-Z)') },
         { value: 'name_desc', label: t('product.sort.za', 'Name (Z-A)') },
@@ -58,47 +52,52 @@ const ProductsPage: React.FC = () => {
         // { value: 'mostSold', label: t('product.sort.mostSold', 'Most Sold') },
     ];
 
-    //fetchdata
-    const fetchDependencies = useCallback(async () => {
-        try {
-            const [categoriesData, providersData] = await Promise.all([
-                getCategories(), getProviders()
-            ]);
-            setCategories(categoriesData);
-            setProviders(providersData);
-        } catch (err) {
-            notificationService.error(t(`errors.fetchInitialData` + err ));
-        } finally {
-            setIsLoadingPage(false);
-        }
-    }, [t]);
+    // --- QUERIES ---
+    const { data: categories = [] } = useQuery({
+        queryKey: ['categories'],
+        queryFn: getCategories,
+    });
+    const { data: providers = [] } = useQuery({
+        queryKey: ['providers'],
+        queryFn: getProviders,
+    });
 
-    const fetchProducts = useCallback(async () => {
-        setIsLoadingTable(true); 
-        try {
-            const params: GetProductsParams = {
-                ...filters,
-                name: debouncedNameFilter?.trim() || undefined,
-                page: currentPage,
-                size: 10,
-            };
-            const data = await getProducts(params);
-            setProductsPage(data);
-        } catch (err) {
-            notificationService.error(t('errors.fetchProducts' + err));
-        } finally {
-            setIsLoadingTable(false);
-        }
-    }, [filters, currentPage, debouncedNameFilter, t]);
+    const { data: productsPage, isLoading: isLoadingTable } = useQuery({
+        queryKey: ['products', { ...filters, name: debouncedNameFilter, page: currentPage }],
+        queryFn: () => getProducts({
+            ...filters,
+            name: debouncedNameFilter?.trim() || undefined,
+            page: currentPage,
+            size: 10,
+        }),
+        placeholderData: keepPreviousData,
+    })
 
-    // Effects
-    useEffect(() => {
-        fetchDependencies();
-    }, [fetchDependencies]);
-    
-    useEffect(() => {
-        fetchProducts();
-    }, [fetchProducts]);
+    // --- MUTATIONS ---
+    const deleteMutation = useMutation({
+        mutationFn: deleteProductPermanently,
+        onSuccess: () => {
+            notificationService.success(t('product.deleteSuccess'));
+            queryClient.invalidateQueries({ queryKey: ['products'] });
+        },
+        onError: () => notificationService.error(t('error.deleteProduct')),
+    });
+    const toggleStatusMutation = useMutation({
+        mutationFn: (id: number) => toggleProductStatus(id),
+        onSuccess: () => {
+            notificationService.success(t('product.statusUpdated'));
+            queryClient.invalidateQueries({ queryKey: ['products'] });
+        },
+        onError: () => notificationService.error(t('errors.toggleStatus')),
+    });
+    const copyMutation = useMutation({
+        mutationFn: copyProduct,
+        onSuccess: () => {
+            notificationService.success(t('product.copySuccess'));
+            queryClient.invalidateQueries({ queryKey: ['products'] });
+        },
+        onError: () => notificationService.error(t('errors.copyProduct')),
+    });
 
     // --- Handlers de Ação ---
     const handleFilterChange = (
@@ -108,78 +107,41 @@ const ProductsPage: React.FC = () => {
         setCurrentPage(0);
         setFilters(prev => ({ ...prev, [field]: value }));
     };
-    
     const handleOpenModal = (product: ProductResponse | null) => {
         setProductToEdit(product);
         setIsModalOpen(true);
     };
-    
-    const handleCloseModal = () => setIsModalOpen(false);
-    
+    const handleCloseModal = () => setIsModalOpen(false); 
     const handleSaveSuccess = () => {
         handleCloseModal();
-        fetchProducts();
         notificationService.success(t('product.saveSuccess', 'Product saved successfully!'))
     };
-
-    const handleDataRefresh = () => {
-        fetchDependencies();
-        fetchProducts();
-    }
-    
+    const handleDelete = (id: number) => {
+        showConfirmation({
+            title: t('product.confirmDeleteTitle'),
+            description: t('actions.confirmDeletePermanent'),
+            onConfirm: () => {
+                if (selectedProduct?.id === id) setSelectedProduct(null);
+                deleteMutation.mutate(id);
+            }
+        });
+    };
     const handleToggleStatus = async (id: number, currentStatus: boolean) => {
         const actionText = currentStatus ? t('actions.deactivate') : t('actions.activate');
         showConfirmation({
             title: t('product.confirmToggleTitle', { action: actionText }),
-            description: t('product.confirmToggleDesc', 'Are you sure you want to proceed?'),
-            confirmText: actionText,
-            onConfirm: async () => {
-                try {
-                    await toggleProductStatus(id);
-                    fetchProducts();
-                    notificationService.success(t('product.statusUpdated' + `-  ${actionText}`, `Status updated!: ${actionText}`));            
-        } catch {
-                    notificationService.error(t('errors.toggleStatus'));
-                }
-            }
+            description: t('product.confirmToggleDesc'),
+            onConfirm: () => toggleStatusMutation.mutate(id),
         });
     };
-
     const handleCopy = async (id: number) => {
         showConfirmation({
             title: t('product.confirmCopyTitle', 'Copy Product?'),
             description: t('product.confirmCopyDesc', 'This will create a new, inactive copy of the product'),
             confirmText: t('actions.copy'),
-            onConfirm: async () => {
-                try {
-                    await copyProduct(id);
-                    fetchProducts();
-                    notificationService.success(t('product.copySucess', 'Product copied with sucess!'));
-                } catch {
-                    notificationService.error(t('errors.copyProduct'));
-                }
-            }
+            onConfirm: () => copyMutation.mutate(id),
         });
     };
-
-    const handleDelete = async (id: number) => {
-        showConfirmation({
-            title: t('product.confirmDeleteTitle', 'Delete Product?'),
-            description: t('actions.confirmDeletePermanent'),
-            confirmText: t('actions.delete'),
-            onConfirm: async () => {
-                try {
-                    await deleteProductPermanently(id);
-                    if (selectedProduct?.id === id) setSelectedProduct(null);
-                    fetchProducts();
-                    notificationService.success(t('product.deleteSucess', 'Product deleted with sucess!'));
-                } catch {
-                    notificationService.error(t('errors.deleteProduct'));
-                }
-            }
-        });
-    };
-
     const handleRowClick = (product: ProductResponse) => {
         setSelectedProduct(prev => (prev?.id === product.id ? null : product));
     };
@@ -222,7 +184,7 @@ const ProductsPage: React.FC = () => {
             </Card>
 
             <div className={clsx("flex flex-col lg:flex-row", selectedProduct ? "gap-6" : "gap-0")}>
-                <div className={clsx("transition-all duration-300 ease-in-out", selectedProduct ? "lg:w-2/3" : "w-full")}>                    
+                <div className={clsx("transition-all duration-300 ease-in-out", selectedProduct ? "lg:w-2/3" : "w-full")}>
                     <ProductsTable
                         products={productsPage?.content ?? []}
                         isLoading={isLoadingTable}
@@ -254,8 +216,14 @@ const ProductsPage: React.FC = () => {
                 </div>
             </div>
             {isModalOpen && (
-                <ProductFormModal isOpen={isModalOpen} onClose={handleCloseModal} onSaveSuccess={handleSaveSuccess} productToEdit={productToEdit} categories={categories} providers={providers} onDataRefresh={handleDataRefresh}/>
-            )}
+                <ProductFormModal 
+                    isOpen={isModalOpen}
+                    onClose={handleCloseModal}
+                    onSaveSuccess={handleSaveSuccess}
+                    productToEdit={productToEdit}
+                    categories={categories}
+                    providers={providers} />
+                )}
         </div>
     );
 };

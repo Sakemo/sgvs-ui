@@ -11,10 +11,22 @@ import { ThemeProvider } from "./contexts/ThemeProvider";
 import { Toaster } from "react-hot-toast";
 import DashboardPage from "./pages/DashboardPage";
 import ReportsPage from "./pages/ReportsPage";
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5*60*1000,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 function App() {
   return (
     <BrowserRouter>
+    <QueryClientProvider client={queryClient}>
     <ThemeProvider>
       <SettingsProvider>
         <ConfirmationModalProvider>
@@ -41,7 +53,7 @@ function App() {
                   },
                 },
               }}
-            />          
+            />
             <Routes>
             <Route element={<MainLayout />}>
               <Route path="/" element={<DashboardPage />} />
@@ -56,7 +68,8 @@ function App() {
         </ConfirmationModalProvider>
       </SettingsProvider>
     </ThemeProvider>
-
+    <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
     </BrowserRouter>
   );
 }

@@ -1,39 +1,29 @@
-// src/components/features/sales/SaleFormModal.tsx
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { AxiosError } from "axios";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { LuPlus, LuTrash2 } from "react-icons/lu";
 
-// API & Types
 import { getProducts, getProductSuggestions } from "../../../api/services/product.service";
 import { getCustomers, getCustomerSuggestions } from "../../../api/services/customer.service";
 import { registerSale } from "../../../api/services/sale.service";
-import {
-  type SaleItemRequest,
-  type SaleRequest,
-  PaymentMethod,
-  UnitOfSale,
-  type ProductResponse,
-} from "../../../api/types/domain";
+import { type SaleItemRequest, PaymentMethod, UnitOfSale, type ProductResponse } from "../../../api/types/domain";
 
-// Components
 import Modal from "../../common/Modal";
 import Button from "../../common/ui/Button";
 import Input from "../../common/ui/Input";
 import Select from "../../common/ui/Select";
 import Textarea from "../../common/ui/Textarea";
 import Card from "../../common/ui/Card";
-import { LuPlus, LuTrash2 } from "react-icons/lu";
-import { formatCurrency } from "../../../utils/formatters";
-import AutocompleteInput, {
-  type AutocompleteOption,
-} from "../../common/AutoCompleteInput";
+import AutocompleteInput, { type AutocompleteOption } from "../../common/AutoCompleteInput";
 import ToggleSwitch from "../../common/ui/ToggleSwitch";
 import { notificationService } from "../../../lib/notification.service";
+import { formatCurrency } from "../../../utils/formatters";
+import useDebounce from "../../../hooks/useDebounce";
 
 interface SaleFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSaveSuccess: () => void;
 }
 
 interface FormSaleItem extends SaleItemRequest {
@@ -42,43 +32,70 @@ interface FormSaleItem extends SaleItemRequest {
   totalValue: number;
 }
 
-const SaleFormModal: React.FC<SaleFormModalProps> = ({
-  isOpen,
-  onClose,
-  onSaveSuccess,
-}) => {
+const SaleFormModal: React.FC<SaleFormModalProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
 
-  // State
   const [keepCreatingSales, setKeepCreatingSales] = useState(false);
   const [items, setItems] = useState<FormSaleItem[]>([]);
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(
-    PaymentMethod.CASH
-  );
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(PaymentMethod.CASH);
   const [description, setDescription] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [quantity, setQuantity] = useState("1");
-
-  // --- Autocomplete States ---
-  const [customerQuery, setCustomerQuery] = useState('');
-  const [productQuery, setProductQuery] = useState('');
-  
-  const [initialCustomerOptions, setInitialCustomerOptions] = useState<AutocompleteOption[]>([]);
-  const [initialProductOptions, setInitialProductOptions] = useState<AutocompleteOption[]>([]);
-  
-  const [searchedCustomerOptions, setSearchedCustomerOptions] = useState<AutocompleteOption[]>([]);
-  const [searchedProductOptions, setSearchedProductOptions] = useState<AutocompleteOption[]>([]);
-  
+  const [customerQuery, setCustomerQuery] = useState("");
+  const [productQuery, setProductQuery] = useState("");
   const [selectedCustomerOption, setSelectedCustomerOption] = useState<AutocompleteOption | null>(null);
   const [selectedProductOption, setSelectedProductOption] = useState<AutocompleteOption | null>(null);
-  
-  const [isSearching, setIsSearching] = useState({ customers: false, products: false });
   const [productDetailsCache, setProductDetailsCache] = useState<Record<number, ProductResponse>>({});
+  const debouncedProductQuery = useDebounce(productQuery, 300);
+  const debouncedCustomerQuery = useDebounce(customerQuery, 300);
 
-  const selectedProductDetails = useMemo(() => {
-    if (!selectedProductOption) return null;
-    return productDetailsCache[Number(selectedProductOption.value)];
-  }, [selectedProductOption, productDetailsCache]);
+  const { data: suggestionData, isLoading: isLoadingSuggestions } = useQuery({
+    queryKey: ['saleFormSuggestions'],
+    queryFn: () => Promise.all([getProductSuggestions(), getCustomerSuggestions()]),
+    enabled: isOpen,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: searchedProductsPage, isLoading: isSearchingProducts } = useQuery({
+    queryKey: ['products', { name: debouncedProductQuery, context: 'sale-modal' }],
+    queryFn: () => getProducts({ name: debouncedProductQuery, size: 10 }),
+    enabled: !!debouncedProductQuery,
+  });
+
+  const { data: searchedCustomers = [], isLoading: isSearchingCustomers } = useQuery({
+    queryKey: ['customers', { name: debouncedCustomerQuery, context: 'sale-modal' }],
+    queryFn: () => getCustomers({ name: debouncedCustomerQuery, isActive: true }),
+    enabled: !!debouncedCustomerQuery,
+  });
+
+  const saleMutation = useMutation({
+    mutationFn: registerSale,
+    onSuccess: () => {
+      notificationService.success(t('sale.saveSuccess', "Sale registered successfully!"));
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["sales"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ['salesGrossTotal'] });
+
+      if (keepCreatingSales) {
+        resetForm();
+      } else {
+        onClose();
+      }
+    },
+    onError: (error) => {
+      const axiosError = error as AxiosError<{ message?: string; }>;
+      notificationService.error(axiosError.response?.data?.message || t('errors.genericSave'));
+    },
+  });
+
+  const initialProductOptions = useMemo(() => suggestionData?.[0]?.map(p => ({ value: p.id, label: `${p.name} (${formatCurrency(p.salePrice)})` })) ?? [], [suggestionData]);
+  const initialCustomerOptions = useMemo(() => suggestionData?.[1]?.map(c => ({ value: c.id, label: c.name })) ?? [], [suggestionData]);
+  const searchedProductOptions = useMemo(() => searchedProductsPage?.content.map(p => ({ value: p.id, label: `${p.name} (${formatCurrency(p.salePrice)})` })) ?? [], [searchedProductsPage]);
+  const productAutocompleteOptions = productQuery ? searchedProductOptions : initialProductOptions;
+  const customerAutocompleteOptions = customerQuery ? searchedCustomers.map(c => ({ value: c.id, label: c.name })) : initialCustomerOptions;
+  const selectedProductDetails = useMemo(() => productDetailsCache[Number(selectedProductOption?.value)], [selectedProductOption, productDetailsCache]);
+  const totalSaleValue = useMemo(() => items.reduce((sum, item) => sum + item.totalValue, 0), [items]);
 
   const resetForm = useCallback(() => {
     setItems([]);
@@ -89,120 +106,47 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
     setSelectedCustomerOption(null);
     setCustomerQuery("");
     setQuantity("1");
-  }, [setCustomerQuery, setProductQuery]);
+  }, []);
+
+  useEffect(() => { if (isOpen) resetForm() }, [isOpen, resetForm]);
 
   useEffect(() => {
-      if (isOpen) {
-          setIsLoading(true);
-          resetForm();
-          
-          Promise.all([
-              getProductSuggestions(),
-              getCustomerSuggestions()
-          ]).then(([productSuggestions, customerSuggestions]) => {
-              setInitialProductOptions(productSuggestions.map(p => ({ value: p.id, label: `${p.name} (${formatCurrency(p.salePrice)})` })));
-              setInitialCustomerOptions(customerSuggestions.map(c => ({ value: c.id, label: c.name })));
-              const initialProductCache = productSuggestions.reduce((acc, p) => ({ ...acc, [p.id]: p }), {});
-              setProductDetailsCache(initialProductCache);
-          }).catch(() => {
-              notificationService.error(t('errors.fetchInitialData'));
-          }).finally(() => {
-              setIsLoading(false);
-          });
-      }
-  }, [isOpen, resetForm, t]);
-
-  // fetch customers
-  useEffect(() => {
-      if (customerQuery.length < 1) {
-          setSearchedCustomerOptions([]);
-          return;
-      }
-      setIsSearching(prev => ({ ...prev, customers: true }));
-      getCustomers({ name: customerQuery, isActive: true })
-          .then(customers => setSearchedCustomerOptions(customers.map(c => ({ value: c.id, label: c.name }))))
-          .finally(() => setIsSearching(prev => ({ ...prev, customers: false })));
-  }, [customerQuery]);
-  
-  // fetch products
-    useEffect(() => {
-        if (productQuery.length < 1) {
-            setSearchedProductOptions([]);
-            return;
-        }
-        setIsSearching(prev => ({ ...prev, products: true }));
-        getProducts({ name: productQuery, size: 10 })
-            .then(page => {
-                setSearchedProductOptions(page.content.map(p => ({ value: p.id, label: `${p.name} (${formatCurrency(p.salePrice)})` })));
-                const newProductCache = page.content.reduce((acc, p) => ({
-                  ...acc, [p.id]: p
-                }), {});
-                setProductDetailsCache(prev => ({ ...prev, ...newProductCache }));
-              })
-            .finally(() => setIsSearching(prev => ({ ...prev, products: false })));
-    }, [productQuery]);
-
-  // validation for options
-  const customerAutocompleteOptions = customerQuery ? searchedCustomerOptions : initialCustomerOptions;
-  const productAutocompleteOptions = productQuery ? searchedProductOptions : initialProductOptions;
-
-  // handlers
+    const allProducts = [...(suggestionData?.[0] ?? []), ...(searchedProductsPage?.content ?? [])];
+    if (allProducts.length > 0) {
+      const newCache = allProducts.reduce((acc, p) => ({ ...acc, [p.id]: p }), {});
+      setProductDetailsCache(prev => ({ ...prev, ...newCache }));
+    }
+  }, [suggestionData, searchedProductsPage]);
 
   const handleAddItem = () => {
     const numQuantity = parseFloat(quantity);
-    if (!selectedProductOption || isNaN(numQuantity) || numQuantity <= 0) {
+    if (!selectedProductOption || !selectedProductDetails || isNaN(numQuantity) || numQuantity <= 0) {
       notificationService.warning(t("validation.invalidQuantity"));
       return;
     }
-
-    if (!selectedProductDetails) {
-      notificationService.warning(t("validation.details"));
+    if (selectedProductDetails.managesStock && selectedProductDetails.stockQuantity < numQuantity) {
+      notificationService.warning(t("validation.insufficientStock", { available: selectedProductDetails.stockQuantity }));
       return;
     }
-
-    if (
-      selectedProductDetails.managesStock &&
-      selectedProductDetails.stockQuantity < numQuantity
-    ) {
-      notificationService.warning(
-        t("validation.insufficientStock", {
-          available: selectedProductDetails?.stockQuantity,
-        }),
-      );
-      return;
-    }
-
-    if (
-      selectedProductDetails?.unitOfSale === UnitOfSale.UNIT &&
-      !Number.isInteger(numQuantity)
-    ) {
+    if (selectedProductDetails.unitOfSale === UnitOfSale.UNIT && !Number.isInteger(numQuantity)) {
       notificationService.error(t("validation.integerQuantityRequired"));
       return;
     }
 
-    const existingItemIndex = items.findIndex(
-      (item) => item.productId === selectedProductDetails.id
-    );
+    const existingItemIndex = items.findIndex(item => item.productId === selectedProductDetails.id);
     if (existingItemIndex > -1) {
       const newItems = [...items];
       newItems[existingItemIndex].quantity += numQuantity;
-      newItems[existingItemIndex].totalValue =
-        newItems[existingItemIndex].quantity *
-        newItems[existingItemIndex].salePrice;
+      newItems[existingItemIndex].totalValue = newItems[existingItemIndex].quantity * newItems[existingItemIndex].salePrice;
       setItems(newItems);
     } else {
-      setItems((prev) => [
-        ...prev,
-        {
-          productId: selectedProductDetails.id,
-          quantity: numQuantity,
-          name: selectedProductDetails.name,
-          salePrice: selectedProductDetails.salePrice,
-          totalValue: numQuantity * selectedProductDetails.salePrice,
-          unitOfSale: selectedProductDetails.unitOfSale,
-          stockQuantity: selectedProductDetails.stockQuantity,
-        },
-      ]);
+      setItems(prev => [...prev, {
+        productId: selectedProductDetails.id,
+        quantity: numQuantity,
+        name: selectedProductDetails.name,
+        salePrice: selectedProductDetails.salePrice,
+        totalValue: numQuantity * selectedProductDetails.salePrice,
+      }]);
     }
     setSelectedProductOption(null);
     setProductQuery("");
@@ -210,83 +154,26 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
   };
 
   const handleRemoveItem = (productId: number) => {
-    setItems((prev) => prev.filter((item) => item.productId !== productId));
+    setItems(prev => prev.filter(item => item.productId !== productId));
   };
 
-  const totalSaleValue = useMemo(
-    () => items.reduce((sum, item) => sum + item.totalValue, 0),
-    [items]
-  );
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    const customerId = selectedCustomerOption
-      ? Number(selectedCustomerOption.value)
-      : undefined;
-
-    if (items.length === 0) {
-      notificationService.error(t(
-          "validation.saleItemsRequired",
-          `At least one item is required for the sale.`
-        ),
-      );
+    const customerId = selectedCustomerOption ? Number(selectedCustomerOption.value) : undefined;
+    if (items.length === 0 || (paymentMethod === PaymentMethod.ON_CREDIT && !customerId)) {
+      notificationService.error(t("validation.saleItemsRequired", "A sale must have items, and a customer if on credit."));
       return;
     }
-    if (paymentMethod === PaymentMethod.ON_CREDIT && !customerId) {
-      notificationService.error(t(
-          "validation.customerRequiredForCredit",
-          "A customer is required for ON_CREDIT sales."
-        ),
-      );
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const payload: SaleRequest = {
-        customerId,
-        paymentMethod,
-        description: description || undefined,
-        items: items.map(({ productId, quantity }) => ({
-          productId,
-          quantity,
-        })),
-      };
-
-      await registerSale(payload);
-      if (keepCreatingSales) {
-        resetForm();
-        onSaveSuccess();
-      } else {
-        onSaveSuccess();
-        onClose();
-      }
-    } catch (error) {
-      const axiosError = error as AxiosError<{
-        message?: string;
-        errors?: Record<string, string>;
-      }>;
-      const apiErrors = axiosError.response?.data?.errors;
-      if (apiErrors) {
-        notificationService.error(`${apiErrors}`);
-      } else {
-        notificationService.error(axiosError.response?.data?.message || t("errors.genericSave"),
-        );
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    saleMutation.mutate({
+      customerId,
+      paymentMethod,
+      description: description || undefined,
+      items: items.map(({ productId, quantity }) => ({ productId, quantity })),
+    });
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={t("sale.addSale", "Register Sale")}
-      className="sm:max-w-4xl"
-    >
+    <Modal isOpen={isOpen} onClose={onClose} title={t("sale.addSale", "Register Sale")} className="sm:max-w-4xl">
       <form onSubmit={handleSubmit}>
         <div className="p-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -297,31 +184,22 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
               selected={selectedCustomerOption}
               onSelect={setSelectedCustomerOption}
               onQueryChange={setCustomerQuery}
-              isLoading={isSearching.customers}
+              isLoading={isLoadingSuggestions || isSearchingCustomers}
             />
             <Select
               label={t("common.paymentMethod")}
               name="paymentMethod"
               value={paymentMethod}
-              onChange={(e) =>
-                setPaymentMethod(e.target.value as PaymentMethod)
-              }
+              onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
             >
               {Object.values(PaymentMethod).map((pm) => (
-                <option key={pm} value={pm}>
-                  {t(
-                    `paymentMethods.${pm.toLowerCase()}`,
-                    pm.replace("_", " ")
-                  )}
-                </option>
+                <option key={pm} value={pm}>{t(`paymentMethods.${pm.toLowerCase()}`, pm.replace("_", " "))}</option>
               ))}
             </Select>
           </div>
 
           <Card>
-            <h3 className="text-lg font-semibold mb-4">
-              {t("sale.addItem", "Add Item")}
-            </h3>
+            <h3 className="text-lg font-semibold mb-4">{t("sale.addItem", "Add Item")}</h3>
             <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_auto] gap-4 items-end">
               <AutocompleteInput
                 label={t("product.objectName", "Product")}
@@ -330,31 +208,18 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
                 selected={selectedProductOption}
                 onSelect={setSelectedProductOption}
                 onQueryChange={setProductQuery}
-                isLoading={isSearching.products}
+                isLoading={isLoadingSuggestions || isSearchingProducts}
               />
               <Input
                 label={t("sale.quantity", "Quantity")}
                 type="number"
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
-                step={
-                  selectedProductDetails?.unitOfSale === UnitOfSale.UNIT
-                    ? "1"
-                    : "0.01"
-                }
-                min={
-                  selectedProductDetails?.unitOfSale === UnitOfSale.UNIT
-                    ? "1"
-                    : "0.01"
-                }
+                step={selectedProductDetails?.unitOfSale === UnitOfSale.UNIT ? "1" : "0.01"}
+                min={selectedProductDetails?.unitOfSale === UnitOfSale.UNIT ? "1" : "0.01"}
                 disabled={!selectedProductOption}
               />
-              <Button
-                type="button"
-                onClick={handleAddItem}
-                disabled={!selectedProductOption}
-                iconLeft={<LuPlus />}
-              >
+              <Button type="button" onClick={handleAddItem} disabled={!selectedProductOption} iconLeft={<LuPlus />}>
                 {t("actions.add", "Add")}
               </Button>
             </div>
@@ -362,29 +227,17 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
 
           {items.length > 0 && (
             <div>
-              <h3 className="text-lg font-semibold mb-2">
-                {t("sale.itemsInSale", "Items in Sale")}
-              </h3>
+              <h3 className="text-lg font-semibold mb-2">{t("sale.itemsInSale", "Items in Sale")}</h3>
               <ul className="max-h-48 overflow-y-auto border border-border-light dark:border-border-dark rounded-md divide-y divide-border-light dark:divide-border-dark">
                 {items.map((item) => (
-                  <li
-                    key={item.productId}
-                    className="p-3 flex justify-between items-center"
-                  >
+                  <li key={item.productId} className="p-3 flex justify-between items-center">
                     <div>
                       <p className="font-medium">{item.name}</p>
                       <p className="text-xs text-text-secondary">{`${item.quantity} x ${formatCurrency(item.salePrice)}`}</p>
                     </div>
                     <div className="flex items-center gap-4">
-                      <p className="font-semibold">
-                        {formatCurrency(item.totalValue)}
-                      </p>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleRemoveItem(item.productId)}
-                      >
+                      <p className="font-semibold">{formatCurrency(item.totalValue)}</p>
+                      <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveItem(item.productId)}>
                         <LuTrash2 className="h-4 w-4 text-red-500" />
                       </Button>
                     </div>
@@ -392,12 +245,8 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
                 ))}
               </ul>
               <div className="mt-4 text-right">
-                <span className="text-text-secondary">
-                  {t("sale.totalValue", "Total")}:{" "}
-                </span>
-                <span className="text-xl font-bold">
-                  {formatCurrency(totalSaleValue)}
-                </span>
+                <span className="text-text-secondary">{t("sale.totalValue", "Total")}: </span>
+                <span className="text-xl font-bold">{formatCurrency(totalSaleValue)}</span>
               </div>
             </div>
           )}
@@ -411,21 +260,14 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
           />
         </div>
 
-        <footer className="bg-gray-50 dark:bg-card-dark/50 px-6 py-4 flex justify-end gap-2">
-          <ToggleSwitch enabled={keepCreatingSales} onChange={setKeepCreatingSales} label={t('actions.keepCreatingSales', 'Register and start new sale')} />
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={onClose}
-            disabled={isLoading}
-          >
+        <footer className="bg-gray-50 dark:bg-card-dark/50 px-6 py-4 flex justify-end items-center gap-4">
+          <div className="flex-grow">
+            <ToggleSwitch enabled={keepCreatingSales} onChange={setKeepCreatingSales} label={t("actions.keepCreatingSales", "Register and start new sale")}/>
+          </div>
+          <Button type="button" variant="secondary" onClick={onClose} disabled={saleMutation.isPending}>
             {t("actions.cancel")}
           </Button>
-          <Button
-            type="submit"
-            isLoading={isLoading}
-            disabled={items.length === 0}
-          >
+          <Button type="submit" isLoading={saleMutation.isPending} disabled={items.length === 0 || saleMutation.isPending}>
             {t("sale.registerSale", "Register Sale")}
           </Button>
         </footer>
