@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
@@ -10,35 +10,24 @@ import {
   LuDollarSign,
   LuSettings,
   LuChartBar,
-  LuChevronDown,
-  LuChevronRight
 } from 'react-icons/lu';
 import { type IconType } from 'react-icons';
 import ThemeToggleButton from './common/ThemeToggleButton';
 
 interface NavItem {
   path: string;
-  labelKey: string; 
+  labelKey: string;
   defaultLabel: string;
   icon: IconType;
 }
 
 interface NavGroup {
   groupLabel: string;
-  icon?: IconType;
   children: NavItem[];
 }
 
 const Sidebar: React.FC = () => {
   const { t } = useTranslation();
-  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
-
-  const toggleGroup = (groupLabel: string) => {
-    setOpenGroups((prev) => ({
-      ...prev,
-      [groupLabel]: !prev[groupLabel],
-    }));
-  };
 
   const mainNavItems: (NavItem | NavGroup)[] = [
     {
@@ -70,12 +59,8 @@ const Sidebar: React.FC = () => {
 
   const linkBaseClasses = 'flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium transition-colors duration-150';
   const linkInactiveClasses = 'text-text-secondary hover:bg-gray-100 hover:text-text-primary dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white';
-  const linkActiveClasses = 'bg-brand-primary/10 text-brand-primary dark:bg-brand-accent/10 dark:text-brand-accent font-semibold';
+  const linkActiveClasses = 'text-brand-primary bg-brand-primary/10  dark:bg-brand-primary/10 dark:text-brand-accent font-semibold';
 
-  const childLinkBaseClasses = 'flex items-center gap-2 pr-3 py-2 rounded-btn text-sm transition-colors duration-150';
-  const childLinkInactiveClasses = 'text-text-secondary hover:bg-gray-100 hover:text-text-primary dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white';
-  const childLinkActiveClasses = 'bg-brand-primary/10 text-brand-primary dark:bg-brand-accent/10 dark:text-brand-accent font-semibold';
-  
   return (
     <aside className="w-64 flex-shrink-0 bg-card-light dark:bg-card-dark border-r border-border-light dark:border-border-dark flex flex-col">
       <div className="p-4 border-b border-border-light dark:border-border-dark">
@@ -84,40 +69,31 @@ const Sidebar: React.FC = () => {
         </h1>
       </div>
       
-      <nav className="flex-1 p-2 space-y-1">
-        {mainNavItems.map((item) =>
+      <nav className="flex-1 p-4 space-y-4">
+        {mainNavItems.map((item) => (
           'groupLabel' in item ? (
-            <div key={`group-${item.groupLabel}`}>
-              <div
-                onClick={() => toggleGroup(item.groupLabel)}
-                className={clsx(
-                  linkBaseClasses,
-                  'cursor-pointer',
-                  openGroups[item.groupLabel] ? linkActiveClasses : linkInactiveClasses
-                )}
-              >
-                <span className = "text-base">{item.groupLabel}</span>
-                {openGroups[item.groupLabel] ? (
-                  <LuChevronDown className="ml-auto h-4 w-4 opacity-60" aria-hidden="true" />
-                ) : (
-                  <LuChevronRight className="ml-auto h-4 w-4 opacity-60" aria-hidden="true"/>
-                )}
+            <div key={item.groupLabel}>
+              <div className="px-3 text-xs uppercase text-text-secondary dark:text-gray-400 font-semibold mb-1">
+                {item.groupLabel}
               </div>
-
-              {openGroups[item.groupLabel] &&
-                item.children.map((child) => (
+              <div className="space-y-1">
+                {item.children.map((child) => (
                   <NavLink
                     key={child.path}
                     to={child.path}
                     end={child.path === '/'}
                     className={({ isActive }) =>
-                      clsx(childLinkBaseClasses, isActive ? childLinkActiveClasses : childLinkInactiveClasses)
+                      clsx(
+                        linkBaseClasses,
+                        isActive ? linkActiveClasses : linkInactiveClasses
+                      )
                     }
                   >
                     <child.icon className="h-5 w-5 flex-shrink-0" />
-                    <span className="text-sm">{t(child.labelKey, child.defaultLabel)}</span>
+                    <span>{t(child.labelKey, child.defaultLabel)}</span>
                   </NavLink>
                 ))}
+              </div>
             </div>
           ) : (
             <NavLink
@@ -132,14 +108,13 @@ const Sidebar: React.FC = () => {
               <span>{t(item.labelKey, item.defaultLabel)}</span>
             </NavLink>
           )
-        )}
+        ))}
       </nav>
       
-      <div className="p-2 border-t border-border-light dark:border-border-dark">
-        <div className='flex items-center justify-between mt-2'>
-          <ThemeToggleButton />
-        </div>
-        <NavLink
+      <div className="p-4 border-t border-border-light dark:border-border-dark">
+        <ThemeToggleButton />
+        <div className="mt-4">
+          <NavLink
             to={footerNavItem.path}
             className={({ isActive }) =>
               clsx(linkBaseClasses, isActive ? linkActiveClasses : linkInactiveClasses)
@@ -147,7 +122,8 @@ const Sidebar: React.FC = () => {
           >
             <footerNavItem.icon className="h-5 w-5 flex-shrink-0" />
             <span>{t(footerNavItem.labelKey, footerNavItem.defaultLabel)}</span>
-        </NavLink>
+          </NavLink>
+        </div>
       </div>
     </aside>
   );
