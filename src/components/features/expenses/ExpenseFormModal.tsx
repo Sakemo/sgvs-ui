@@ -107,10 +107,25 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
   // -- product value get --
   const selectedProductDetails = useMemo(() => {
     if (!selectedProduct) return null;
-    return productOptions.find(p => p.id === selectedProduct.value);
-  }, [selectedProduct, productOptions])
+    return productOptions.find((p) => p.id === selectedProduct.value);
+  }, [selectedProduct, productOptions]);
+
+  const restockTotalValue = useMemo(() => {
+    return restockItems.reduce((total, item) => {
+      return total + item.quantity * item.unitCostPrice;
+    }, 0);
+  }, [restockItems]);
 
   // -- effects --
+  useEffect(() => {
+    if (isRestocking) {
+      setFormData((prev) => ({
+        ...prev,
+        value: restockTotalValue,
+      }));
+    }
+  }, [isRestocking, restockTotalValue]);
+
   useEffect(() => {
     if (debouncedProductQuery.length < 1) {
       setProductOptions([]);
@@ -118,19 +133,17 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
     }
     setIsSearchingProducts(true);
     getProducts({ name: debouncedProductQuery, size: 10 })
-      .then((page) =>
-        setProductOptions(page.content)
-      )
+      .then((page) => setProductOptions(page.content))
       .finally(() => setIsSearchingProducts(false));
   }, [debouncedProductQuery]);
 
   useEffect(() => {
-    if(selectedProductDetails && selectedProductDetails.costPrice) {
+    if (selectedProductDetails && selectedProductDetails.costPrice) {
       setUnitCostPrice(String(selectedProductDetails.costPrice));
     } else {
-      setUnitCostPrice('');
+      setUnitCostPrice("");
     }
-  }, [selectedProductDetails])
+  }, [selectedProductDetails]);
 
   useEffect(() => {
     if (isOpen) {
@@ -182,9 +195,22 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
     setIsLoading(true);
 
     try {
+      const totalValue = isRestocking ? restockTotalValue : formData.value;
+
+      if (!formData.name?.trim()) {
+        notificationService.error(t("validation.nameRequired"));
+        setIsLoading(false);
+        return;
+      }
+      if (totalValue === undefined || totalValue <= 0) {
+        notificationService.error(t("validation.valueRequired"));
+        setIsLoading(false);
+        return;
+      }
+
       const payload: ExpenseRequest = {
         name: formData.name || "",
-        value: isRestocking ? 0 : formData.value,
+        value: totalValue,
         expenseDate: new Date(formData.expenseDate!).toISOString(),
         expenseType: formData.expenseType!,
         paymentMethod: formData.paymentMethod!,
@@ -313,11 +339,15 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
                         variant="ghost"
                         size="icon"
                         onClick={() => handleRemoveItem(item.productId)}
-                        iconLeft={<LuTrash2/>}
+                        iconLeft={<LuTrash2 />}
                       />
                     </div>
                   </li>
                 ))}
+                  <div className="mt-4 pt-4 border-t border-border-light dark:border-border-dark flex justify-between items-center font-bold">
+        <span>{t('common.total', 'Total')}</span>
+        <span>{formatCurrency(restockTotalValue)}</span>
+    </div>
               </ul>
             )}
           </Card>
