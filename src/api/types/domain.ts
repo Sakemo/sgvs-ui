@@ -14,6 +14,9 @@ export type PaymentMethod = typeof PaymentMethod[keyof typeof PaymentMethod];
 export const ExpenseType = { RESTOCKING: "RESTOCKING", PERSONAL: "PERSONAL", BUSINESS: "BUSINESS", INVESTMENT: "INVESTMENT", OTHERS: "OTHERS" } as const;
 export type ExpenseType = typeof ExpenseType[keyof typeof ExpenseType];
 
+export const PaymentStatus = { PENDING: 'PENDING', PAID: 'PAID', NOT_APPLICABLE: 'NOT_APPLICABLE', }
+export type PaymentStatus = typeof PaymentStatus[keyof typeof PaymentStatus];
+
 // =================================================================
 // GENERIC & SHARED INTERFACES
 // =================================================================
@@ -155,7 +158,7 @@ export interface SaleRequest {
 
 export interface SaleItemResponse {
   id: number;
-  product: EntitySummary; // Reutilizando o tipo genérico
+  product: EntitySummary;
   quantity: number;
   unitPrice: number;
   totalValue: number;
@@ -166,6 +169,7 @@ export interface SaleResponse {
   totalValue: number;
   customer: EntitySummary | null;
   paymentMethod: PaymentMethod;
+  paymentStatus: PaymentStatus;
   description: string | null;
   saleDate: string;
   items: SaleItemResponse[];
@@ -208,6 +212,14 @@ export interface AbcAnalysisRow {
   percentageOfTotalRevenue: number;
   cumulativePercentage: number;
   abcClass: 'A' | 'B' | 'C';
+}
+
+// -- Payments ---
+export interface PaymentRequest {
+  customerId: number;
+  saleIds: number[];
+  paymentMethod: PaymentMethod;
+  amountPaid: number;
 }
 
 // --- Category ---

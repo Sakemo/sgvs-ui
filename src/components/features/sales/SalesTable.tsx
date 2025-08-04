@@ -2,13 +2,13 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
-import type { SaleResponse } from '../../../api/types/domain';
+import { PaymentMethod, PaymentStatus, type SaleResponse } from '../../../api/types/domain';
 import { formatCurrency, formatDate } from '../../../utils/formatters';
 
 import Table, { type TableColumn } from '../../common/Table';
 import Badge from '../../common/ui/Badge';
 import Button from '../../common/ui/Button';
-import { LuEye, LuTrash2 } from 'react-icons/lu';
+import { LuCircleDollarSign, LuEye, LuTrash2 } from 'react-icons/lu';
 
 export interface GroupHeader {
   isGroupHeader: true;
@@ -23,11 +23,12 @@ interface SalesTableProps {
     isLoading?: boolean;
     onViewDetails: (sale: SaleResponse) => void;
     onDelete: (id: number) => void;
+    onSettlePayment: (sale: SaleResponse) => void;
     selectedRowId?: number | null;
 }
 
 const SalesTable: React.FC<SalesTableProps> = ({
-    sales, isLoading, onViewDetails, onDelete, selectedRowId
+    sales, isLoading, onViewDetails, onDelete, onSettlePayment, selectedRowId
 }) => {
     const { t } = useTranslation();
 
@@ -36,10 +37,22 @@ const SalesTable: React.FC<SalesTableProps> = ({
         { header: t('common.items', "Items"), accessor: (row) => row.items.length, className: 'text-center' },
         { header: t('common.client'), accessor: (row) => row.customer?.name || t('sale.anonymous', 'Anonymous') },
         { header: t('common.paymentMethod'), accessor: (row) => (
-            <Badge variant="subtle" colorScheme="gray">
-                {t(`paymentMethods.${row.paymentMethod.toLowerCase()}`, row.paymentMethod.replace('_', ' '))}
-            </Badge>
-        ) }, 
+            <div className='flex"'>
+                <Badge variant="subtle" colorScheme="gray" className='flex items-center justify-between'>
+                    {t(`paymentMethods.${row.paymentMethod.toLowerCase()}`, row.paymentMethod.replace('_', ' '))}
+                                {row.paymentMethod === PaymentMethod.ON_CREDIT && (
+                    <Badge 
+                    variant="outline" 
+                    colorScheme={row.paymentStatus === PaymentStatus.PAID ? 'green' : 'yellow'}
+                    className=""
+                    >
+                    {t(`paymentStatus.${row.paymentStatus.toLowerCase()}`, row.paymentStatus)}
+                    </Badge>
+                )}
+                </Badge>
+
+            </div>
+        ) },
         {
             header: t('sale.totalValue', 'Total'),
             accessor: (row) => formatCurrency(row.totalValue),
@@ -49,6 +62,19 @@ const SalesTable: React.FC<SalesTableProps> = ({
             header: t('common.actions', 'Actions'),
             accessor: (row) => (
                 <div className="flex justify-end gap-1">
+                    {row.paymentMethod === 'ON_CREDIT' && row.paymentStatus === 'PENDING' && (
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onSettlePayment(row);
+                            }}
+                            title={t('actions.settlePayment', 'Settle Payment')}
+                            className='text-green-600 hover:text-green-700'
+                            iconLeft={<LuCircleDollarSign />}
+                        />
+                    )}
                     <Button variant="ghost" size="icon" title={t('common.details')} onClick={(e) => { e.stopPropagation(); onViewDetails(row); }}>
                         <LuEye className="h-4 w-4" />
                     </Button>

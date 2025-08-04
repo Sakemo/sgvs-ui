@@ -25,12 +25,18 @@ import useDebounce from '../hooks/useDebounce';
 import AutocompleteInput from '../components/common/AutoCompleteInput';
 import { notificationService } from '../lib/notification.service';
 import { formatDate } from '../utils/formatters';
+import { useConfirmation } from '../contexts/utils/UseConfirmation';
+import { recordPayment } from '../api/services/payment.service';
+import PaySaleModal from '../components/features/sales/PaySaleModal';
 
 const SalesPage: React.FC = () => {
   const { t } = useTranslation();
   
+  const showConfirmation = useConfirmation();
+
   // Data State
   const [salesPage, setSalesPage] = useState<Page<SaleResponse> | null>(null);
+  const [saleToPay, setSaleToPay] = useState<SaleResponse | null>(null);
   const [grossTotal, setGrossTotal] = useState(0);
   const [netProfit, setNetProfit] = useState(0);
   const [totalsByPaymentMethod, setTotalsByPaymentMethod] = useState<TotalByPaymentMethod[]>([]);
@@ -61,6 +67,28 @@ const SalesPage: React.FC = () => {
   
   const debouncedCustomerQuery = useDebounce(customerQuery, 400);
   const debouncedProductQuery = useDebounce(productQuery, 400);
+
+  const handleSettlePayment = (sale: SaleResponse) => {
+    setSaleToPay(sale);
+  };
+
+
+  const handleConfirmPayment = async (saleId: number, customerId: number, amount: number, paymentMethod: PaymentMethod) => {
+    try {
+      await recordPayment({
+        customerId: customerId,
+        saleIds: [saleId],
+        amountPaid: amount,
+        paymentMethod: paymentMethod,
+      });
+      notificationService.success(t('payment.success', 'Payment recorded successfully!'));
+      setSaleToPay(null); // Fecha o modal
+      fetchData(); // Atualiza os dados
+    } catch (err) {
+      notificationService.error(t('errors.recordPayment' + err, 'Failed to record payment.'));
+    }
+  };
+
 
   const processedSales: SaleTableRow[] = useMemo(() => {
         const sales = salesPage?.content ?? [];
@@ -275,6 +303,7 @@ const SalesPage: React.FC = () => {
         isLoading={loading}
         onViewDetails={setSaleToView}
         onDelete={handleDelete}
+        onSettlePayment={handleSettlePayment}
       />
 
       {salesPage && salesPage.totalPages > 1 && (
@@ -283,6 +312,14 @@ const SalesPage: React.FC = () => {
 
       <SaleFormModal isOpen={isFormModalOpen} onClose={() => setIsFormModalOpen(false)} onSaveSuccess={fetchData} />
       <SaleDetailsModal isOpen={!!saleToView} onClose={() => setSaleToView(null)} sale={saleToView} />
+      {saleToPay && (
+        <PaySaleModal
+          isOpen={!!saleToPay}
+          onClose={() => setSaleToPay(null)}
+          sale={saleToPay}
+          onConfirm={handleConfirmPayment}
+        />
+      )}    
     </div>
   );
 };
