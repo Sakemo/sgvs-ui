@@ -5,7 +5,7 @@ import Badge from "../../common/ui/Badge";
 import clsx from "clsx";
 import { formatCurrency } from "../../../utils/formatters";
 import Button from "../../common/ui/Button";
-import { LuEye, LuPencil, LuPower, LuPowerOff, LuTrash2 } from "react-icons/lu";
+import { LuCircleDollarSign, LuEye, LuPencil, LuPower, LuPowerOff, LuTrash2 } from "react-icons/lu";
 
 interface CustomerCardProps {
     customer: CustomerResponse;
@@ -13,10 +13,11 @@ interface CustomerCardProps {
     onToggleStatus: (id: number, currentStatus: boolean) => void;
     onViewDetails: (customer: CustomerResponse) => void;
     onDelete: (id: number) => void;
+    onSettleDebt: (customer: CustomerResponse) => void;
 }
 
 const CustomerCard: React.FC<CustomerCardProps> = ({
-    customer, onEdit, onToggleStatus, onDelete, onViewDetails
+    customer, onEdit, onToggleStatus, onDelete, onViewDetails, onSettleDebt
 }) => {
     const { t } = useTranslation();
     const hasDebt = customer.debtBalance > 0;
@@ -67,6 +68,12 @@ const CustomerCard: React.FC<CustomerCardProps> = ({
 
             <footer className="mt-4 pt-4 border-t border-border-light dark:border-border-dark flex justify-end items-center gap-1">
                 <Button variant="ghost" size="icon" title={t('common.details', 'Details')} onClick={() => onViewDetails(customer)} iconLeft={<LuEye/>}/>
+                {hasDebt && (
+                    <Button variant="ghost" size="icon" title={t('actions.settleDebt', 'Settle Debt')} onClick={() => onSettleDebt(customer)}
+                    className="text-green-600 hover:text-green-700" iconLeft={<LuCircleDollarSign />}>
+                        
+                    </Button>
+                )}
                 <Button variant="ghost" size="icon" title={t('actions.edit')} onClick={() => onEdit(customer)} iconLeft={<LuPencil />} /> 
                 <Button variant="ghost" size="icon" title={customer.active ? t('actions.deactivate') : t('actions.activate')} onClick={() => onToggleStatus(customer.id, customer.active)} className={customer.active ? "text-yellow-600 hover:text-yellow-700" : "text-green-600 hover:text-green-700"} disabled={hasDebt && customer.active} iconLeft={customer.active ? <LuPowerOff /> : <LuPower />} />
                 <Button variant="ghost" size="icon" title={t('actions.delete')} className="text-red-600 hover:text-red-700" onClick={() => onDelete(customer.id)} iconLeft={<LuTrash2 />} />

@@ -2,7 +2,7 @@ import { cva } from "class-variance-authority";
 
 export const badgeVariants = cva(
     // Estilos base
-    'inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+    'inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 gap-2',
     {
         variants: {
             variant: {
@@ -10,7 +10,7 @@ export const badgeVariants = cva(
                 secondary: 'border-transparent bg-brand-secondary-accent text-white',
                 destructive: 'border-transparent bg-red-600 text-white',
                 outline: 'text-text-primary dark:text-gray-100',
-                subtle: 'border-transparent',
+                subtle: 'border-transparent px-2 flex items-center justify-between',
             },
             colorScheme: {
                 gray:      'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200',

@@ -1,6 +1,6 @@
 import apiClient from "../../lib/apiClient";
 import type { Page, PaymentMethod, SaleRequest, SaleResponse } from "../types/domain";
-
+import { PaymentStatus } from "../types/domain";
 export interface GetSalesParams {
     startDate?: string;
     endDate?: string;
@@ -74,4 +74,16 @@ export const getSalesSummary = async (params: GetSalesParams):Promise<GroupSumma
     const response = await apiClient
     .get<GroupSummary[]>('/sales/summary-by-group', { params: queryParams });
     return response.data ?? [];
+};
+
+export const getPendingSalesByCustomer = async (customerId: number): Promise<SaleResponse[]> => {
+    const params = {
+        customerId,
+        paymentMethod: 'ON_CREDIT',
+        paymentStatus: PaymentStatus.PENDING,
+        size: 1000,
+    };
+
+    const response = await apiClient.get<Page<SaleResponse>>('/sales', { params });
+    return response.data.content;
 };
