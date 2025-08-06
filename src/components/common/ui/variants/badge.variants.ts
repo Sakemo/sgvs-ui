@@ -18,7 +18,9 @@ export const badgeVariants = cva(
                 blue:      'bg-brand-primary text-white dark:bg-blue-700',
                 yellow:    'bg-yellow-500 text-white dark:bg-yellow-600',
                 red:       'bg-red-500 text-white dark:bg-red-600',
-                purple:    'bg-purple-800/80 text-purple-200 dark:bg-purple-900/50'
+                purple:    'bg-purple-800/80 text-purple-200 dark:bg-purple-900/50',
+                orange:    'bg-purple-800/80 text-purple-200 dark:bg-purple-900/50'
+
             },
         },
         compoundVariants: [
