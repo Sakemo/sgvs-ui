@@ -2,13 +2,21 @@ import { format, formatDistanceToNowStrict, isToday, isYesterday, parseISO, type
 import { ptBR, enUS } from 'date-fns/locale';
 import i18n from '../i18n';
 
-export type ProfitMarginStatus = 'high' | 'medium' | 'low' | 'loss' | 'n/a'
+export type ProfitMarginStatus = 'abusive' | 'healthy' | 'warning' | 'low' | 'loss' | 'no_cost' | 'zero';
+export type BusinessField = 'COMMERCE' | 'INDUSTRY' | 'SERVICES' | 'OTHERS';
 
 export interface ProfitMarginResult {
   percentage: number | null;
   formatted: string;
   status: ProfitMarginStatus;
 }
+
+const MARGIN_BENCHMARKS: Record<BusinessField, [number, number, number]> = {
+  COMMERCE: [10, 20, 30],
+  INDUSTRY: [8, 12, 25],
+  SERVICES: [20, 30, 50],
+  OTHERS: [15, 25, 40]
+};
 
 /**
  * Calculates the profit margin percentage for a product.
@@ -19,19 +27,37 @@ export interface ProfitMarginResult {
  */
 export const calculateProfitMargin = (
   salePrice: number | null | undefined,
-  costPrice: number | null | undefined
+  costPrice: number | null | undefined,
+  businessField: BusinessField = 'COMMERCE'
 ): ProfitMarginResult => {
   if (costPrice === null || costPrice === undefined || costPrice <= 0 || salePrice === null || salePrice === undefined) {
-    return { percentage: null, formatted: '—', status: 'n/a' };
+    return { percentage: null, formatted: '-', status: 'no_cost' };
+  }
+
+  if (salePrice === null || salePrice == undefined || salePrice <= 0) {
+    return { percentage: null, formatted: '-', status: 'zero' };
+  }
+
+  if (costPrice > salePrice) {
+    const loss = salePrice - costPrice;
+    const lossMargin = (loss / salePrice) * 100;
+    return {
+      percentage: lossMargin,
+      formatted: `${lossMargin.toFixed(1)}%`,
+      status: 'loss',
+    };
   }
 
   const profit = salePrice - costPrice;
-  const margin = (profit / costPrice) * 100;
+  const margin = (profit / salePrice) * 100;
   
-  let status: ProfitMarginStatus = 'loss';
-  if (margin > 50) status = 'high';
-  else if (margin > 20) status = 'medium';
-  else if (margin >= 0) status = 'low';
+  const [lowThreshold, healthyThreshold, abusiveThreshold] = MARGIN_BENCHMARKS[businessField] || MARGIN_BENCHMARKS.OTHERS;
+
+  let status: ProfitMarginStatus;
+  if (margin > abusiveThreshold) status = 'abusive';
+  else if (margin >= healthyThreshold) status = 'healthy';
+  else if (margin >= lowThreshold) status = 'warning';
+  else status = 'low';
 
   return {
     percentage: margin,

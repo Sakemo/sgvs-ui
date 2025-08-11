@@ -214,6 +214,18 @@ export interface AbcAnalysisRow {
   abcClass: 'A' | 'B' | 'C';
 }
 
+export interface FinancialSummaryResponse {
+  totalRevenue: number;
+  totalCostOfGoods: number;
+  totalExpenses: number;
+  grossProfit: number;
+  netProfit: number;
+  operatingProfit: number;
+  grossMargin: number;
+  netMargin: number;
+  operatingMargin: number;
+}
+
 // -- Payments ---
 export interface PaymentRequest {
   customerId: number;

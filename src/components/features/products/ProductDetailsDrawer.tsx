@@ -6,6 +6,7 @@ import { LuPencil, LuX } from "react-icons/lu";
 import Badge from "../../common/ui/Badge";
 import { calculateProfitMargin, formatCurrency, formatDate } from "../../../utils/formatters";
 import { marginBadgeColors } from "./utils/MarginBadgeColors";
+import PricingAssistant from "./utils/PricingAssistant";
 
 interface ProductDetailsDrawerProps {
     product: ProductResponse;
@@ -54,6 +55,7 @@ const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({
 
       {/* Corpo do Drawer com scroll */}
       <div className="flex-grow overflow-y-auto p-4">
+        <PricingAssistant status={margin.status} />
         <dl className="divide-y divide-border-light dark:divide-border-dark">
           <DetailRow label={t('common.status', 'Status')} value={
               <Badge variant="outline" colorScheme={product.active ? 'green' : 'gray'}>
@@ -73,7 +75,7 @@ const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({
           <DetailRow label={t('common.stock', 'Stock')} value={`${product.stockQuantity} ${product.unitOfSale.toLowerCase()}`} />
           <DetailRow label={t('product.unitOfSale', 'Unit of Sale')} value={
               <span className="capitalize">{product.unitOfSale.toLowerCase()}</span>
-            } 
+            }
           />
           <DetailRow label={t('product.barcode', 'Barcode')} value={product.barcode} />
           <DetailRow label={t('product.provider', 'Provider')} value={product.provider?.name} />

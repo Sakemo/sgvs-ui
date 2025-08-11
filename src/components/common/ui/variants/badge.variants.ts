@@ -17,7 +17,11 @@ export const badgeVariants = cva(
                 green:     'bg-green-600 text-white dark:bg-green-700',
                 blue:      'bg-brand-primary text-white dark:bg-blue-700',
                 yellow:    'bg-yellow-500 text-white dark:bg-yellow-600',
-                red:       'bg-red-500 text-white dark:bg-red-600'
+                red:       'bg-red-500 text-white dark:bg-red-600',
+                purple:    'bg-purple-800/80 text-purple-200 dark:bg-purple-900/50',
+                orange:    'bg-purple-800/80 text-purple-200 dark:bg-purple-900/50',
+                emerald:   'bg-emerald-600 text-white dark:bg-emerald-700',
+                sky:       'bg-sky-500 text-white dark:bg-sky-600',  
             },
         },
         compoundVariants: [
@@ -29,6 +33,8 @@ export const badgeVariants = cva(
             { variant: 'outline', colorScheme: 'green', className: 'text-green-600 border-green-300 dark:text-green-400 dark:border-green-800' },
             { variant: 'outline', colorScheme: 'yellow', className: 'text-yellow-600 border-yellow-300 dark:text-yellow-400 dark:border-yellow-800' },
             { variant: 'outline', colorScheme: 'blue', className: 'text-blue-600 border-blue-300 dark:text-blue-400 dark:border-blue-800' },
+            { variant: 'subtle', colorScheme: 'emerald', className: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300' },
+            { variant: 'subtle', colorScheme: 'sky', className: 'bg-sky-100 text-sky-800 dark:bg-sky-900/50 dark:text-sky-300' },
         ],
         defaultVariants: {
             variant: 'default',

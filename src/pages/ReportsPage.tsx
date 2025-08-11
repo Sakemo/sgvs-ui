@@ -4,19 +4,22 @@ import { useTranslation } from 'react-i18next';
 import { startOfMonth, endOfMonth, startOfYear, endOfYear, subDays } from 'date-fns';
 
 // API & Types
-import { getAbcAnalysisReport } from '../api/services/report.service';
-import type { AbcAnalysisRow } from '../api/types/domain';
+import { getAbcAnalysisReport, getFinancialSummaryReport } from '../api/services/report.service';
+import { type FinancialSummaryResponse, type AbcAnalysisRow } from '../api/types/domain';
 
 // Components
 import Card from '../components/common/ui/Card';
 import AbcAnalysisTable from '../components/features/reports/AbcAnalysisTable';
 import DateFilterDropdown, { type DateFilterOption } from '../components/common/DateFilterDropdown';
 import { notificationService } from '../lib/notification.service';
+import FinancialSummaryCard from '../components/features/reports/FinancialSummaryCard';
+import AbcAnalysisSummary from '../components/features/reports/AbcAnalysisSummary';
 
 const ReportsPage: React.FC = () => {
   const { t } = useTranslation();
   
-  const [reportData, setReportData] = useState<AbcAnalysisRow[]>([]);
+  const [abcData, setAbcData] = useState<AbcAnalysisRow[]>([]);
+  const [summaryData, setSummaryData] = useState<FinancialSummaryResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   
   // Filtros de data
@@ -54,31 +57,40 @@ const ReportsPage: React.FC = () => {
     setEndDate(end);
   };
 
-  const fetchReport = useCallback(async () => {
+  const fetchReports = useCallback(async () => {
     setIsLoading(true);
     try {
       const params = {
         startDate: new Date(startDate.setHours(0, 0, 0, 0)).toISOString(),
         endDate: new Date(endDate.setHours(23, 59, 59, 999)).toISOString()
       };
-      const data = await getAbcAnalysisReport(params);
-      setReportData(data);
+      
+      // --- Lógica de Fetch Atualizada ---
+      const [abcReport, summaryReport] = await Promise.all([
+        getAbcAnalysisReport(params),
+        getFinancialSummaryReport(params)
+      ]);
+      
+      setAbcData(abcReport);
+      setSummaryData(summaryReport);
     } catch (error) {
-      notificationService.error(t('errors.fetchReport' + error, 'Failed to generate report.'));
+      notificationService.error(t('errors.fetchReport' + error, 'Failed to generate reports.'));
     } finally {
       setIsLoading(false);
     }
   }, [startDate, endDate, t]);
 
   useEffect(() => {
-    fetchReport();
-  }, [fetchReport]);
+    fetchReports();
+  }, [fetchReports]);
 
   return (
     <div className="space-y-6">
       <header>
         <h1 className="text-2xl font-semibold dark:text-gray-200">{t('reports.pageTitle', 'Reports')}</h1>
       </header>
+
+      <FinancialSummaryCard data={summaryData} isLoading={isLoading} />
 
       <Card>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -94,8 +106,12 @@ const ReportsPage: React.FC = () => {
                 />
             </div>
         </div>
+        <div className='mt-6'>
+          <AbcAnalysisSummary data={abcData} isLoading={isLoading} />
+        </div>
+
         <div className="mt-6">
-            <AbcAnalysisTable data={reportData} isLoading={isLoading} />
+            <AbcAnalysisTable data={abcData} isLoading={isLoading} />
         </div>
       </Card>
     </div>
