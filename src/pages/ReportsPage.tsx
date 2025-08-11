@@ -13,6 +13,7 @@ import AbcAnalysisTable from '../components/features/reports/AbcAnalysisTable';
 import DateFilterDropdown, { type DateFilterOption } from '../components/common/DateFilterDropdown';
 import { notificationService } from '../lib/notification.service';
 import FinancialSummaryCard from '../components/features/reports/FinancialSummaryCard';
+import AbcAnalysisSummary from '../components/features/reports/AbcAnalysisSummary';
 
 const ReportsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -105,6 +106,10 @@ const ReportsPage: React.FC = () => {
                 />
             </div>
         </div>
+        <div className='mt-6'>
+          <AbcAnalysisSummary data={abcData} isLoading={isLoading} />
+        </div>
+
         <div className="mt-6">
             <AbcAnalysisTable data={abcData} isLoading={isLoading} />
         </div>
