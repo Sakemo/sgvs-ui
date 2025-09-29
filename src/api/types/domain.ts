@@ -18,6 +18,24 @@ export const PaymentStatus = { PENDING: 'PENDING', PAID: 'PAID', NOT_APPLICABLE:
 export type PaymentStatus = typeof PaymentStatus[keyof typeof PaymentStatus];
 
 // =================================================================
+// AUTHENTICATION DOMAIN
+// =================================================================
+
+export interface RegisterRequest {
+  username: string;
+  password?: string; // Password is optional here because we might handle confirmation separately
+}
+
+export interface LoginRequest {
+  username: string;
+  password?: string;
+}
+
+export interface AuthResponse {
+  token: string;
+}
+
+// =================================================================
 // GENERIC & SHARED INTERFACES
 // =================================================================
 
