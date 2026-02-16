@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import {
   createProduct,
   updateProduct,
+  calculateSuggestedPrice,
 } from "../../../api/services/product.service";
 import type {
   ProductRequest,
@@ -19,7 +20,7 @@ import Input from "../../common/ui/Input";
 import Select from "../../common/ui/Select";
 import Textarea from "../../common/ui/Textarea";
 import { AxiosError } from "axios";
-import { LuPencil, LuPlus, LuTrash } from "react-icons/lu";
+import { LuPencil, LuPlus, LuTrash, LuCalculator } from "react-icons/lu";
 import ProviderAddModal from "../providers/ProviderAddModal";
 import AdvancedOptions from "../../common/AdvancedOptions";
 import { useSettings } from "../../../contexts/utils/UseSettings";
@@ -55,21 +56,22 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
   const isEditMode = !!productToEdit;
 
   const [categoryQuery, setCategoryQuery] = useState("");
-  const [categoryOptions, setCategoryOptions] = useState<EntitySummary[]>([]);
   const [isSearchingCategories, setIsSearchingCategories] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
-  const [categoryToEdit, setCategoryToEdit] = useState<EntitySummary | null>(
-    null
-  );
+  const [categoryToEdit, setCategoryToEdit] = useState<EntitySummary | null>(null);
   const [isProviderModalOpen, setIsProviderModalOpen] = useState(false);
   const [keepAdding, setKeepAdding] = useState(false);
   const nameInputRef = useRef<HTMLInputElement>(null);
 
+  const [isCalculating, setIsCalculating] = useState(false);
+  // Estado do Switch
+  const [isSmartPricing, setIsSmartPricing] = useState(true);
+
+  // --- Handlers Auxiliares ---
   const handleDeleteCategory = (categoryId: number) => {
     showConfirmation({
       title: "Delete Category?",
-      description:
-        "Are you sure? This will affect all products in this category.",
+      description: "Are you sure? This will affect all products in this category.",
       onConfirm: async () => {
         try {
           await deleteCategory(categoryId);
@@ -111,6 +113,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
     setFormData((prev) => ({ ...prev, providerId: newProvider.id }));
   };
 
+  // --- Inicialização ---
   const getInitialFormData = useCallback((): ProductRequest => {
     if (isEditMode && productToEdit) {
       return {
@@ -120,6 +123,8 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
         stockQuantity: productToEdit.stockQuantity,
         salePrice: productToEdit.salePrice,
         costPrice: productToEdit.costPrice,
+        desiredProfitMargin: productToEdit.desiredProfitMargin ?? 30,
+        minimumStock: productToEdit.minimumStock ?? 0,
         unitOfSale: productToEdit.unitOfSale,
         active: productToEdit.active,
         managesStock: productToEdit.managesStock,
@@ -132,8 +137,10 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
       description: "",
       barcode: "",
       stockQuantity: 0,
+      minimumStock: 0,
       salePrice: undefined,
       costPrice: undefined,
+      desiredProfitMargin: 30,
       unitOfSale: UnitOfSale.UNIT,
       active: true,
       managesStock: false,
@@ -142,15 +149,23 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
     };
   }, [isEditMode, productToEdit, categories]);
 
-  const [formData, setFormData] =
-    useState<Partial<ProductRequest>>(getInitialFormData());
+  const [formData, setFormData] = useState<Partial<ProductRequest>>(getInitialFormData());
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      const keepAddingCache = productToEdit ? false : true;
-      setKeepAdding(keepAddingCache);
+      setKeepAdding(false);
       setFormData(getInitialFormData());
+
+      // Lógica para decidir se o switch começa ligado ou desligado
+      if (isEditMode && productToEdit) {
+        setIsSmartPricing(
+          productToEdit.desiredProfitMargin !== null &&
+          productToEdit.desiredProfitMargin !== undefined
+        );
+      } else {
+        setIsSmartPricing(true);
+      }
 
       const timer = setTimeout(() => {
         nameInputRef.current?.focus();
@@ -158,8 +173,9 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
 
       return () => clearTimeout(timer);
     }
-  }, [isOpen, getInitialFormData, productToEdit]);
+  }, [isOpen, getInitialFormData, productToEdit, isEditMode]);
 
+  // Fallback para categoria padrão
   useEffect(() => {
     if (
       isOpen &&
@@ -175,9 +191,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
   }, [isOpen, isEditMode, categories, formData.categoryId]);
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value, type } = e.target;
     const isCheckbox = type === "checkbox";
@@ -195,16 +209,42 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
     }));
   };
 
+  // --- Cálculo de Preço ---
+  const handleCalculatePrice = async () => {
+    if (isSmartPricing && formData.costPrice && formData.desiredProfitMargin) {
+      setIsCalculating(true);
+      try {
+        const suggestedPrice = await calculateSuggestedPrice(
+          formData.costPrice,
+          formData.desiredProfitMargin
+        );
+        setFormData((prev) => ({ ...prev, salePrice: suggestedPrice }));
+      } catch (error) {
+        notificationService.error(t("errors.calculatePrice", "Error calculating price"));
+        console.error(error);
+      } finally {
+        setIsCalculating(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (isSmartPricing && formData.costPrice && formData.desiredProfitMargin) {
+      const timer = setTimeout(() => {
+        handleCalculatePrice();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isSmartPricing, formData.costPrice, formData.desiredProfitMargin]);
+
+  // --- Submit ---
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     const newErrors: Record<string, string> = {};
     if (!formData.name || formData.name.trim().length < 2) {
-      newErrors.name = t(
-        "validation.nameRequired",
-        "Name is required (min 2 char)"
-      );
+      newErrors.name = t("validation.nameRequired", "Name is required (min 2 char)");
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -221,35 +261,35 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
         description: formData.description || null,
         barcode: formData.barcode || null,
         stockQuantity: formData.stockQuantity ?? 0,
+        minimumStock: formData.minimumStock ?? 0,
         costPrice: formData.costPrice ?? null,
+        desiredProfitMargin: isSmartPricing ? (formData.desiredProfitMargin ?? null) : null,
         unitOfSale: formData.unitOfSale ?? UnitOfSale.UNIT,
         active: formData.active ?? true,
         managesStock: formData.managesStock!,
         providerId: formData.providerId ?? null,
       };
+
       if (isEditMode && productToEdit) {
         await updateProduct(productToEdit.id, payload);
       } else {
         await createProduct(payload);
       }
+
       if (keepAdding && !isEditMode) {
-        getInitialFormData();
+        setFormData(getInitialFormData());
+        setIsSmartPricing(true);
         onDataRefresh();
       } else {
         onSaveSuccess();
       }
     } catch (error) {
-      const axiosError = error as AxiosError<{
-        message?: string;
-        errors?: Record<string, string>;
-      }>;
+      const axiosError = error as AxiosError<{ message?: string; errors?: Record<string, string> }>;
       const apiErrors = axiosError.response?.data?.errors;
       if (apiErrors) {
         notificationService.error(`${apiErrors}`);
       } else {
-        notificationService.error(
-          t("errors.genericSave", "An unexpected error occurred.")
-        );
+        notificationService.error(t("errors.genericSave", "An unexpected error occurred."));
       }
     } finally {
       setIsLoading(false);
@@ -261,13 +301,11 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
       <Modal
         isOpen={isOpen}
         onClose={onClose}
-        title={
-          isEditMode
-            ? t("product.editTitle")
-            : t("product.addTitle", "Add Title")
-        }
+        title={isEditMode ? t("product.editTitle") : t("product.addTitle", "Add Product")}
       >
         <form onSubmit={handleSubmit} className="space-y-4">
+
+          {/* BLOCO 1: NOME E CATEGORIA */}
           <div className="grid grid-cols-1 md:grid-cols-2 md:[&>*:nth-child(1)]:col-span-2 gap-4">
             <Input
               ref={nameInputRef}
@@ -278,31 +316,16 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
               required
             />
 
-            <Input
-              label={t("product.salePrice", "Sale Price") + " *"}
-              name="salePrice"
-              type="number"
-              step="0.01"
-              value={formData.salePrice ?? ""}
-              onChange={handleChange}
-              required
-            />
-
-            <div className="flex items-end gap-2">
+            <div className="flex items-end gap-2 md:col-span-2">
               <AutocompleteInput
                 label={t("common.category" + " *")}
                 placeholder={t("actions.searchByName")}
-                options={categories.map((c) => ({
-                  value: c.id,
-                  label: c.name,
-                }))}
+                options={categories.map((c) => ({ value: c.id, label: c.name }))}
                 selected={
                   formData.categoryId
                     ? {
                         value: formData.categoryId,
-                        label:
-                          categories.find((c) => c.id === formData.categoryId)
-                            ?.name || "",
+                        label: categories.find((c) => c.id === formData.categoryId)?.name || "",
                       }
                     : null
                 }
@@ -324,10 +347,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
                         className="h-7 w-7"
                         onClick={(e) => {
                           e.stopPropagation();
-                          const categorySummary: EntitySummary = {
-                            id: Number(option.value),
-                            name: option.label,
-                          };
+                          const categorySummary: EntitySummary = { id: Number(option.value), name: option.label };
                           openCategoryModalForEdit(categorySummary);
                         }}
                         iconLeft={<LuPencil />}
@@ -346,7 +366,6 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
                   </div>
                 )}
               />
-
               <Button
                 type="button"
                 variant="ghost"
@@ -358,7 +377,8 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-2">
+          {/* BLOCO 2: CHECKBOXES */}
+          <div className="flex flex-col sm:flex-row gap-4 py-2">
             <div className="flex items-center space-x-2">
               <input
                 type="checkbox"
@@ -390,7 +410,23 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
             )}
           </div>
 
-          <AdvancedOptions className="grid grid-cols-3 [&>*:nth-child(1)]:col-span-2 [&>*:nth-child(6)]:col-span-3 gap-4">
+          {/* BLOCO 3: PRECIFICAÇÃO INTELIGENTE (COM SWITCH) */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-border-light dark:border-border-dark">
+
+            {/* Header da Seção com Toggle */}
+            <div className="sm:col-span-3 flex justify-between items-center pb-2 border-b border-gray-200 dark:border-gray-700 mb-2">
+                <h4 className="text-sm font-semibold text-text-primary dark:text-gray-200 flex items-center gap-2">
+                    <LuCalculator className="h-4 w-4 text-brand-primary"/>
+                    {t("product.smartPricing", "Smart Pricing")}
+                </h4>
+                <ToggleSwitch
+                    enabled={isSmartPricing}
+                    onChange={setIsSmartPricing}
+                    label={isSmartPricing ? t('common.on', 'On') : t('common.off', 'Off')}
+                />
+            </div>
+
+            {/* Inputs de Preço */}
             <Input
               label={t("product.costPrice", "Cost Price")}
               name="costPrice"
@@ -398,18 +434,67 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
               step="0.01"
               value={formData.costPrice ?? ""}
               onChange={handleChange}
+              // Custo sempre editável
             />
 
             <Input
-              label={t("common.stock", "Stock Quantity")}
-              name="stockQuantity"
+              label={t("product.desiredMargin", "Margin (%)")}
+              name="desiredProfitMargin"
               type="number"
-              step="1"
-              value={formData.stockQuantity ?? ""}
+              step="0.01"
+              value={formData.desiredProfitMargin ?? 30}
               onChange={handleChange}
+              iconLeft={<LuCalculator className="text-gray-400 h-4 w-4" />}
+              // Desativa se Smart Pricing OFF
+              disabled={!isSmartPricing}
+              className={!isSmartPricing ? "opacity-50 cursor-not-allowed bg-gray-100 dark:bg-gray-700" : ""}
             />
 
-            <div className="flex items-end gap-2">
+            <div className="relative">
+                <Input
+                    label={t("product.salePrice", "Sale Price") + " *"}
+                    name="salePrice"
+                    type="number"
+                    step="0.01"
+                    value={formData.salePrice ?? ""}
+                    onChange={handleChange}
+                    required
+                    // Se Smart Pricing ON -> ReadOnly (calculado)
+                    // Se Smart Pricing OFF -> Editável
+                    readOnly={isSmartPricing}
+                    className={isSmartPricing ? "bg-gray-100 dark:bg-gray-700 focus:ring-0 cursor-default" : ""}
+                />
+                {isCalculating && (
+                    <div className="absolute right-3 top-9">
+                        <div className="animate-spin h-4 w-4 border-2 border-brand-primary border-t-transparent rounded-full"></div>
+                    </div>
+                )}
+            </div>
+          </div>
+
+          {/* BLOCO 4: OPÇÕES AVANÇADAS (Estoque, Provider, Unidade) */}
+          <AdvancedOptions className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+            <div className="sm:col-span-3 grid grid-cols-2 gap-4">
+              <Input
+                label={t("common.stock", "Stock Quantity")}
+                name="stockQuantity"
+                type="number"
+                step="1"
+                value={formData.stockQuantity ?? ""}
+                onChange={handleChange}
+              />
+              <Input
+                label={t("product.minimumStock", "Minimum Stock")}
+                name="minimumStock"
+                type="number"
+                step="1"
+                value={formData.minimumStock ?? ""}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="sm:col-span-3 flex items-end gap-2">
               <Select
                 label={t("product.provider", "Provider")}
                 name="providerId"
@@ -433,36 +518,40 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
               />
             </div>
 
-            <Input
-              label={t("product.barcode", "Barcode")}
-              name="barcode"
-              value={formData.barcode || ""}
-              onChange={handleChange}
-            />
+            <div className="sm:col-span-3 grid grid-cols-2 gap-4">
+              <Input
+                label={t("product.barcode", "Barcode")}
+                name="barcode"
+                value={formData.barcode || ""}
+                onChange={handleChange}
+              />
 
-            <Select
-              label={t("product.unitOfSale", "Unit of Sale")}
-              name="unitOfSale"
-              value={formData.unitOfSale}
-              onChange={handleChange}
-            >
-              {Object.values(UnitOfSale).map((unit) => (
-                <option key={unit} value={unit}>
-                  {t(`unitOfSale.${unit.toLowerCase()}`, unit)}
-                </option>
-              ))}
-            </Select>
+              <Select
+                label={t("product.unitOfSale", "Unit of Sale")}
+                name="unitOfSale"
+                value={formData.unitOfSale}
+                onChange={handleChange}
+              >
+                {Object.values(UnitOfSale).map((unit) => (
+                  <option key={unit} value={unit}>
+                    {t(`unitOfSale.${unit.toLowerCase()}`, unit)}
+                  </option>
+                ))}
+              </Select>
+            </div>
 
-            <Textarea
-              label={t("common.description", "Description")}
-              name="description"
-              value={formData.description || ""}
-              onChange={handleChange}
-              rows={3}
-            />
+            <div className="sm:col-span-3">
+              <Textarea
+                label={t("common.description", "Description")}
+                name="description"
+                value={formData.description || ""}
+                onChange={handleChange}
+                rows={3}
+              />
+            </div>
           </AdvancedOptions>
 
-          <footer className="grid grid-cols-4 [&>*:nth-child(1)]:col-span-2 gap-2 pt-4">
+          <footer className="grid grid-cols-4 [&>*:nth-child(1)]:col-span-2 gap-2 pt-4 border-t border-border-light dark:border-border-dark">
             {!isEditMode && (
               <ToggleSwitch
                 enabled={keepAdding}
@@ -470,6 +559,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
                 label={t("actions.keepAdding", "Keep adding")}
               />
             )}
+            {isEditMode && <div></div>}
             <Button
               type="button"
               variant="secondary"

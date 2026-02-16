@@ -1,5 +1,7 @@
+
 import apiClient from "../../lib/apiClient";
 import type { Page, ProductRequest, ProductResponse } from "../types/domain";
+import type { LowStockProduct } from "../types/domain";
 
 export interface GetProductsParams {
     name?: string;
@@ -69,6 +71,17 @@ export const copyProduct = async (id: number): Promise<ProductResponse> => {
   return response.data;
 };
 
+/**
+ * Busca produtos com estoque baixo
+ */
+export const getLowStockProducts = async (): Promise<LowStockProduct[]> => {
+  const response = await apiClient.get<LowStockProduct[]>('/products/low-stock');
+  return response.data;
+};
+
+/**
+ * Busca sugestões de produtos
+ */
 export const getProductSuggestions = async (): Promise<ProductResponse[]> => {
     const response = await apiClient.get<ProductResponse[]>('/products/suggestions');
     return response.data;
@@ -87,4 +100,14 @@ export const toggleProductStatus = async (id: number): Promise<void> => {
  */
 export const deleteProductPermanently = async (id: number): Promise<void> => {
   await apiClient.delete(`/products/${id}/permanent`);
+};
+
+export const calculateSuggestedPrice = async (costPrice: number, margin: number): Promise<number> => {
+  const response = await apiClient.get<number>('/products/calculate-price', {
+    params: {
+      costPrice,
+      desiredProfitMargin: margin
+    }
+  });
+  return response.data;
 };

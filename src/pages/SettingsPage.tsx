@@ -8,13 +8,14 @@ import Button from '../components/common/ui/Button';
 import { LuSave } from 'react-icons/lu';
 import { useSettings } from '../contexts/utils/UseSettings';
 import { notificationService } from '../lib/notification.service';
+import AccountSettings from '../components/features/settings/AccountSettings';
 
 const SettingsPage: React.FC = () => {
   const { t } = useTranslation();
-  
+
   const { settings: initialSettings, isLoading, refetchSettings } = useSettings();
   const [formData, setFormData] = useState<Partial<GeneralSettingsRequest>>({});
-  const [isSaving, setIsSaving] = useState(false);  
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if(initialSettings) {
@@ -27,21 +28,21 @@ const SettingsPage: React.FC = () => {
   const handleFormChange = (updatedValues: Partial<GeneralSettingsRequest>) => {
     setFormData(prev => ({ ...prev, ...updatedValues }));
   };
-  
+
   const handleSave = async () => {
     if (!isDirty) return;
-    
+
     setIsSaving(true);
     try {
       const payload = formData as GeneralSettingsRequest;
       const updatedSettings = await updateGeneralSettings(payload);
-      
+
       refetchSettings();
       setFormData(updatedSettings);
       notificationService.success(t('settings.saveSuccess', 'Settings saved'))
-      
+
     } catch (err) {
-      notificationService.error(t('errors.saveSettings' + err, 
+      notificationService.error(t('errors.saveSettings' + err,
         `Failed to save settings: ${err}`));
     } finally {
       setIsSaving(false);
@@ -52,7 +53,7 @@ const SettingsPage: React.FC = () => {
     return <p>{t('common.loading', 'Loading...')}</p>;
   }
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-2">
       <header className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold dark:text-gray-200">{t('settings.pageTitle', 'Settings')}</h1>
         <Button onClick={handleSave} disabled={!isDirty || isSaving} isLoading={isSaving} iconLeft={<LuSave />}>
@@ -60,7 +61,7 @@ const SettingsPage: React.FC = () => {
         </Button>
       </header>
 
-      <main>
+      <main className="space-y-6">
         {initialSettings && (
           <StockControlSettings
             currentSelection={formData.stockControlType!}
@@ -68,7 +69,7 @@ const SettingsPage: React.FC = () => {
             disabled={isSaving}
           />
         )}
-        
+        <AccountSettings />
       </main>
     </div>
   );

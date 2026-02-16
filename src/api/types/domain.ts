@@ -41,6 +41,36 @@ export interface EntitySummary {
 // DOMAIN-SPECIFIC TYPES
 // =================================================================
 
+// --- Auth Domiain --
+export interface LoginRequest {
+  username: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  username: string;
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  user?: User;
+}
+
+export interface UpdateRequest{
+  username?: string;
+  email?: string;
+  password?:string;
+}
+
+export interface User {
+  id: string;
+  username: string;
+  email: string;
+  role?: string;
+}
+
 // --- Dashboard Domain ---
 export interface MetricCardData {
   value: number;
@@ -60,6 +90,13 @@ export interface TimeSeriesDataPoint {
   receivables: number;
 }
 
+export interface LowStockProduct {
+  id: number;
+  name: string;
+  currentStock: number;
+  minimumStock: number;
+}
+
 export interface DashboardResponse {
   grossRevenue: MetricCardData;
   netProfit: MetricCardData;
@@ -69,6 +106,7 @@ export interface DashboardResponse {
   salesByPaymentMethod: ChartDataPoint[];
   topSellingProducts: ChartDataPoint[];
   revenueAndProfitTrend: TimeSeriesDataPoint[];
+  lowStockProducts?: LowStockProduct[];
 }
 
 // --- Settings Domain ---
@@ -92,8 +130,10 @@ export interface ProductResponse {
   description: string | null;
   barcode: string | null;
   stockQuantity: number;
+  minimumStock: number;
   salePrice: number;
   costPrice: number | null;
+  desiredProfitMargin: number,
   unitOfSale: UnitOfSale;
   active: boolean;
   managesStock: boolean;
@@ -108,8 +148,10 @@ export interface ProductRequest {
   description?: string | null;
   barcode?: string | null;
   stockQuantity: number;
+  minimumStock: number;
   salePrice: number | undefined;
   costPrice?: number | null;
+  desiredProfitMargin: number | null;
   unitOfSale: UnitOfSale;
   active: boolean;
   managesStock: boolean;

@@ -5,7 +5,9 @@ import { startOfMonth, endOfMonth, startOfYear, endOfYear } from 'date-fns';
 
 // API & Types
 import { getDashboardSummary } from '../api/services/dashboard.service';
+import { getLowStockProducts } from '../api/services/product.service';
 import type { DashboardResponse } from '../api/types/domain';
+import type { LowStockProduct } from '../api/types/domain';
 
 // Components
 import DateFilterDropdown, { type DateFilterOption } from '../components/common/DateFilterDropdown';
@@ -13,6 +15,7 @@ import MetricCard from '../components/features/dashboard/MetricCard';
 import SalesTrendChart from '../components/features/dashboard/SalesTrendChart';
 import TopProductsList from '../components/features/dashboard/TopProductsList';
 import PaymentMethodDonut from '../components/features/dashboard/PaymentMethodDonut';
+import LowStockAlert from '../components/features/dashboard/LowStockAlert';
 import { notificationService } from '../lib/notification.service';
 
 const DashboardPage: React.FC = () => {
@@ -20,9 +23,11 @@ const DashboardPage: React.FC = () => {
   
   // Data State
   const [dashboardData, setDashboardData] = useState<DashboardResponse | null>(null);
+  const [lowStockProducts, setLowStockProducts] = useState<LowStockProduct[]>([]);
   
   // UI State
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingLowStock, setIsLoadingLowStock] = useState(true);
   
   // Filters State
   const [dateFilter, setDateFilter] = useState<DateFilterOption>('this_month');
@@ -68,8 +73,22 @@ const DashboardPage: React.FC = () => {
     }
   }, [t]);
 
+  const fetchLowStockProducts = useCallback(async () => {
+    setIsLoadingLowStock(true);
+    try {
+      const products = await getLowStockProducts();
+      setLowStockProducts(products);
+    } catch (error) {
+      notificationService.error(`Failed to fetch low stock products: ${error}`);
+    } finally {
+      setIsLoadingLowStock(false);
+    }
+  }, []);
+
+
   useEffect(() => {
     fetchData(dateFilter);
+    fetchLowStockProducts();
   }, [dateFilter, fetchData]);
 
   return (
@@ -84,6 +103,11 @@ const DashboardPage: React.FC = () => {
           />
         </div>
       </header>
+
+      <LowStockAlert 
+        products={lowStockProducts} 
+        isLoading={isLoadingLowStock}
+      />
 
       <main className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
