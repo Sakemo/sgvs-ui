@@ -57,7 +57,7 @@ const PaymentMethodDonut: React.FC<PaymentMethodDonutProps> = ({ data, isLoading
   const chartData = data.map(entry => ({
     ...entry,
     originalLabel: entry.label,
-    label: t(`paymentMethods.${entry.label.toLowerCase()}`, entry.label),
+    label: t(`paymentMethods.${entry.label.toLowerCase()}`),
     percent: totalValue > 0 ? ((entry.value / totalValue) * 100).toFixed(1) : 0,
   }));
 
@@ -67,7 +67,7 @@ const PaymentMethodDonut: React.FC<PaymentMethodDonutProps> = ({ data, isLoading
 
   return (
     <Card className="h-full flex flex-col">
-      <h2 className="text-lg font-semibold mb-4">{t('dashboard.salesByPaymentMethod', 'Sales by Payment Method')}</h2>
+      <h2 className="text-lg font-semibold mb-4">{t('dashboard.salesByPaymentMethod')}</h2>
       <div className="flex-grow h-64">
         {isLoading ? (
           <div className="w-full h-full flex items-center justify-center">
@@ -100,7 +100,7 @@ const PaymentMethodDonut: React.FC<PaymentMethodDonutProps> = ({ data, isLoading
           </ResponsiveContainer>
         ) : (
           <div className="flex items-center justify-center h-full text-sm text-text-secondary">
-            {t('dashboard.noSalesData', 'No sales data for this period.')}
+            {t('dashboard.noSalesData')}
           </div>
         )}
       </div>

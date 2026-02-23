@@ -284,7 +284,7 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={t("sale.addSale", "Register Sale")}
+      title={t("sale.addSale")}
       className="sm:max-w-4xl"
     >
       <form onSubmit={handleSubmit}>
@@ -309,10 +309,7 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
             >
               {Object.values(PaymentMethod).map((pm) => (
                 <option key={pm} value={pm}>
-                  {t(
-                    `paymentMethods.${pm.toLowerCase()}`,
-                    pm.replace("_", " ")
-                  )}
+                  {t(`paymentMethods.${pm.toLowerCase()}`)}
                 </option>
               ))}
             </Select>
@@ -320,11 +317,11 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
 
           <Card>
             <h3 className="text-lg font-semibold mb-4">
-              {t("sale.addItem", "Add Item")}
+              {t("sale.addItem")}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_auto] gap-4 items-end">
               <AutocompleteInput
-                label={t("product.objectName", "Product")}
+                label={t("product.objectName")}
                 placeholder={t("actions.searchByName")}
                 options={productAutocompleteOptions}
                 selected={selectedProductOption}
@@ -333,7 +330,7 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
                 isLoading={isSearching.products}
               />
               <Input
-                label={t("sale.quantity", "Quantity")}
+                label={t("sale.quantity")}
                 type="number"
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
@@ -355,7 +352,7 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
                 disabled={!selectedProductOption}
                 iconLeft={<LuPlus />}
               >
-                {t("actions.add", "Add")}
+                {t("actions.add")}
               </Button>
             </div>
           </Card>
@@ -363,7 +360,7 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
           {items.length > 0 && (
             <div>
               <h3 className="text-lg font-semibold mb-2">
-                {t("sale.itemsInSale", "Items in Sale")}
+                {t("sale.itemsInSale")}
               </h3>
               <ul className="max-h-48 overflow-y-auto border border-border-light dark:border-border-dark rounded-md divide-y divide-border-light dark:divide-border-dark">
                 {items.map((item) => (
@@ -393,7 +390,7 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
               </ul>
               <div className="mt-4 text-right">
                 <span className="text-text-secondary">
-                  {t("sale.totalValue", "Total")}:{" "}
+                  {t("sale.totalValue")}:{" "}
                 </span>
                 <span className="text-xl font-bold">
                   {formatCurrency(totalSaleValue)}
@@ -412,7 +409,7 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
         </div>
 
         <footer className="bg-gray-50 dark:bg-card-dark/50 px-6 py-4 flex justify-end gap-2">
-          <ToggleSwitch enabled={keepCreatingSales} onChange={setKeepCreatingSales} label={t('actions.keepCreatingSales', 'Register and start new sale')} />
+          <ToggleSwitch enabled={keepCreatingSales} onChange={setKeepCreatingSales} label={t('actions.keepCreatingSales')} />
           <Button
             type="button"
             variant="secondary"
@@ -426,7 +423,7 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
             isLoading={isLoading}
             disabled={items.length === 0}
           >
-            {t("sale.registerSale", "Register Sale")}
+            {t("sale.registerSale")}
           </Button>
         </footer>
       </form>

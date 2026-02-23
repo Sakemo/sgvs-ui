@@ -52,15 +52,15 @@ const CustomerPage: React.FC = () => {
   const debouncedNameFilter = useDebounce(filters.name, 400);
 
   const orderOptions = [
-    { value: "name_asc", label: t("customer.sort.az", "Name (A-Z)") },
-    { value: "name_desc", label: t("customer.sort.za", "Name (Z-A)") },
+    { value: "name_asc", label: t("customer.sort.az") },
+    { value: "name_desc", label: t("customer.sort.za") },
     {
       value: "debt_desc",
-      label: t("customer.sort.highestDebt", "Highest Debt"),
+      label: t("customer.sort.highestDebt"),
     },
-    { value: "debt_asc", label: t("customer.sort.lowestDebt", "Lowest Debt") },
-    { value: "recent", label: t("filter.mostRecent", "Most Recent") },
-    { value: "oldest", label: t("filter.oldest", "Oldest") },
+    { value: "debt_asc", label: t("customer.sort.lowestDebt") },
+    { value: "recent", label: t("filter.mostRecent") },
+    { value: "oldest", label: t("filter.oldest") },
   ];
 
   const fetchCustomers = useCallback(async () => {
@@ -80,7 +80,7 @@ const CustomerPage: React.FC = () => {
       setCustomers(data);
     } catch (err) {
       notificationService.error(
-        t("errors.fetchCustomers" + err, "Failed to load customers")
+        t("errors.fetchCustomers")
       );
     } finally {
       setLoading(false);
@@ -104,7 +104,7 @@ const CustomerPage: React.FC = () => {
     setIsModalOpen(false);
     fetchCustomers();
     notificationService.success(
-      t("customer.saveSuccess", "Customer saved sucefully!")
+      t("customer.saveSuccess")
     );
   };
 
@@ -115,8 +115,7 @@ const CustomerPage: React.FC = () => {
     showConfirmation({
       title: t("customer.confirmToggleTitle", { action: actionText }),
       description: t(
-        "cutomer.confirmToggleDesc",
-        "Are you sure? This may affect ongoing sale."
+        "customer.confirmToggleDesc"
       ),
       confirmText: actionText,
       onConfirm: async () => {
@@ -125,8 +124,8 @@ const CustomerPage: React.FC = () => {
           fetchCustomers();
           notificationService.success(
             t(
-              "product.statusUpdated" + ` - ${actionText}`,
-              `Status updated - ${actionText}`
+              "customer.statusUpdated",
+              { action: actionText }
             )
           );
         } catch {
@@ -149,13 +148,13 @@ const CustomerPage: React.FC = () => {
     setCustomerToPay(null);
     fetchCustomers();
     notificationService.success(
-      t("payment.success", "Payment recorded successfully!")
+      t("payment.success")
     );
   };
 
   const handleDelete = async (id: number) => {
     showConfirmation({
-      title: t("customer.confirmDeleteTitle", "Delete customer?"),
+      title: t("customer.confirmDeleteTitle"),
       description: t("actions.confirmDeletePermanent"),
       confirmText: t("actions.delete"),
       onConfirm: async () => {
@@ -163,7 +162,7 @@ const CustomerPage: React.FC = () => {
           await deleteCustomerPermanently(id);
           fetchCustomers();
           notificationService.success(
-            t("customer.deleteSuccess", "Customer deleted")
+            t("customer.deleteSuccess")
           );
         } catch {
           notificationService.error(t("errors.deleteCustomer"));
@@ -176,10 +175,10 @@ const CustomerPage: React.FC = () => {
     <div className="space-y-6">
       <header className="flex flex-wrap justify-between items-center gap-4">
         <h1 className="text-2xl font-semibold dark:text-gray-200">
-          {t("customer.pageTitle", "Customer")}
+          {t("customer.pageTitle")}
         </h1>
         <Button onClick={() => handleOpenModal(null)} iconLeft={<LuPlus />}>
-          {t("customer.addCustomer", "Add Customer")}
+          {t("customer.addCustomer")}
         </Button>
       </header>
 
@@ -195,20 +194,20 @@ const CustomerPage: React.FC = () => {
             value={filters.activity}
             onChange={(e) => handleFilterChange("activity", e.target.value)}
           >
-            <option value="active">{t("common.active", "Active")}</option>
+            <option value="active">{t("common.active")}</option>
             <option value="inactive">{t("common.inactive")}</option>
-            <option value="all">{t("common.all", "All")}</option>
+            <option value="all">{t("common.all")}</option>
           </Select>
           <Select
             value={filters.debt}
             onChange={(e) => handleFilterChange("debt", e.target.value)}
           >
-            <option value="all">{t("common.all,", "All")}</option>
+            <option value="all">{t("common.all")}</option>
             <option value="debtors">
-              {t("customers.debtors", "With Debt")}
+              {t("customer.debtors")}
             </option>
             <option value="non_debtors">
-              {t("custormer.noDebt", "No debt")}
+              {t("customer.noDebt")}
             </option>
           </Select>
           <Select
@@ -244,8 +243,7 @@ const CustomerPage: React.FC = () => {
         ) : (
           <Card className="text-center p-8 text-text-secondary">
             {t(
-              "customer.noCustomerFound",
-              "No customers found matching your criteria"
+              "customer.noCustomersFound"
             )}
           </Card>
         ))}

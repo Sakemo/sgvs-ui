@@ -252,7 +252,7 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
     >
       <form onSubmit={handleSubmit} className="p-6 space-y-4">
         <Select
-          label={t("expense.expenseType" + " *")}
+          label={`${t("expense.expenseType")} *`}
           name="expenseType"
           value={formData.expenseType || ""}
           onChange={handleChange}
@@ -260,7 +260,7 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
         >
           {Object.values(ExpenseType).map((type) => (
             <option key={type} value={type}>
-              {t(`expenseCategories.${type.toLowerCase()}`, type)}
+              {t(`expenseCategories.${type.toLowerCase()}`)}
             </option>
           ))}
         </Select>
@@ -276,7 +276,7 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
         {isRestocking ? (
           <Card>
             <h3 className="text-md font-semibold mb-3">
-              {t("expense.addRestockItems", "Add Restock Items")}
+              {t("expense.addRestockItems")}
             </h3>
             <div className="space-y-3">
               <AutocompleteInput
@@ -345,7 +345,7 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
                   </li>
                 ))}
                   <div className="mt-4 pt-4 border-t border-border-light dark:border-border-dark flex justify-between items-center font-bold">
-        <span>{t('common.total', 'Total')}</span>
+        <span>{t('common.total')}</span>
         <span>{formatCurrency(restockTotalValue)}</span>
     </div>
               </ul>
@@ -364,7 +364,7 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
         )}
 
         <Select
-          label={"common.paymentMethod" + " *"}
+          label={`${t("common.paymentMethod")} *`}
           name="paymentMethod"
           value={formData.paymentMethod || ""}
           onChange={handleChange}
@@ -373,8 +373,7 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
           {Object.values(PaymentMethod).map((type) => (
             <option key={type} value={type}>
               {t(
-                `paymentMethods.${type.toLowerCase().replace("_", " ")}`,
-                type.replace(/_/g, " ")
+                `paymentMethods.${type.toLowerCase()}`
               )}
             </option>
           ))}

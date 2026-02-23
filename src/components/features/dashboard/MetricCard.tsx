@@ -47,7 +47,7 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, value, percentageChange,
           <p className="text-3xl font-bold mt-2 text-text-primary dark:text-white">
             {formatCurrency(value)}
           </p>
-          <p className="text-xs text-text-secondary">{t('dashboard.vsPreviousPeriod', 'vs. previous period')}</p>
+          <p className="text-xs text-text-secondary">{t('dashboard.vsPreviousPeriod')}</p>
 
           <div className="absolute bottom-0 left-0 w-full h-1/3 opacity-20 dark:opacity-10">
             <ResponsiveContainer width="100%" height="100%">

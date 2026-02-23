@@ -33,9 +33,9 @@ const DashboardPage: React.FC = () => {
   const [dateFilter, setDateFilter] = useState<DateFilterOption>('this_month');
   
   const dateFilterOptions = [
-    { key: 'today' as DateFilterOption, label: t('filter.today', 'Today') },
-    { key: 'this_month' as DateFilterOption, label: t('filter.thisMonth', 'This Month') },
-    { key: 'this_year' as DateFilterOption, label: t('filter.thisYear', 'This Year') },
+    { key: 'today' as DateFilterOption, label: t('filter.today') },
+    { key: 'this_month' as DateFilterOption, label: t('filter.thisMonth') },
+    { key: 'this_year' as DateFilterOption, label: t('filter.thisYear') },
   ];
 
   const fetchData = useCallback(async (option: DateFilterOption) => {
@@ -67,7 +67,7 @@ const DashboardPage: React.FC = () => {
       const data = await getDashboardSummary(params);
       setDashboardData(data);
     } catch (error) {
-      notificationService.error(`Failed to fetch dashboard data: ${error}`)
+      notificationService.error(t('errors.fetchDashboardData'))
     } finally {
       setIsLoading(false);
     }
@@ -79,11 +79,11 @@ const DashboardPage: React.FC = () => {
       const products = await getLowStockProducts();
       setLowStockProducts(products);
     } catch (error) {
-      notificationService.error(`Failed to fetch low stock products: ${error}`);
+      notificationService.error(t('errors.fetchLowStockProducts'));
     } finally {
       setIsLoadingLowStock(false);
     }
-  }, []);
+  }, [t]);
 
 
   useEffect(() => {
@@ -94,7 +94,7 @@ const DashboardPage: React.FC = () => {
   return (
     <div className="space-y-6 dark:text-gray-200">
       <header className="flex flex-wrap justify-between items-center gap-4">
-        <h1 className="text-2xl font-semibold">{t('dashboard.title', 'Dashboard')}</h1>
+        <h1 className="text-2xl font-semibold">{t('dashboard.title')}</h1>
         <div className="w-full sm:w-auto">
           <DateFilterDropdown
             selectedOption={dateFilter}
@@ -112,14 +112,14 @@ const DashboardPage: React.FC = () => {
       <main className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <MetricCard
-            title={t('dashboard.grossRevenue', 'Gross Revenue')}
+            title={t('dashboard.grossRevenue')}
             value={dashboardData?.grossRevenue.value ?? 0}
             percentageChange={dashboardData?.grossRevenue.percentageChange ?? 0}
             sparklineData={dashboardData?.grossRevenue.sparklineData ?? []}
             isLoading={isLoading}
           />
           <MetricCard
-            title={t('dashboard.netProfit', 'Net Profit')}
+            title={t('dashboard.netProfit')}
             value={dashboardData?.netProfit.value ?? 0}
             percentageChange={dashboardData?.netProfit.percentageChange ?? 0}
             sparklineData={dashboardData?.netProfit.sparklineData ?? []}
@@ -149,21 +149,21 @@ const DashboardPage: React.FC = () => {
 
         <div className="grid grid-cols-3 gap-4">
           <MetricCard
-            title={t('dashboard.totalExpenses', 'Total Expenses')}
+            title={t('dashboard.totalExpenses')}
             value={dashboardData?.totalExpense.value ?? 0}
             percentageChange={dashboardData?.totalExpense.percentageChange ?? 0}
             sparklineData={dashboardData?.totalExpense.sparklineData ?? []}
             isLoading={isLoading}
           />
           <MetricCard
-              title={t('dashboard.totalReceivables', 'Total Receivables')}
+              title={t('dashboard.totalReceivables')}
               value={dashboardData?.totalReceivables.value ?? 0}
               percentageChange={dashboardData?.totalReceivables.percentageChange ?? 0}
               sparklineData={dashboardData?.totalReceivables.sparklineData ?? []}
               isLoading={isLoading}
           />
           <MetricCard
-            title={t('dashboard.averageTicket', 'Average Ticket')}
+            title={t('dashboard.averageTicket')}
             value={dashboardData?.averageTicket.value ?? 0}
             percentageChange={dashboardData?.averageTicket.percentageChange ?? 0}
             sparklineData={dashboardData?.averageTicket.sparklineData ?? []}

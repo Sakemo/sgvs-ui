@@ -39,25 +39,24 @@ const SettingsPage: React.FC = () => {
 
       refetchSettings();
       setFormData(updatedSettings);
-      notificationService.success(t('settings.saveSuccess', 'Settings saved'))
+      notificationService.success(t('settings.saveSuccess'))
 
     } catch (err) {
-      notificationService.error(t('errors.saveSettings' + err,
-        `Failed to save settings: ${err}`));
+      notificationService.error(t('errors.saveSettings'));
     } finally {
       setIsSaving(false);
     }
   };
 
   if (isLoading) {
-    return <p>{t('common.loading', 'Loading...')}</p>;
+    return <p>{t('common.loading')}</p>;
   }
   return (
     <div className="space-y-6 p-2">
       <header className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold dark:text-gray-200">{t('settings.pageTitle', 'Settings')}</h1>
+        <h1 className="text-2xl font-semibold dark:text-gray-200">{t('settings.pageTitle')}</h1>
         <Button onClick={handleSave} disabled={!isDirty || isSaving} isLoading={isSaving} iconLeft={<LuSave />}>
-          {t('actions.saveChanges', 'Save Changes')}
+          {t('actions.saveChanges')}
         </Button>
       </header>
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { AlertTriangle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export interface LowStockProduct {
   id: number;
@@ -14,6 +15,8 @@ interface LowStockAlertProps {
 }
 
 const LowStockAlert: React.FC<LowStockAlertProps> = ({ products, isLoading }) => {
+  const { t } = useTranslation();
+
   if (isLoading) {
     return (
       <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 animate-pulse">
@@ -30,7 +33,7 @@ const LowStockAlert: React.FC<LowStockAlertProps> = ({ products, isLoading }) =>
       <div className="flex items-center mb-2">
         <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 mr-2" />
         <h3 className="text-lg font-medium text-amber-800 dark:text-amber-200">
-          Alertas de Estoque Baixo
+          {t('dashboard.lowStockAlerts')}
         </h3>
         <span className="ml-2 bg-amber-600 dark:bg-amber-700 text-white text-sm px-2 py-1 rounded-full">
           {products.length}
@@ -41,7 +44,10 @@ const LowStockAlert: React.FC<LowStockAlertProps> = ({ products, isLoading }) =>
           <div key={product.id} className="text-sm text-amber-700 dark:text-amber-300 flex justify-between">
             <span>• {product.name}</span>
             <span className="font-medium">
-              {product.currentStock} unidades (mínimo: {product.minimumStock})
+              {t('dashboard.lowStockUnitsAndMinimum', {
+                currentStock: product.currentStock,
+                minimumStock: product.minimumStock,
+              })}
             </span>
           </div>
         ))}

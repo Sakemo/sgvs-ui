@@ -19,7 +19,7 @@ const AdvancedOptions: React.FC<AdvancedOptionsProps> = ({ children, className }
                 onClick={() => setIsOpen(prev => !prev)}
                 className="flex items-center justify-between w-full text-sm font-medium text-text-secondary hover:text-text-primary dark:hover:text-white"
             >
-                <span>{t('actions.advancedOptions', 'Advanced Options')}</span>
+                <span>{t('actions.advancedOptions')}</span>
                 <LuChevronDown className={clsx("h-4 w-4 transition-transform duration-200", isOpen && "rotate-180")} />
             </button>
             

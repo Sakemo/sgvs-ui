@@ -10,9 +10,9 @@ const ThemeToggleButton: React.FC = () => {
 
     return (
         <Button variant="ghost" onClick={toggleTheme} className="dark:text-gray-300 text-text-secondary" iconLeft=           {theme === 'light' ? (<LuMoon />) : (<LuSun />)}
-        title={theme === 'light' ? t('theme.switchToDark', 'Switch to Dark Mode') : t('theme.switchToLight', 'Light Mode')}>
+        title={theme === 'light' ? t('theme.switchToDark') : t('theme.switchToLight')}>
 
-            {theme === 'light' ? t('theme.switchToDark', 'Dark Mode') : t('theme.switchToLight', 'Light Mode')}
+            {theme === 'light' ? t('theme.switchToDark') : t('theme.switchToLight')}
         </Button>
     );
 };

@@ -21,18 +21,37 @@
     "loading": "Loading...",
     "notApplicable": "N/A",
     "items": "Items",
+    "total": "Total",
     "date": "Date",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At",
+    "username": "Username",
+    "email": "Email Address",
+    "password": "Password",
+    "copied": "Copied!",
     "allClients": "All Clients",
     "allProducts": "All Products",
-    "allPaymentMethods": "All Payment Methods"
+    "allPaymentMethods": "All Payment Methods",
+    "allCategories": "All Categories",
+    "on": "On",
+    "off": "Off"
   },
   "sidebar": {
     "dashboard": "Dashboard",
+    "reports": "Reports",
     "sales": "Sales",
     "products": "Products",
     "customers": "Customers",
     "expenses": "Expenses",
-    "settings": "Settings"
+    "settings": "Settings",
+    "language": "Language",
+    "portuguese": "Portuguese",
+    "english": "English",
+    "groups": {
+      "overview": "Overview",
+      "finance": "Finance",
+      "operations": "Operations"
+    }
   },
   "actions": {
     "add": "Add",
@@ -46,10 +65,22 @@
     "save": "Save",
     "create": "Create",
     "close": "Close",
+    "keepCreatingSales": "Register and start new sale",
     "confirm": "Are you sure you want to",
     "activate": "Activate",
     "deactivate": "Deactivate",
-    "confirmDeletePermanent": "Permanently delete this item? This action cannot be undone."
+    "confirmDeletePermanent": "Permanently delete this item? This action cannot be undone.",
+    "advancedOptions": "Advanced Options",
+    "keepAdding": "Keep adding",
+    "show": "Show",
+    "hide": "Hide",
+    "logout": "Sign Out",
+    "registerNew": "Register New Account",
+    "deleteAccount": "Delete My Account"
+  },
+  "theme": {
+    "switchToDark": "Dark Mode",
+    "switchToLight": "Light Mode"
   },
   "filter": {
     "filterBy": "Filter by",
@@ -60,19 +91,102 @@
     "oldest": "Oldest",
     "highestValue": "Highest Value",
     "lowestValue": "Lowest Value",
+    "thisWeek": "This Week",
     "today": "Today",
     "thisMonth": "This Month",
     "thisYear": "This Year",
     "allTime": "All Time"
   },
+  "report": {
+    "abc": {
+      "title": "ABC Analysis of Products",
+      "description": "Classify products based on their revenue contribution.",
+      "class": "Class",
+      "contribution": "Contribution",
+      "cumulative": "Cumulative",
+      "noData": "No data available for the selected period."
+    }
+  },
+  "reports": {
+    "pageTitle": "Reports",
+    "noData": "No data for the selected period.",
+    "summary": {
+      "grossProfit": "Gross Profit",
+      "netProfit": "Net Profit",
+      "operatingProfit": "Operating Profit",
+      "profitValue": "Profit",
+      "margin": "Margin"
+    },
+    "abc": {
+      "summary": {
+        "classA_title": "Class A: Vital Products",
+        "classA_desc": "Few items that generate most of your revenue (80%). Monitor stock closely.",
+        "classB_title": "Class B: Important Products",
+        "classB_desc": "Intermediate contribution (15%). Good candidates for promotion and growth.",
+        "classC_title": "Class C: Long Tail",
+        "classC_desc": "Many items with low individual contribution (5%). Review assortment and turnover."
+      }
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "grossRevenue": "Gross Revenue",
+    "netProfit": "Net Profit",
+    "totalExpenses": "Total Expenses",
+    "totalReceivables": "Total Receivables",
+    "averageTicket": "Average Ticket",
+    "vsPreviousPeriod": "vs. previous period",
+    "revenueProfitTrend": "Revenue & Profit Trend",
+    "revenue": "Revenue",
+    "profit": "Profit",
+    "receivables": "Receivables",
+    "salesByPaymentMethod": "Sales by Payment Method",
+    "topSellingProducts": "Top Selling Products",
+    "noSalesData": "No sales data for this period.",
+    "lowStockAlerts": "Low Stock Alerts",
+    "lowStockUnitsAndMinimum": "{{currentStock}} units (minimum: {{minimumStock}})"
+  },
   "errors": {
     "fetchProducts": "Failed to load products.",
+    "fetchDashboardData": "Failed to load dashboard data.",
+    "fetchLowStockProducts": "Failed to load low stock products.",
+    "fetchReport": "Failed to generate reports.",
+    "fetchExpenses": "Failed to load expenses.",
+    "fetchCustomers": "Failed to load customers.",
     "fetchCategories": "Failed to load categories.",
     "fetchInitialData": "Failed to load page data.",
     "toggleStatus": "Failed to update status.",
     "copyProduct": "Failed to copy product.",
     "deleteProduct": "Failed to delete product.",
+    "deleteExpense": "Failed to delete expense.",
+    "deleteCustomer": "Failed to delete customer.",
+    "saveSettings": "Failed to save settings.",
+    "updateProfile": "Failed to update profile.",
+    "deleteAccount": "Failed to delete account.",
     "genericSave": "An unexpected error occurred while saving."
+  },
+  "settings": {
+    "pageTitle": "Settings",
+    "saveSuccess": "Settings saved successfully.",
+    "stock": {
+      "title": "Stock Management",
+      "globalTitle": "Global Control",
+      "globalDesc": "Validate and decrement stock for all products during every sale.",
+      "perItemTitle": "Per-Item Control",
+      "perItemDesc": "Manage stock individually. Only products with stock control enabled will be validated.",
+      "noneTitle": "No Control",
+      "noneDesc": "Stock validation is completely disabled. Stock levels will not be updated."
+    },
+    "account": {
+      "title": "Account Profile",
+      "dangerZone": "Danger Zone",
+      "updateSuccess": "Profile updated successfully.",
+      "deleteTitle": "Delete account?",
+      "deleteDesc": "This action is permanent and will remove your account."
+    }
+  },
+  "payment": {
+    "success": "Payment recorded successfully."
   },
   "product": {
     "objectName": "Product",
@@ -86,6 +200,7 @@
       "name": "Name",
       "category": "Category",
       "salePrice": "Price",
+      "margin": "Margin",
       "stock": "Stock",
       "status": "Status",
       "lastUpdated": "Last Updated",
@@ -94,6 +209,7 @@
     "form": {
       "name": "Product Name",
       "activeProduct": "Active Product",
+      "managesStock": "Manage Stock",
       "salePrice": "Sale Price",
       "costPrice": "Cost Price"
     },
@@ -106,7 +222,16 @@
     },
     "unitOfSale": "Unit of Sale",
     "provider": "Provider",
-    "barcode": "Barcode"
+    "barcode": "Barcode",
+    "salePrice": "Sale Price",
+    "costPrice": "Cost Price",
+    "minimumStock": "Minimum Stock",
+    "margin": "Profit Margin",
+    "desiredMargin": "Margin (%)",
+    "smartPricing": "Smart Pricing",
+    "details": {
+      "title": "Product Details"
+    }
   },
   "customer": {
     "objectName": "Customer",
@@ -124,6 +249,8 @@
     "allowCredit": "Allow purchases on credit?",
     "noCustomersFound": "No customers found matching your criteria.",
     "confirmToggle": "Are you sure?",
+    "confirmToggleDesc": "Are you sure? This may affect ongoing sales.",
+    "statusUpdated": "Status updated - {{action}}",
     "sort": {
       "az": "Name (A-Z)",
       "za": "Name (Z-A)",
@@ -134,6 +261,7 @@
   "sale": {
     "pageTitle": "Sales",
     "addSale": "Register Sale",
+    "grossRevenue": "Revenue",
     "grossTotal": "Gross Total",
     "netProfit": "Net Profit",
     "totalByAllMethods": "Total (All Methods)",
@@ -144,11 +272,32 @@
     "addItem": "Add Item",
     "quantity": "Quantity",
     "registerSale": "Register Sale",
+    "itemsInSale": "Items in Sale",
     "items": "Items",
     "saleDate": "Sale Date",
     "details": {
       "title": "Sale Details"
     }
+  },
+  "expense": {
+    "pageTitle": "Expenses",
+    "addTitle": "Add Expense",
+    "editTitle": "Edit Expense",
+    "detailsTitle": "Expense Details",
+    "expenseType": "Expense Type",
+    "expenseDate": "Expense Date",
+    "addRestockItems": "Add Restock Items",
+    "confirmDeleteTitle": "Delete expense?",
+    "deleteSuccess": "Expense deleted successfully.",
+    "saveSuccess": "Expense saved successfully.",
+    "noExpenseFound": "No expenses found."
+  },
+  "expenseCategories": {
+    "restocking": "Restocking",
+    "personal": "Personal",
+    "business": "Business",
+    "investment": "Investment",
+    "others": "Others"
   },
   "paymentMethods": {
     "cash": "Cash",
@@ -156,5 +305,10 @@
     "credit": "Credit",
     "on_credit": "On Credit",
     "bank_transfer": "Bank Transfer"
+  },
+  "unitOfSale": {
+    "unit": "unit",
+    "weight": "kg",
+    "volume": "L"
   }
 }

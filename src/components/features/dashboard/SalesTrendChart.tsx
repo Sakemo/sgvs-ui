@@ -39,10 +39,9 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label })
 
 const SalesTrendChart: React.FC<SalesTrendChartProps> = ({ data, isLoading }) => {
   const { t } = useTranslation();
-  console.log("SalesTrendChart received data:", data);
   return (
     <Card>
-      <h2 className="text-lg font-semibold mb-4">{t('dashboard.revenueProfitTrend', 'Revenue & Profit Trend')}</h2>
+      <h2 className="text-lg font-semibold mb-4">{t('dashboard.revenueProfitTrend')}</h2>
       <div className="h-80">
         {isLoading ? (
           <div className="w-full h-full bg-gray-200 dark:bg-gray-700 rounded-md animate-pulse" />
@@ -71,7 +70,7 @@ const SalesTrendChart: React.FC<SalesTrendChartProps> = ({ data, isLoading }) =>
               <Area
                 type="monotone"
                 dataKey="revenue"
-                name={t('dashboard.revenue', 'Revenue')}
+                name={t('dashboard.revenue')}
                 stroke="#00BFFF"
                 strokeWidth={2}
                 fillOpacity={1}
@@ -80,7 +79,7 @@ const SalesTrendChart: React.FC<SalesTrendChartProps> = ({ data, isLoading }) =>
               <Area
                 type="monotone"
                 dataKey="profit"
-                name={t('dashboard.profit', 'Profit')}
+                name={t('dashboard.profit')}
                 stroke="#22C55E"
                 strokeWidth={2}
                 fillOpacity={1}
@@ -89,7 +88,7 @@ const SalesTrendChart: React.FC<SalesTrendChartProps> = ({ data, isLoading }) =>
               <Area
                 type="monotone"
                 dataKey="receivables"
-                name={t('dashboard.receivables', 'Receivables')}
+                name={t('dashboard.receivables')}
                 stroke="#F59E0B"
                 strokeWidth={2}
                 fillOpacity={1}

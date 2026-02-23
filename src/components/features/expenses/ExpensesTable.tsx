@@ -22,27 +22,27 @@ const ExpensesTable: React.FC<ExpensesTableProps> = ({
 }) => {
     const { t } = useTranslation();
     const columns: TableColumn<ExpenseResponse>[] = [
-        { header: t('common.name', 'Name'), accessor: 'name', headerClassName: 'w-2/5' },
-        { header: t('common.value', 'Value'), accessor: (row) => formatCurrency(row.value), className: 'text-right font-medium', headerClassName: 'text-right' },
-        { header: t('common.category', 'Category'), 
+        { header: t('common.name'), accessor: 'name', headerClassName: 'w-2/5' },
+        { header: t('common.value'), accessor: (row) => formatCurrency(row.value), className: 'text-right font-medium', headerClassName: 'text-right' },
+        { header: t('common.category'),
         accessor: (row) => (<Badge variant="subtle" colorScheme="blue">
-            {t(`expenseCategories.${row.expenseType}`, row.expenseType)}
+            {t(`expenseCategories.${row.expenseType.toLowerCase()}`)}
         </Badge>),
         },
         {
-            header: t('expense.expenseDate', 'Date'),
+            header: t('expense.expenseDate'),
             accessor: (row) => formatDate(row.expenseDate, { showTime: false })
         },
         {
             header: t('common.paymentMethod'),
             accessor: (row) => (
                 <Badge variant="subtle" colorScheme="gray">
-                    {t(`paymentMethods.${row.paymentMethod.toLowerCase()}`, row.paymentMethod)}
+                    {t(`paymentMethods.${row.paymentMethod.toLowerCase()}`)}
                 </Badge>
             )
         },
         {
-            header: t('common.actions', 'Actions'),
+            header: t('common.actions'),
             accessor: (row) => (
                 <div className="flex justify-end gap-1">
                     <Button variant="ghost" size="icon" onClick={(e) => {

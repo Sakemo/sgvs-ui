@@ -48,7 +48,7 @@ const ExpensesPage: React.FC = () => {
             const data = await getExpenses(params);
             setExpensesPage(data);
         } catch(err) {
-            notificationService.error(t('errors.fetchExpenses' + err, 'Failed to load expenses'));
+            notificationService.error(t('errors.fetchExpenses'));
         } finally {
             setLoading(false);
         }
@@ -83,22 +83,22 @@ const ExpensesPage: React.FC = () => {
     const handleSaveSuccess = () => {
         setIsModalOpen(false);
         fetchExpenses();
-        notificationService.success(t('expense.saveSucess', 'Product saved successfully!'))
+        notificationService.success(t('expense.saveSuccess'))
     };
 
     const handleDelete = async (id: number) => {
         showConfirmation({
-            title: t('expense.confirmDeleteTitle', 'Delete expense?'),
-            description: t('actions.confirmDeletePermanent', 'Permanently delete This action cannot be undone.'),
-            confirmText: t('actions.delete', 'Delete'),
+            title: t('expense.confirmDeleteTitle'),
+            description: t('actions.confirmDeletePermanent'),
+            confirmText: t('actions.delete'),
             onConfirm: async () => {
                 try {
                     await deleteExpense(id);
                     if (selectedExpense?.id === id) setSelectedExpense(null);
                     fetchExpenses();
-                    notificationService.success(t('expense.deleteSuccess', 'Expense deleted'))
+                    notificationService.success(t('expense.deleteSuccess'))
                 } catch {
-                    notificationService.error(t('errors.deleteExpense', 'Failed to delete expense.'))
+                    notificationService.error(t('errors.deleteExpense'))
                 }
             }
         });
@@ -115,10 +115,10 @@ const ExpensesPage: React.FC = () => {
         <div className="space-y-6">
             <header className="flex flex-wrap justify-between items-center gap-4">
                 <h1 className="text-2xl font-semibold dark:text-gray-200">
-                    {t('expense.pageTitle', 'Expenses')}
+                    {t('expense.pageTitle')}
                 </h1>
                 <Button onClick={() => handleOpenModal(null)} iconLeft={<LuPlus />}>
-                    {t('expenses.addTitle', "Add Expense")}
+                    {t('expense.addTitle')}
                 </Button>
             </header>
 
@@ -129,11 +129,11 @@ const ExpensesPage: React.FC = () => {
                     <Input type="date" value={endDateValue} onChange={(e) => handleDateChange('endDate', e.target.value)} />
                     <Select value={filters.expenseType ?? ''} onChange={(e) => handleFilterChange('expenseType', e.target.value || undefined)}>
                         <option value="">
-                            {t('common.allCategories', 'All Categories')}
+                            {t('common.allCategories')}
                         </option>
                         {Object.values(ExpenseType).map(type => (
                             <option key={type} value={type}>
-                                {t(`expenseCategories.${type}`, type)}
+                                {t(`expenseCategories.${type.toLowerCase()}`)}
                             </option>
                         ))}
                     </Select>

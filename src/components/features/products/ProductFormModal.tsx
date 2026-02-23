@@ -309,7 +309,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 md:[&>*:nth-child(1)]:col-span-2 gap-4">
             <Input
               ref={nameInputRef}
-              label={t("product.form.name", "Product Name") + " *"}
+              label={`${t("product.form.name")} *`}
               name="name"
               value={formData.name || ""}
               onChange={handleChange}
@@ -318,7 +318,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
 
             <div className="flex items-end gap-2 md:col-span-2">
               <AutocompleteInput
-                label={t("common.category" + " *")}
+                label={`${t("common.category")} *`}
                 placeholder={t("actions.searchByName")}
                 options={categories.map((c) => ({ value: c.id, label: c.name }))}
                 selected={
@@ -389,7 +389,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
                 className="h-4 w-4 rounded"
               />
               <label htmlFor="active">
-                {t("product.form.activeProduct", "Active Product")}
+                {t("product.form.activeProduct")}
               </label>
             </div>
 
@@ -404,7 +404,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
                   className="h-4 w-4 rounded"
                 />
                 <label htmlFor="managesStock">
-                  {t("products.form.managesStock", "Manage Stock")}
+                  {t("product.form.managesStock")}
                 </label>
               </div>
             )}
@@ -417,18 +417,18 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
             <div className="sm:col-span-3 flex justify-between items-center pb-2 border-b border-gray-200 dark:border-gray-700 mb-2">
                 <h4 className="text-sm font-semibold text-text-primary dark:text-gray-200 flex items-center gap-2">
                     <LuCalculator className="h-4 w-4 text-brand-primary"/>
-                    {t("product.smartPricing", "Smart Pricing")}
+                    {t("product.smartPricing")}
                 </h4>
                 <ToggleSwitch
                     enabled={isSmartPricing}
                     onChange={setIsSmartPricing}
-                    label={isSmartPricing ? t('common.on', 'On') : t('common.off', 'Off')}
+                    label={isSmartPricing ? t('common.on') : t('common.off')}
                 />
             </div>
 
             {/* Inputs de Preço */}
             <Input
-              label={t("product.costPrice", "Cost Price")}
+              label={t("product.costPrice")}
               name="costPrice"
               type="number"
               step="0.01"
@@ -438,7 +438,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
             />
 
             <Input
-              label={t("product.desiredMargin", "Margin (%)")}
+              label={t("product.desiredMargin")}
               name="desiredProfitMargin"
               type="number"
               step="0.01"
@@ -452,7 +452,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
 
             <div className="relative">
                 <Input
-                    label={t("product.salePrice", "Sale Price") + " *"}
+                    label={`${t("product.salePrice")} *`}
                     name="salePrice"
                     type="number"
                     step="0.01"
@@ -477,7 +477,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
 
             <div className="sm:col-span-3 grid grid-cols-2 gap-4">
               <Input
-                label={t("common.stock", "Stock Quantity")}
+                label={t("common.stock")}
                 name="stockQuantity"
                 type="number"
                 step="1"
@@ -485,7 +485,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
                 onChange={handleChange}
               />
               <Input
-                label={t("product.minimumStock", "Minimum Stock")}
+                label={t("product.minimumStock")}
                 name="minimumStock"
                 type="number"
                 step="1"
@@ -496,12 +496,12 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
 
             <div className="sm:col-span-3 flex items-end gap-2">
               <Select
-                label={t("product.provider", "Provider")}
+                label={t("product.provider")}
                 name="providerId"
                 value={formData.providerId ?? ""}
                 onChange={handleChange}
               >
-                <option value="">{t("common.none", "None")}</option>
+                <option value="">{t("common.none")}</option>
                 {providers.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.name}
@@ -520,21 +520,21 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
 
             <div className="sm:col-span-3 grid grid-cols-2 gap-4">
               <Input
-                label={t("product.barcode", "Barcode")}
+                label={t("product.barcode")}
                 name="barcode"
                 value={formData.barcode || ""}
                 onChange={handleChange}
               />
 
               <Select
-                label={t("product.unitOfSale", "Unit of Sale")}
+                label={t("product.unitOfSale")}
                 name="unitOfSale"
                 value={formData.unitOfSale}
                 onChange={handleChange}
               >
                 {Object.values(UnitOfSale).map((unit) => (
                   <option key={unit} value={unit}>
-                    {t(`unitOfSale.${unit.toLowerCase()}`, unit)}
+                    {t(`unitOfSale.${unit.toLowerCase()}`)}
                   </option>
                 ))}
               </Select>
@@ -542,7 +542,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
 
             <div className="sm:col-span-3">
               <Textarea
-                label={t("common.description", "Description")}
+                label={t("common.description")}
                 name="description"
                 value={formData.description || ""}
                 onChange={handleChange}
@@ -556,7 +556,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
               <ToggleSwitch
                 enabled={keepAdding}
                 onChange={setKeepAdding}
-                label={t("actions.keepAdding", "Keep adding")}
+                label={t("actions.keepAdding")}
               />
             )}
             {isEditMode && <div></div>}

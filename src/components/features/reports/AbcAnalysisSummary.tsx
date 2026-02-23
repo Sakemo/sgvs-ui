@@ -52,38 +52,23 @@ const AbcAnalysisSummary: React.FC<AbcAnalysisSummaryProps> = ({
   const summaryItems = [
     {
       icon: LuCrown,
-      title: t(
-        "reports.abc.summary.classA_title",
-        "Classe A: Seus Produtos Vitais"
-      ),
+      title: t("reports.abc.summary.classA_title"),
       count: classCounts.A,
-      description: t(
-        "reports.abc.summary.classA_desc",
-        "Poucos itens, mas são os que geram a maior parte da sua receita (80%). Monitore o estoque deles de perto!"
-      ),
+      description: t("reports.abc.summary.classA_desc"),
       colorClass: "text-emerald-500",
     },
     {
       icon: LuStar,
-      title: t(
-        "reports.abc.summary.classB_title",
-        "Classe B: Seus Produtos Importantes"
-      ),
+      title: t("reports.abc.summary.classB_title"),
       count: classCounts.B,
-      description: t(
-        "reports.abc.summary.classB_desc",
-        "Relevância intermediária para a receita (15%). Boas oportunidades de promoção para se tornarem Classe A."
-      ),
+      description: t("reports.abc.summary.classB_desc"),
       colorClass: "text-sky-500",
     },
     {
       icon: LuArchive,
-      title: t("reports.abc.summary.classC_title", "Classe C: A Longa Cauda"),
+      title: t("reports.abc.summary.classC_title"),
       count: classCounts.C,
-      description: t(
-        "reports.abc.summary.classC_desc",
-        "Muitos produtos que vendem pouco individualmente (5% da receita). Revise-os: são novos, de nicho, ou apenas ocupam espaço?"
-      ),
+      description: t("reports.abc.summary.classC_desc"),
       colorClass: "text-gray-500",
     },
   ];

@@ -33,36 +33,36 @@ const FinancialSummaryCard: React.FC<FinancialSummaryCardProps> = ({ data, isLoa
   const { t } = useTranslation();
 
   if (isLoading) {
-    return <Card className="p-6 text-center">{t('common.loading', 'Loading...')}</Card>;
+    return <Card className="p-6 text-center">{t('common.loading')}</Card>;
   }
   if (!data) {
-    return <Card className="p-6 text-center">{t('reports.noData', 'No data for the selected period.')}</Card>;
+    return <Card className="p-6 text-center">{t('reports.noData')}</Card>;
   }
 
   return (
     <Card>
       <div className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-border-light dark:divide-border-dark">
         <div className="flex-1 flex flex-col p-4">
-          <h3 className="font-semibold text-lg mb-2">{t('reports.summary.grossProfit', 'Gross Profit')}</h3>
+          <h3 className="font-semibold text-lg mb-2">{t('reports.summary.grossProfit')}</h3>
           <div className="flex divide-x divide-border-light dark:divide-border-dark rounded-lg border border-border-light dark:border-border-dark overflow-hidden">
-            <SummaryItem icon={LuDollarSign} title={t('reports.summary.profitValue', 'Profit')} value={data.grossProfit} isCurrency colorClass="text-green-500" />
-            <SummaryItem icon={LuTrendingUp} title={t('reports.summary.margin', 'Margin')} value={data.grossMargin} isCurrency={false} colorClass="text-green-500" />
+            <SummaryItem icon={LuDollarSign} title={t('reports.summary.profitValue')} value={data.grossProfit} isCurrency colorClass="text-green-500" />
+            <SummaryItem icon={LuTrendingUp} title={t('reports.summary.margin')} value={data.grossMargin} isCurrency={false} colorClass="text-green-500" />
           </div>
         </div>
 
         <div className="flex-1 flex flex-col p-4">
-          <h3 className="font-semibold text-lg mb-2">{t('reports.summary.netProfit', 'Net Profit')}</h3>
+          <h3 className="font-semibold text-lg mb-2">{t('reports.summary.netProfit')}</h3>
           <div className="flex divide-x divide-border-light dark:divide-border-dark rounded-lg border border-border-light dark:border-border-dark overflow-hidden">
-            <SummaryItem icon={LuShieldCheck} title={t('reports.summary.profitValue', 'Profit')} value={data.netProfit} isCurrency colorClass="text-blue-500" />
-            <SummaryItem icon={LuTrendingUp} title={t('reports.summary.margin', 'Margin')} value={data.netMargin} isCurrency={false} colorClass="text-blue-500" />
+            <SummaryItem icon={LuShieldCheck} title={t('reports.summary.profitValue')} value={data.netProfit} isCurrency colorClass="text-blue-500" />
+            <SummaryItem icon={LuTrendingUp} title={t('reports.summary.margin')} value={data.netMargin} isCurrency={false} colorClass="text-blue-500" />
           </div>
         </div>
         
         <div className="flex-1 flex flex-col p-4">
-          <h3 className="font-semibold text-lg mb-2">{t('reports.summary.operatingProfit', 'Operating Profit')}</h3>
+          <h3 className="font-semibold text-lg mb-2">{t('reports.summary.operatingProfit')}</h3>
           <div className="flex divide-x divide-border-light dark:divide-border-dark rounded-lg border border-border-light dark:border-border-dark overflow-hidden">
-            <SummaryItem icon={LuBriefcase} title={t('reports.summary.profitValue', 'Profit')} value={data.operatingProfit} isCurrency colorClass="text-purple-500" />
-            <SummaryItem icon={LuTrendingUp} title={t('reports.summary.margin', 'Margin')} value={data.operatingMargin} isCurrency={false} colorClass="text-purple-500" />
+            <SummaryItem icon={LuBriefcase} title={t('reports.summary.profitValue')} value={data.operatingProfit} isCurrency colorClass="text-purple-500" />
+            <SummaryItem icon={LuTrendingUp} title={t('reports.summary.margin')} value={data.operatingMargin} isCurrency={false} colorClass="text-purple-500" />
           </div>
         </div>
       </div>

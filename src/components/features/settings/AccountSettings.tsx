@@ -8,7 +8,7 @@ import Button from '../../common/ui/Button';
 import Input from '../../common/ui/Input';
 import Card from '../../common/ui/Card';
 import {
-  LuUser, LuMail, LuLock, LuLogOut, LuTrash2, LuUserPlus,
+  LuUser, LuLogOut, LuTrash2, LuUserPlus,
   LuPencil, LuCopy, LuEye, LuEyeOff, LuCheck, LuX
 } from 'react-icons/lu';
 import { useNavigate } from 'react-router-dom';
@@ -31,7 +31,7 @@ const AccountSettings: React.FC = () => {
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
-    notificationService.success(t('common.copied', 'Copied!'));
+    notificationService.success(t('common.copied'));
   };
 
   const cancelEdit = () => {
@@ -157,29 +157,29 @@ const AccountSettings: React.FC = () => {
     <div className="space-y-6">
       <Card>
         <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-          <LuUser className="text-brand-primary" /> {t('settings.account.title', 'Account Profile')}
+          <LuUser className="text-brand-primary" /> {t('settings.account.title')}
         </h2>
 
         <dl className="mt-2 divide-y divide-border-light dark:divide-border-dark">
-          <InfoRow label={t('common.username', 'Username')} value={user?.username || ''} field="username" />
-          <InfoRow label={t('common.email', 'Email Address')} value={user?.email || ''} field="email" />
-          <InfoRow label={t('common.password', 'Password')} value="" field="password" isSecret />
+          <InfoRow label={t('common.username')} value={user?.username || ''} field="username" />
+          <InfoRow label={t('common.email')} value={user?.email || ''} field="email" />
+          <InfoRow label={t('common.password')} value="" field="password" isSecret />
         </dl>
       </Card>
 
       <Card className="border-red-200 dark:border-red-900/50 bg-red-50/30 dark:bg-red-900/10">
-        <h2 className="text-lg font-semibold text-red-600 mb-4">{t('settings.account.dangerZone', 'Danger Zone')}</h2>
+        <h2 className="text-lg font-semibold text-red-600 mb-4">{t('settings.account.dangerZone')}</h2>
         <div className="flex flex-wrap gap-3">
           <Button variant="secondary" onClick={logout} iconLeft={<LuLogOut />}>
-            {t('actions.logout', 'Sign Out')}
+            {t('actions.logout')}
           </Button>
 
           <Button variant="secondary" onClick={() => navigate('/register')} iconLeft={<LuUserPlus />}>
-            {t('actions.registerNew', 'Register New Account')}
+            {t('actions.registerNew')}
           </Button>
 
           <Button variant="danger" onClick={handleDeleteAccount} iconLeft={<LuTrash2 />}>
-            {t('actions.deleteAccount', 'Delete My Account')}
+            {t('actions.deleteAccount')}
           </Button>
         </div>
       </Card>

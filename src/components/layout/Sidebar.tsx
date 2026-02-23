@@ -17,49 +17,55 @@ import ThemeToggleButton from './common/ThemeToggleButton';
 interface NavItem {
   path: string;
   labelKey: string;
-  defaultLabel: string;
   icon: IconType;
 }
 
 interface NavGroup {
-  groupLabel: string;
+  groupLabelKey: string;
   children: NavItem[];
 }
 
 const Sidebar: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLanguage = i18n.resolvedLanguage?.startsWith('pt') ? 'pt' : 'en';
 
   const mainNavItems: (NavItem | NavGroup)[] = [
     {
-      groupLabel: 'Overview',
+      groupLabelKey: 'sidebar.groups.overview',
       children: [
-        { path: '/', labelKey: 'sidebar.dashboard', defaultLabel: 'Dashboard', icon: LuLayoutDashboard },
-        { path: '/reports', labelKey: 'sidebar.reports', defaultLabel: 'Reports', icon: LuChartBar },
+        { path: '/', labelKey: 'sidebar.dashboard', icon: LuLayoutDashboard },
+        { path: '/reports', labelKey: 'sidebar.reports', icon: LuChartBar },
       ],
     },
     {
-      groupLabel: 'Finance',
+      groupLabelKey: 'sidebar.groups.finance',
       children: [
-        { path: '/sales', labelKey: 'sidebar.sales', defaultLabel: 'Sales', icon: LuShoppingCart },
-        { path: '/expenses', labelKey: 'sidebar.expenses', defaultLabel: 'Expenses', icon: LuDollarSign },
+        { path: '/sales', labelKey: 'sidebar.sales', icon: LuShoppingCart },
+        { path: '/expenses', labelKey: 'sidebar.expenses', icon: LuDollarSign },
       ],
     },
     {
-      groupLabel: 'Operations',
+      groupLabelKey: 'sidebar.groups.operations',
       children: [
-        { path: '/products', labelKey: 'sidebar.products', defaultLabel: 'Products', icon: LuPackage },
-        { path: '/customers', labelKey: 'sidebar.customers', defaultLabel: 'Customers', icon: LuUsers },
+        { path: '/products', labelKey: 'sidebar.products', icon: LuPackage },
+        { path: '/customers', labelKey: 'sidebar.customers', icon: LuUsers },
       ],
     },
   ];
   
   const footerNavItem: NavItem = {
-    path: '/settings', labelKey: 'sidebar.settings', defaultLabel: 'Settings', icon: LuSettings,
+    path: '/settings', labelKey: 'sidebar.settings', icon: LuSettings,
   };
 
   const linkBaseClasses = 'flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium transition-colors duration-150';
   const linkInactiveClasses = 'text-text-secondary hover:bg-gray-100 hover:text-text-primary dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white';
   const linkActiveClasses = 'text-brand-primary bg-brand-primary/10  dark:bg-brand-primary/10 dark:text-brand-accent font-semibold';
+  const languageButtonBaseClasses =
+    'px-3 py-1.5 text-xs rounded-btn border transition-colors duration-150';
+  const languageButtonActiveClasses =
+    'bg-brand-primary text-white border-brand-primary dark:bg-brand-primary dark:text-white dark:border-brand-primary';
+  const languageButtonInactiveClasses =
+    'bg-transparent text-text-secondary border-border-light hover:text-text-primary hover:border-brand-primary dark:text-gray-300 dark:border-border-dark dark:hover:text-white dark:hover:border-brand-primary';
 
   return (
     <aside className="w-64 flex-shrink-0 bg-card-light dark:bg-card-dark border-r border-border-light dark:border-border-dark flex flex-col">
@@ -71,10 +77,10 @@ const Sidebar: React.FC = () => {
       
       <nav className="flex-1 p-4 space-y-4">
         {mainNavItems.map((item) => (
-          'groupLabel' in item ? (
-            <div key={item.groupLabel}>
+          'groupLabelKey' in item ? (
+            <div key={item.groupLabelKey}>
               <div className="px-3 text-xs uppercase text-text-secondary dark:text-gray-400 font-semibold mb-1">
-                {item.groupLabel}
+                {t(item.groupLabelKey)}
               </div>
               <div className="space-y-1">
                 {item.children.map((child) => (
@@ -90,7 +96,7 @@ const Sidebar: React.FC = () => {
                     }
                   >
                     <child.icon className="h-5 w-5 flex-shrink-0" />
-                    <span>{t(child.labelKey, child.defaultLabel)}</span>
+                    <span>{t(child.labelKey)}</span>
                   </NavLink>
                 ))}
               </div>
@@ -105,7 +111,7 @@ const Sidebar: React.FC = () => {
               }
             >
               <item.icon className="h-5 w-5 flex-shrink-0" />
-              <span>{t(item.labelKey, item.defaultLabel)}</span>
+              <span>{t(item.labelKey)}</span>
             </NavLink>
           )
         ))}
@@ -114,6 +120,33 @@ const Sidebar: React.FC = () => {
       <div className="p-4 border-t border-border-light dark:border-border-dark">
         <ThemeToggleButton />
         <div className="mt-4">
+          <p className="px-1 text-xs uppercase text-text-secondary dark:text-gray-400 font-semibold mb-2">
+            {t('sidebar.language')}
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => i18n.changeLanguage('pt')}
+              className={clsx(
+                languageButtonBaseClasses,
+                currentLanguage === 'pt' ? languageButtonActiveClasses : languageButtonInactiveClasses
+              )}
+            >
+              {t('sidebar.portuguese')}
+            </button>
+            <button
+              type="button"
+              onClick={() => i18n.changeLanguage('en')}
+              className={clsx(
+                languageButtonBaseClasses,
+                currentLanguage === 'en' ? languageButtonActiveClasses : languageButtonInactiveClasses
+              )}
+            >
+              {t('sidebar.english')}
+            </button>
+          </div>
+        </div>
+        <div className="mt-4">
           <NavLink
             to={footerNavItem.path}
             className={({ isActive }) =>
@@ -121,7 +154,7 @@ const Sidebar: React.FC = () => {
             }
           >
             <footerNavItem.icon className="h-5 w-5 flex-shrink-0" />
-            <span>{t(footerNavItem.labelKey, footerNavItem.defaultLabel)}</span>
+            <span>{t(footerNavItem.labelKey)}</span>
           </NavLink>
         </div>
       </div>

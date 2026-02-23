@@ -22,7 +22,7 @@ const ExpenseDetailsDrawer: React.FC<ExpenseDetailsDrawerProps> = ({
         <aside className="h-full flex flex-col rounded-card border border-border-light bg-brand-primary/10 dark:!bg-brand-accent/10 dark:text-white">
             <header className="flex items-center justify-between p-4 border-b border-border-light dark:border-border-dark ">
                 <h2 className="text-lg font-semibold">
-                    {t('expense.detailsTitle', 'Expense Details')} - {expense.name}
+                    {t('expense.detailsTitle')} - {expense.name}
                 </h2>
                 <div className="flex items-center">
                     <Button variant="ghost" size="icon" onClick={() => onEdit(expense)} title={t('actions.edit')} iconLeft={<LuPencil />} />
@@ -37,13 +37,13 @@ const ExpenseDetailsDrawer: React.FC<ExpenseDetailsDrawerProps> = ({
                     <DetailRow label={t('common.value')} value={formatCurrency(expense.value)} />
                     <DetailRow label={t('common.category')} value={
                         <Badge variant="subtle" colorScheme="blue">
-                            {t(`expenseCategories.${expense.expenseType}`, expense.expenseType)}
+                            {t(`expenseCategories.${expense.expenseType.toLowerCase()}`)}
                         </Badge>
                     } />
                     <DetailRow label={t('expense.expenseDate')} value={formatDate(expense.expenseDate, { showTime: true })} />
                     <DetailRow label={t('common.paymentMethod')} value={
                         <Badge variant="outline" colorScheme="gray">
-                            {t(`paymentMethods.${expense.paymentMethod.toLowerCase()}`, expense.paymentMethod)}
+                            {t(`paymentMethods.${expense.paymentMethod.toLowerCase()}`)}
                         </Badge>
                     } />
                     <DetailRow label={t('common.createdAt')} value={formatDate(expense.updatedAt)} />

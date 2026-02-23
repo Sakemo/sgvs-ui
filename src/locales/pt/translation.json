@@ -21,18 +21,37 @@
     "loading": "Carregando...",
     "notApplicable": "N/A",
     "items": "Itens",
+    "total": "Total",
     "date": "Data",
+    "createdAt": "Criado em",
+    "updatedAt": "Atualizado em",
+    "username": "Usuário",
+    "email": "E-mail",
+    "password": "Senha",
+    "copied": "Copiado!",
     "allClients": "Todos os Clientes",
     "allProducts": "Todos os Produtos",
-    "allPaymentMethods": "Todas as Formas"
+    "allPaymentMethods": "Todas as Formas",
+    "allCategories": "Todas as Categorias",
+    "on": "Ligado",
+    "off": "Desligado"
   },
   "sidebar": {
     "dashboard": "Dashboard",
+    "reports": "Relatórios",
     "sales": "Vendas",
     "products": "Produtos",
     "customers": "Clientes",
     "expenses": "Despesas",
-    "settings": "Configurações"
+    "settings": "Configurações",
+    "language": "Idioma",
+    "portuguese": "Português",
+    "english": "Inglês",
+    "groups": {
+      "overview": "Visão Geral",
+      "finance": "Financeiro",
+      "operations": "Operações"
+    }
   },
   "actions": {
     "add": "Adicionar",
@@ -47,10 +66,22 @@
     "saveChanges": "Salvar Alterações",
     "create": "Criar",
     "close": "Fechar",
+    "keepCreatingSales": "Registrar e iniciar nova venda",
     "confirm": "Você tem certeza que deseja",
     "activate": "Ativar",
     "deactivate": "Desativar",
-    "confirmDeletePermanent": "Deletar permanentemente este item? Esta ação não pode ser desfeita."
+    "confirmDeletePermanent": "Deletar permanentemente este item? Esta ação não pode ser desfeita.",
+    "advancedOptions": "Opções Avançadas",
+    "keepAdding": "Continuar adicionando",
+    "show": "Mostrar",
+    "hide": "Ocultar",
+    "logout": "Sair",
+    "registerNew": "Cadastrar Nova Conta",
+    "deleteAccount": "Excluir Minha Conta"
+  },
+  "theme": {
+    "switchToDark": "Modo Escuro",
+    "switchToLight": "Modo Claro"
   },
   "filter": {
     "filterBy": "Filtrar por",
@@ -61,19 +92,102 @@
     "oldest": "Mais Antigo",
     "highestValue": "Maior Valor",
     "lowestValue": "Menor Valor",
+    "thisWeek": "Esta Semana",
     "today": "Hoje",
     "thisMonth": "Este Mês",
     "thisYear": "Este Ano",
     "allTime": "Ver Tudo"
   },
+  "report": {
+    "abc": {
+      "title": "Análise ABC de Produtos",
+      "description": "Classifique produtos com base na contribuição para a receita.",
+      "class": "Classe",
+      "contribution": "Contribuição",
+      "cumulative": "Acumulado",
+      "noData": "Sem dados disponíveis para o período selecionado."
+    }
+  },
+  "reports": {
+    "pageTitle": "Relatórios",
+    "noData": "Sem dados para o período selecionado.",
+    "summary": {
+      "grossProfit": "Lucro Bruto",
+      "netProfit": "Lucro Líquido",
+      "operatingProfit": "Lucro Operacional",
+      "profitValue": "Lucro",
+      "margin": "Margem"
+    },
+    "abc": {
+      "summary": {
+        "classA_title": "Classe A: Produtos Vitais",
+        "classA_desc": "Poucos itens que geram a maior parte da receita (80%). Monitore o estoque de perto.",
+        "classB_title": "Classe B: Produtos Importantes",
+        "classB_desc": "Contribuição intermediária (15%). Podem crescer com promoções e posicionamento.",
+        "classC_title": "Classe C: Longa Cauda",
+        "classC_desc": "Muitos itens com baixa contribuição individual (5%). Revise mix e giro."
+      }
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "grossRevenue": "Receita Bruta",
+    "netProfit": "Lucro Líquido",
+    "totalExpenses": "Despesas Totais",
+    "totalReceivables": "Contas a Receber",
+    "averageTicket": "Ticket Médio",
+    "vsPreviousPeriod": "vs. período anterior",
+    "revenueProfitTrend": "Tendência de Receita e Lucro",
+    "revenue": "Receita",
+    "profit": "Lucro",
+    "receivables": "Recebíveis",
+    "salesByPaymentMethod": "Vendas por Forma de Pagamento",
+    "topSellingProducts": "Produtos Mais Vendidos",
+    "noSalesData": "Sem dados de vendas para este período.",
+    "lowStockAlerts": "Alertas de Estoque Baixo",
+    "lowStockUnitsAndMinimum": "{{currentStock}} unidades (mínimo: {{minimumStock}})"
+  },
   "errors": {
     "fetchProducts": "Falha ao carregar produtos.",
+    "fetchDashboardData": "Falha ao carregar os dados do dashboard.",
+    "fetchLowStockProducts": "Falha ao carregar produtos com estoque baixo.",
+    "fetchReport": "Falha ao gerar relatórios.",
+    "fetchExpenses": "Falha ao carregar despesas.",
+    "fetchCustomers": "Falha ao carregar clientes.",
     "fetchCategories": "Falha ao carregar categorias.",
     "fetchInitialData": "Falha ao carregar dados da página.",
     "toggleStatus": "Falha ao atualizar status.",
     "copyProduct": "Falha ao copiar produto.",
     "deleteProduct": "Falha ao deletar produto.",
+    "deleteExpense": "Falha ao deletar despesa.",
+    "deleteCustomer": "Falha ao deletar cliente.",
+    "saveSettings": "Falha ao salvar configurações.",
+    "updateProfile": "Falha ao atualizar perfil.",
+    "deleteAccount": "Falha ao excluir conta.",
     "genericSave": "Ocorreu um erro inesperado ao salvar."
+  },
+  "settings": {
+    "pageTitle": "Configurações",
+    "saveSuccess": "Configurações salvas com sucesso.",
+    "stock": {
+      "title": "Gestão de Estoque",
+      "globalTitle": "Controle Global",
+      "globalDesc": "Valida e baixa estoque de todos os produtos em cada venda.",
+      "perItemTitle": "Controle por Item",
+      "perItemDesc": "Gerencie estoque por produto. Só itens com controle ativo serão validados.",
+      "noneTitle": "Sem Controle",
+      "noneDesc": "A validação de estoque fica desativada e os níveis não são atualizados."
+    },
+    "account": {
+      "title": "Perfil da Conta",
+      "dangerZone": "Zona de Perigo",
+      "updateSuccess": "Perfil atualizado com sucesso.",
+      "deleteTitle": "Excluir conta?",
+      "deleteDesc": "Esta ação é permanente e removerá sua conta."
+    }
+  },
+  "payment": {
+    "success": "Pagamento registrado com sucesso."
   },
   "product": {
     "objectName": "Produto",
@@ -87,6 +201,7 @@
       "name": "Nome",
       "category": "Categoria",
       "salePrice": "Preço",
+      "margin": "Margem",
       "stock": "Estoque",
       "status": "Status",
       "lastUpdated": "Última Atualização",
@@ -95,6 +210,7 @@
     "form": {
       "name": "Nome do Produto",
       "activeProduct": "Produto Ativo",
+      "managesStock": "Controla Estoque",
       "salePrice": "Preço de Venda",
       "costPrice": "Preço de Custo"
     },
@@ -107,7 +223,16 @@
     },
     "unitOfSale": "Unidade de Venda",
     "provider": "Fornecedor",
-    "barcode": "Código de Barras"
+    "barcode": "Código de Barras",
+    "salePrice": "Preço de Venda",
+    "costPrice": "Preço de Custo",
+    "minimumStock": "Estoque Mínimo",
+    "margin": "Margem de Lucro",
+    "desiredMargin": "Margem (%)",
+    "smartPricing": "Precificação Inteligente",
+    "details": {
+      "title": "Detalhes do Produto"
+    }
   },
   "customer": {
     "objectName": "Cliente",
@@ -125,6 +250,8 @@
     "allowCredit": "Permitir compras no fiado?",
     "noCustomersFound": "Nenhum cliente encontrado com os seus critérios.",
     "confirmToggle": "Você tem certeza?",
+    "confirmToggleDesc": "Tem certeza? Isso pode afetar vendas em andamento.",
+    "statusUpdated": "Status atualizado - {{action}}",
     "sort": {
         "az": "Nome (A-Z)",
         "za": "Nome (Z-A)",
@@ -135,6 +262,7 @@
   "sale": {
     "pageTitle": "Vendas",
     "addSale": "Registrar Venda",
+    "grossRevenue": "Receita",
     "grossTotal": "Total Bruto",
     "netProfit": "Lucro Líquido",
     "totalByAllMethods": "Total (Todas as Formas)",
@@ -145,11 +273,32 @@
     "addItem": "Adicionar Item",
     "quantity": "Quantidade",
     "registerSale": "Registrar Venda",
+    "itemsInSale": "Itens da Venda",
     "items": "Itens",
     "saleDate": "Data da Venda",
     "details": {
       "title": "Detalhes da Venda"
     }
+  },
+  "expense": {
+    "pageTitle": "Despesas",
+    "addTitle": "Adicionar Despesa",
+    "editTitle": "Editar Despesa",
+    "detailsTitle": "Detalhes da Despesa",
+    "expenseType": "Tipo de Despesa",
+    "expenseDate": "Data da Despesa",
+    "addRestockItems": "Adicionar Itens de Reposição",
+    "confirmDeleteTitle": "Excluir despesa?",
+    "deleteSuccess": "Despesa excluída com sucesso.",
+    "saveSuccess": "Despesa salva com sucesso.",
+    "noExpenseFound": "Nenhuma despesa encontrada."
+  },
+  "expenseCategories": {
+    "restocking": "Reposição de Estoque",
+    "personal": "Pessoal",
+    "business": "Negócio",
+    "investment": "Investimento",
+    "others": "Outros"
   },
   "paymentMethods": {
     "cash": "Dinheiro",
@@ -157,5 +306,10 @@
     "credit": "Crédito",
     "on_credit": "Fiado",
     "bank_transfer": "PIX / Transferência"
+  },
+  "unitOfSale": {
+    "unit": "un",
+    "weight": "kg",
+    "volume": "L"
   }
 }

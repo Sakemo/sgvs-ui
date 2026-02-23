@@ -14,7 +14,7 @@ const TopProductsList: React.FC<TopProductsListProps> = ({ data, isLoading }) =>
 
   return (
     <Card className="h-full flex flex-col">
-      <h2 className="text-lg font-semibold mb-4">{t('dashboard.topSellingProducts', 'Top Selling Products')}</h2>
+      <h2 className="text-lg font-semibold mb-4">{t('dashboard.topSellingProducts')}</h2>
       
       {isLoading ? (
         <div className="space-y-4 animate-pulse">
@@ -45,7 +45,7 @@ const TopProductsList: React.FC<TopProductsListProps> = ({ data, isLoading }) =>
             </ul>
           ) : (
             <div className="flex items-center justify-center h-full text-sm text-text-secondary">
-              {t('dashboard.noSalesData', 'No sales data for this period.')}
+              {t('dashboard.noSalesData')}
             </div>
           )}
         </div>

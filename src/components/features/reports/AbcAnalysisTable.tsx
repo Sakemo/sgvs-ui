@@ -18,7 +18,7 @@ const AbcAnalysisTable: React.FC<AbcAnalysisTableProps> = ({ data, isLoading }) 
 
   const columns: TableColumn<AbcAnalysisRow>[] = [
     {
-      header: t('report.abc.class', 'Class'),
+      header: t('report.abc.class'),
       accessor: (row) => (
         <Badge
           colorScheme={row.abcClass === 'A' ? 'green' : row.abcClass === 'B' ? 'yellow' : 'gray'}
@@ -31,22 +31,22 @@ const AbcAnalysisTable: React.FC<AbcAnalysisTableProps> = ({ data, isLoading }) 
       width: 'w-24',
     },
     {
-      header: t('product.objectName', 'Product'),
+      header: t('product.objectName'),
       accessor: 'productName',
       headerClassName: 'w-2/5',
     },
     {
-      header: t('sale.grossRevenue', 'Revenue'),
+      header: t('sale.grossRevenue'),
       accessor: (row) => formatCurrency(row.totalRevenue),
       className: 'text-right font-medium',
     },
     {
-      header: t('report.abc.contribution', 'Contribution'),
+      header: t('report.abc.contribution'),
       accessor: (row) => `${row.percentageOfTotalRevenue.toFixed(2)}%`,
       className: 'text-right',
     },
     {
-      header: t('report.abc.cumulative', 'Cumulative'),
+      header: t('report.abc.cumulative'),
       accessor: (row) => `${row.cumulativePercentage.toFixed(2)}%`,
       className: 'text-right font-semibold',
     },
@@ -58,7 +58,7 @@ const AbcAnalysisTable: React.FC<AbcAnalysisTableProps> = ({ data, isLoading }) 
       data={data}
       keyExtractor={(row) => row.productId}
       isLoading={isLoading}
-      emptyMessage={t('report.abc.noData', 'No data available for the selected period.')}
+      emptyMessage={t('report.abc.noData')}
     >
       {(row) => (
         <tr key={row.productId} className="hover:bg-gray-50 dark:hover:bg-white/5">

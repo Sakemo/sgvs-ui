@@ -28,9 +28,9 @@ const ReportsPage: React.FC = () => {
   const [endDate, setEndDate] = useState(endOfMonth(new Date()));
 
   const dateFilterOptions = [
-    { key: 'this_week' as DateFilterOption, label: t('filter.thisWeek', 'This Week') },
-    { key: 'this_month' as DateFilterOption, label: t('filter.thisMonth', 'This Month') },
-    { key: 'this_year' as DateFilterOption, label: t('filter.thisYear', 'This Year') },
+    { key: 'this_week' as DateFilterOption, label: t('filter.thisWeek') },
+    { key: 'this_month' as DateFilterOption, label: t('filter.thisMonth') },
+    { key: 'this_year' as DateFilterOption, label: t('filter.thisYear') },
   ];
 
   const handleDateFilterSelect = (option: DateFilterOption) => {
@@ -74,7 +74,7 @@ const ReportsPage: React.FC = () => {
       setAbcData(abcReport);
       setSummaryData(summaryReport);
     } catch (error) {
-      notificationService.error(t('errors.fetchReport' + error, 'Failed to generate reports.'));
+      notificationService.error(t('errors.fetchReport'));
     } finally {
       setIsLoading(false);
     }
@@ -87,7 +87,7 @@ const ReportsPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-semibold dark:text-gray-200">{t('reports.pageTitle', 'Reports')}</h1>
+        <h1 className="text-2xl font-semibold dark:text-gray-200">{t('reports.pageTitle')}</h1>
       </header>
 
       <FinancialSummaryCard data={summaryData} isLoading={isLoading} />
@@ -95,8 +95,8 @@ const ReportsPage: React.FC = () => {
       <Card>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex-grow">
-                <h2 className="text-lg font-semibold">{t('report.abc.title', 'ABC Analysis of Products')}</h2>
-                <p className="text-sm text-text-secondary">{t('report.abc.description', 'Classify products based on their revenue contribution.')}</p>
+                <h2 className="text-lg font-semibold">{t('report.abc.title')}</h2>
+                <p className="text-sm text-text-secondary">{t('report.abc.description')}</p>
             </div>
             <div className="w-full sm:w-56">
                 <DateFilterDropdown

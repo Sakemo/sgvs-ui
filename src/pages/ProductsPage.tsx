@@ -208,7 +208,7 @@ const ProductsPage: React.FC = () => {
                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleFilterChange('categoryId', e.target.value ? Number(e.target.value) : undefined)}
                     >
                         {/* O texto das opções herda a cor do <select> */}
-                        <option value="">{t('product.allCategories', 'All Categories')}</option>
+                        <option value="">{t('common.allCategories')}</option>
                         {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
                     </Select>
                     <Select

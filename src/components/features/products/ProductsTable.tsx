@@ -2,7 +2,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
-import { type ProductResponse, UnitOfSale } from '../../../api/types/domain';
+import { type ProductResponse } from '../../../api/types/domain';
 
 import Table, { type TableColumn } from '../../common/Table';
 import Button from '../../common/ui/Button';
@@ -38,7 +38,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
     { header: t('product.table.name'), accessor: 'name', headerClassName: 'w-1/3' },
     { header: t('product.table.category'), accessor: (row) => row.category?.name || '—' },
     { header: t('product.table.salePrice'), accessor: (row) => formatCurrency(row.salePrice), className: 'text-right font-medium' },
-    { header: t('product.table.margin', 'Profit Margin'), accessor: (row) => {
+    { header: t('product.table.margin'), accessor: (row) => {
       const margin = calculateProfitMargin(row.salePrice, row.costPrice);
       return (
         <Badge variant="subtle" colorScheme={marginBadgeColors[margin.status]}>
@@ -47,7 +47,11 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
       )
     }, className: 'text-center',
     headerClassName: 'text-center', },
-    { header: t('product.table.stock'), accessor: (row) => `${row.stockQuantity} ${row.unitOfSale === UnitOfSale.UNIT ? 'un' : 'kg/L'}`, className: 'text-center' },
+    {
+      header: t('product.table.stock'),
+      accessor: (row) => `${row.stockQuantity} ${t(`unitOfSale.${row.unitOfSale.toLowerCase()}`)}`,
+      className: 'text-center'
+    },
     { header: t('product.table.status'), accessor: (row) => ( <Badge variant="outline" colorScheme={row.active ? 'green' : 'gray'}>{row.active ? t('common.active') : t('common.inactive')}</Badge> ), className: 'text-center' },
     { header: t('product.table.lastUpdated'), accessor: (row) => formatTimeAgo(row.updatedAt) },
     {
