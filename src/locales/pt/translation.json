@@ -45,8 +45,8 @@
     "expenses": "Despesas",
     "settings": "Configurações",
     "language": "Idioma",
-    "portuguese": "Português",
-    "english": "Inglês",
+    "portuguese": "PT-BR",
+    "english": "EN-US",
     "groups": {
       "overview": "Visão Geral",
       "finance": "Financeiro",
@@ -169,6 +169,11 @@
   "settings": {
     "pageTitle": "Configurações",
     "saveSuccess": "Configurações salvas com sucesso.",
+    "language": {
+      "title": "Idioma Padrão",
+      "description": "Define o idioma padrão da aplicação.",
+      "label": "Idioma"
+    },
     "stock": {
       "title": "Gestão de Estoque",
       "globalTitle": "Controle Global",
@@ -184,6 +189,49 @@
       "updateSuccess": "Perfil atualizado com sucesso.",
       "deleteTitle": "Excluir conta?",
       "deleteDesc": "Esta ação é permanente e removerá sua conta."
+    }
+  },
+  "auth": {
+    "systemCaption": "flick.business",
+    "errors": {
+      "network": "Sem conexão com o servidor. Verifique sua internet e tente novamente.",
+      "timeout": "O servidor demorou para responder. Tente novamente em instantes.",
+      "invalidCredentials": "Usuário/e-mail ou senha inválidos.",
+      "duplicateUser": "Usuário ou e-mail já cadastrado.",
+      "passwordRequirements": "A senha deve ter entre 8 e 100 caracteres.",
+      "invalidLoginData": "Revise os dados de login e tente novamente.",
+      "invalidRegisterData": "Revise os dados de cadastro e tente novamente.",
+      "tooManyAttempts": "Muitas tentativas. Aguarde um pouco antes de tentar novamente.",
+      "server": "Erro interno no servidor. Tente novamente em alguns minutos."
+    },
+    "login": {
+      "title": "Entre na sua conta",
+      "subtitle": "Gerencie suas vendas e estoque",
+      "identifierLabel": "Usuário ou E-mail",
+      "identifierPlaceholder": "Seu usuário ou e-mail",
+      "passwordPlaceholder": "Sua senha",
+      "submit": "Entrar",
+      "loading": "Entrando...",
+      "noAccount": "Não tem uma conta?",
+      "registerLink": "Cadastre-se",
+      "success": "Login realizado com sucesso!",
+      "error": "Erro de conexão. Tente novamente."
+    },
+    "register": {
+      "title": "Criar nova conta",
+      "subtitle": "Comece a gerenciar suas vendas",
+      "usernamePlaceholder": "Seu nome de usuário",
+      "emailPlaceholder": "seu@email.com",
+      "passwordPlaceholder": "Sua senha",
+      "confirmPasswordLabel": "Confirmar Senha",
+      "confirmPasswordPlaceholder": "Confirme sua senha",
+      "submit": "Criar conta",
+      "loading": "Criando conta...",
+      "hasAccount": "Já tem uma conta?",
+      "loginLink": "Faça login",
+      "passwordMismatch": "As senhas não coincidem",
+      "success": "Conta criada com sucesso!",
+      "error": "Erro ao criar conta"
     }
   },
   "payment": {

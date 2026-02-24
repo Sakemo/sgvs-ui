@@ -8,18 +8,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        'brand-primary': '#00BFFF',          // Deep Sky Blue
-        'brand-accent': '#7DF9FF',           // Electric Blue
-        'brand-secondary-accent': '#8A2BE2', // Blue Violet
-        'brand-muted': '#A3A3A3',            // Gray
-        'bg-light': '#F8F9FA',               // Off-white
-        'bg-dark': '#1A202C',                // Dark Slate
-        'card-light': '#FFFFFF',             // White
-        'card-dark': '#2D3748',              // Darker Slate
-        'text-primary': '#1F2937',           // Dark Gray
-        'text-secondary': '#6B7280',         // Medium Gray
-        'border-light': '#E5E7EB',           // Light Gray
-        'border-dark': '#4A5568',            // Lighter Dark Gray (ajustado de 700 para 600 para melhor contraste)
+        'brand-primary': '#7AA2F7',          // Tokyo Night Blue
+        'brand-accent': '#7DCFFF',           // Tokyo Night Cyan
+        'brand-secondary-accent': '#BB9AF7', // Tokyo Night Magenta
+        'brand-muted': '#565F89',            // Tokyo Night Comment
+        'bg-light': '#E1E2E7',               // Tokyo Night Day Background
+        'bg-dark': '#1A1B26',                // Tokyo Night Night Background
+        'card-light': '#FFFFFF',             // Elevated Light Surface
+        'card-dark': '#24283B',              // Tokyo Night Surface
+        'text-primary': '#1F2335',           // Tokyo Night Day Foreground
+        'text-secondary': '#545C7E',         // Tokyo Night Muted Foreground
+        'border-light': '#C0CAF5',           // Tokyo Night Day Border
+        'border-dark': '#414868',            // Tokyo Night Night Border
       },
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],

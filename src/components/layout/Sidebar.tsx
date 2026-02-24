@@ -71,7 +71,7 @@ const Sidebar: React.FC = () => {
     <aside className="w-64 flex-shrink-0 bg-card-light dark:bg-card-dark border-r border-border-light dark:border-border-dark flex flex-col">
       <div className="p-4 border-b border-border-light dark:border-border-dark">
         <h1 className="text-xl font-bold text-text-primary dark:text-white text-center">
-          SGVS<span className="text-brand-primary">.</span>
+          flick.business
         </h1>
       </div>
       

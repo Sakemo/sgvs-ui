@@ -3,8 +3,25 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { notificationService } from "../lib/notification.service";
 import { loginUser } from "../api/services/auth.service";
+import { useTranslation } from "react-i18next";
+import type { AuthResponse, User } from "../api/types/domain";
+import { getAuthErrorMessage } from "../lib/auth-error-message";
+
+const toUserFromAuthResponse = (
+  data: AuthResponse,
+  fallbackIdentifier: string
+): User => {
+  const user = data.user;
+  return {
+    id: user?.id ?? data.id ?? "unknown",
+    username: user?.username ?? data.username ?? fallbackIdentifier,
+    email: user?.email ?? data.email ?? "",
+    role: user?.role ?? data.role,
+  };
+};
 
 const LoginPage: React.FC = () => {
+  const { t } = useTranslation();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -22,12 +39,12 @@ const LoginPage: React.FC = () => {
         password,
       });
 
-      login(data.token, data.user || { id: '1', username: identifier, email: '' });
-      notificationService.success("Login realizado com sucesso!");
+      login(data.token, toUserFromAuthResponse(data, identifier));
+      notificationService.success(t("auth.login.success"));
       navigate("/");
 
     } catch (error) {
-      notificationService.error("Erro de conexão. Tente novamente.");
+      notificationService.error(getAuthErrorMessage(error, t, "login"));
       console.error("Login error:", error);
     } finally {
       setIsLoading(false);
@@ -39,13 +56,13 @@ const LoginPage: React.FC = () => {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-brand-primary dark:text-brand-accent mb-2">
-            SGVS
+            flick.business
           </h1>
           <h2 className="text-xl font-semibold text-text-primary dark:text-gray-200">
-            Entre na sua conta
+            {t("auth.login.title")}
           </h2>
           <p className="mt-2 text-sm text-text-secondary dark:text-gray-400">
-            Gerencie suas vendas e estoque
+            {t("auth.login.subtitle")}
           </p>
         </div>
 
@@ -58,7 +75,7 @@ const LoginPage: React.FC = () => {
               htmlFor="username"
               className="block text-sm font-medium text-text-primary dark:text-gray-200 mb-2"
             >
-              User or E-mail
+              {t("auth.login.identifierLabel")}
             </label>
             <input
               id="username"
@@ -69,7 +86,7 @@ const LoginPage: React.FC = () => {
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-primary dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-primary/50 dark:focus:ring-brand-accent/70 focus:border-transparent transition-colors"
-              placeholder="Your username or e-mail"
+              placeholder={t("auth.login.identifierPlaceholder")}
             />
           </div>
 
@@ -78,7 +95,7 @@ const LoginPage: React.FC = () => {
               htmlFor="password"
               className="block text-sm font-medium text-text-primary dark:text-gray-200 mb-2"
             >
-              Senha
+              {t("common.password")}
             </label>
             <input
               id="password"
@@ -89,7 +106,7 @@ const LoginPage: React.FC = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-primary dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-primary/50 dark:focus:ring-brand-accent/70 focus:border-transparent transition-colors"
-              placeholder="Your password"
+              placeholder={t("auth.login.passwordPlaceholder")}
             />
           </div>
 
@@ -99,18 +116,18 @@ const LoginPage: React.FC = () => {
               disabled={isLoading}
               className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-brand-primary hover:bg-brand-primary/90 dark:bg-brand-accent dark:hover:bg-brand-accent/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary/50 dark:focus:ring-brand-accent/70 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {isLoading ? "Entrando..." : "Entrar"}
+              {isLoading ? t("auth.login.loading") : t("auth.login.submit")}
             </button>
           </div>
 
           <div className="text-center">
             <span className="text-sm text-text-secondary dark:text-gray-400">
-              Não tem uma conta?{" "}
+              {t("auth.login.noAccount")}{" "}
               <Link
                 to="/register"
                 className="font-medium text-brand-primary hover:text-brand-primary/80 dark:text-brand-accent dark:hover:text-brand-accent/80 transition-colors"
               >
-                Cadastre-se
+                {t("auth.login.registerLink")}
               </Link>
             </span>
           </div>
@@ -118,7 +135,7 @@ const LoginPage: React.FC = () => {
 
         <div className="text-center">
           <p className="text-xs text-text-secondary dark:text-gray-500">
-            Sistema de Gestão de Vendas Simplificado
+            {t("auth.systemCaption")}
           </p>
         </div>
       </div>

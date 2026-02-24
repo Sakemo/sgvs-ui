@@ -45,8 +45,8 @@
     "expenses": "Expenses",
     "settings": "Settings",
     "language": "Language",
-    "portuguese": "Portuguese",
-    "english": "English",
+    "portuguese": "PT-BR",
+    "english": "EN-US",
     "groups": {
       "overview": "Overview",
       "finance": "Finance",
@@ -168,6 +168,11 @@
   "settings": {
     "pageTitle": "Settings",
     "saveSuccess": "Settings saved successfully.",
+    "language": {
+      "title": "Default Language",
+      "description": "Sets the application's default language.",
+      "label": "Language"
+    },
     "stock": {
       "title": "Stock Management",
       "globalTitle": "Global Control",
@@ -183,6 +188,49 @@
       "updateSuccess": "Profile updated successfully.",
       "deleteTitle": "Delete account?",
       "deleteDesc": "This action is permanent and will remove your account."
+    }
+  },
+  "auth": {
+    "systemCaption": "flick.business",
+    "errors": {
+      "network": "Cannot reach the server. Check your connection and try again.",
+      "timeout": "The server took too long to respond. Please try again shortly.",
+      "invalidCredentials": "Invalid username/email or password.",
+      "duplicateUser": "Username or email is already registered.",
+      "passwordRequirements": "Password must be between 8 and 100 characters.",
+      "invalidLoginData": "Review your login details and try again.",
+      "invalidRegisterData": "Review your registration details and try again.",
+      "tooManyAttempts": "Too many attempts. Wait a moment and try again.",
+      "server": "Internal server error. Please try again in a few minutes."
+    },
+    "login": {
+      "title": "Sign in to your account",
+      "subtitle": "Manage your sales and inventory",
+      "identifierLabel": "Username or Email",
+      "identifierPlaceholder": "Your username or email",
+      "passwordPlaceholder": "Your password",
+      "submit": "Sign in",
+      "loading": "Signing in...",
+      "noAccount": "Don't have an account?",
+      "registerLink": "Sign up",
+      "success": "Login successful!",
+      "error": "Connection error. Please try again."
+    },
+    "register": {
+      "title": "Create a new account",
+      "subtitle": "Start managing your sales",
+      "usernamePlaceholder": "Your username",
+      "emailPlaceholder": "your@email.com",
+      "passwordPlaceholder": "Your password",
+      "confirmPasswordLabel": "Confirm Password",
+      "confirmPasswordPlaceholder": "Confirm your password",
+      "submit": "Create account",
+      "loading": "Creating account...",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Log in",
+      "passwordMismatch": "Passwords do not match",
+      "success": "Account created successfully!",
+      "error": "Failed to create account"
     }
   },
   "payment": {

@@ -3,9 +3,26 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { notificationService } from '../lib/notification.service';
 import { registerUser } from '../api/services/auth.service';
-import type { AxiosError } from 'axios';
+import { useTranslation } from 'react-i18next';
+import type { AuthResponse, User } from '../api/types/domain';
+import { getAuthErrorMessage } from '../lib/auth-error-message';
+
+const toUserFromAuthResponse = (
+  data: AuthResponse,
+  fallbackUsername: string,
+  fallbackEmail: string
+): User => {
+  const user = data.user;
+  return {
+    id: user?.id ?? data.id ?? 'new',
+    username: user?.username ?? data.username ?? fallbackUsername,
+    email: user?.email ?? data.email ?? fallbackEmail,
+    role: user?.role ?? data.role,
+  };
+};
 
 const RegisterPage: React.FC = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -28,7 +45,7 @@ const RegisterPage: React.FC = () => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-      notificationService.error('As senhas não coincidem');
+      notificationService.error(t('auth.register.passwordMismatch'));
       return;
     }
 
@@ -41,15 +58,12 @@ const RegisterPage: React.FC = () => {
         password: formData.password
       });
 
-      // Login automático
-      const mockUser = { id: 'new', username: formData.username, email: formData.email };
-      login(data.token, mockUser);
+      login(data.token, toUserFromAuthResponse(data, formData.username, formData.email));
 
-      notificationService.success('Conta criada com sucesso!');
+      notificationService.success(t('auth.register.success'));
       navigate('/');
     } catch (error) {
-      const err = error as AxiosError<{ message: string }>;
-      notificationService.error(err.response?.data?.message || 'Erro ao criar conta');
+      notificationService.error(getAuthErrorMessage(error, t, 'register'));
     } finally {
       setIsLoading(false);
     }
@@ -60,20 +74,20 @@ const RegisterPage: React.FC = () => {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-brand-primary dark:text-brand-accent mb-2">
-            SGVS
+            flick.business
           </h1>
           <h2 className="text-xl font-semibold text-text-primary dark:text-gray-200">
-            Criar nova conta
+            {t('auth.register.title')}
           </h2>
           <p className="mt-2 text-sm text-text-secondary dark:text-gray-400">
-            Comece a gerenciar suas vendas
+            {t('auth.register.subtitle')}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6 bg-card-light dark:bg-card-dark p-8 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
           <div>
             <label htmlFor="username" className="block text-sm font-medium text-text-primary dark:text-gray-200 mb-2">
-              Nome de usuário
+              {t('common.username')}
             </label>
             <input
               id="username"
@@ -84,13 +98,13 @@ const RegisterPage: React.FC = () => {
               value={formData.username}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-border-light dark:border-border-dark rounded-input bg-transparent text-text-primary dark:text-gray-200 placeholder-text-secondary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 dark:focus:ring-brand-accent/70 transition-colors"
-              placeholder="Seu nome de usuário"
+              placeholder={t('auth.register.usernamePlaceholder')}
             />
           </div>
 
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-text-primary dark:text-gray-200 mb-2">
-              Email
+              {t('common.email')}
             </label>
             <input
               id="email"
@@ -101,13 +115,13 @@ const RegisterPage: React.FC = () => {
               value={formData.email}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-border-light dark:border-border-dark rounded-input bg-transparent text-text-primary dark:text-gray-200 placeholder-text-secondary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 dark:focus:ring-brand-accent/70 transition-colors"
-              placeholder="seu@email.com"
+              placeholder={t('auth.register.emailPlaceholder')}
             />
           </div>
 
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-text-primary dark:text-gray-200 mb-2">
-              Senha
+              {t('common.password')}
             </label>
             <input
               id="password"
@@ -118,13 +132,13 @@ const RegisterPage: React.FC = () => {
               value={formData.password}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-border-light dark:border-border-dark rounded-input bg-transparent text-text-primary dark:text-gray-200 placeholder-text-secondary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 dark:focus:ring-brand-accent/70 transition-colors"
-              placeholder="Sua senha"
+              placeholder={t('auth.register.passwordPlaceholder')}
             />
           </div>
 
           <div>
             <label htmlFor="confirmPassword" className="block text-sm font-medium text-text-primary dark:text-gray-200 mb-2">
-              Confirmar Senha
+              {t('auth.register.confirmPasswordLabel')}
             </label>
             <input
               id="confirmPassword"
@@ -135,7 +149,7 @@ const RegisterPage: React.FC = () => {
               value={formData.confirmPassword}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-border-light dark:border-border-dark rounded-input bg-transparent text-text-primary dark:text-gray-200 placeholder-text-secondary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 dark:focus:ring-brand-accent/70 transition-colors"
-              placeholder="Confirme sua senha"
+              placeholder={t('auth.register.confirmPasswordPlaceholder')}
             />
           </div>
 
@@ -145,18 +159,18 @@ const RegisterPage: React.FC = () => {
               disabled={isLoading}
               className="w-full flex justify-center py-3 px-4 border border-transparent rounded-btn shadow-sm text-sm font-medium text-white bg-brand-primary hover:bg-brand-primary/90 dark:bg-brand-accent dark:hover:bg-brand-accent/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary/50 dark:focus:ring-brand-accent/70 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {isLoading ? 'Criando conta...' : 'Criar conta'}
+              {isLoading ? t('auth.register.loading') : t('auth.register.submit')}
             </button>
           </div>
 
           <div className="text-center">
             <span className="text-sm text-text-secondary dark:text-gray-400">
-              Já tem uma conta?{' '}
+              {t('auth.register.hasAccount')}{' '}
               <Link
                 to="/login"
                 className="font-medium text-brand-primary hover:text-brand-primary/80 dark:text-brand-accent dark:hover:text-brand-accent/80 transition-colors"
               >
-                Faça login
+                {t('auth.register.loginLink')}
               </Link>
             </span>
           </div>

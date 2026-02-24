@@ -1,15 +1,15 @@
 Frontend repo for: (https://github.com/Sakemo/sgvs-api)[flick-business-backend]
 
-### **Master Project Document: Simplified Sales & Gestião de Vendas (SGVS)**
+### **Master Project Document: flick.business**
 
 **Version:** 1.0 (Post-Refactor)
 **Last Updated:** July 28, 2025
 
 #### **1. Introduction & Project Vision**
 
-The **Simplified Sales Management System (SGVS)** is a full-stack web application designed to be a powerful, intuitive, and visually impactful management tool for small to medium-sized businesses. The project's core philosophy extends beyond simple transaction logging to provide the user with a "CEO experience," complete with actionable insights and full control over financial and inventory operations. The software aims to transform raw data into business intelligence, with a sharp focus on cash flow, profitability, and product performance.
+The **flick.business** is a full-stack web application designed to be a powerful, intuitive, and visually impactful management tool for small to medium-sized businesses. The project's core philosophy extends beyond simple transaction logging to provide the user with a "CEO experience," complete with actionable insights and full control over financial and inventory operations. The software aims to transform raw data into business intelligence, with a sharp focus on cash flow, profitability, and product performance.
 
-Built on a modern and scalable architecture, SGVS utilizes React (Vite + TypeScript) on the frontend and Java (Spring Boot) on the backend, with PostgreSQL for relational data. The application was developed following "MIT-level" principles: clean code, decoupled architecture, robust testing, and an exceptional user experience (UX), including internationalization (i18n), a dark/light theme, and reactive UI components. This document serves as the master roadmap for ongoing development, detailing what has been completed and outlining the next strategic steps.
+Built on a modern and scalable architecture, flick.business utilizes React (Vite + TypeScript) on the frontend and Java (Spring Boot) on the backend, with PostgreSQL for relational data. The application was developed following "MIT-level" principles: clean code, decoupled architecture, robust testing, and an exceptional user experience (UX), including internationalization (i18n), a dark/light theme, and reactive UI components. This document serves as the master roadmap for ongoing development, detailing what has been completed and outlining the next strategic steps.
 
 ---
 

@@ -55,6 +55,10 @@ export interface RegisterRequest {
 
 export interface AuthResponse {
   token: string;
+  id?: number | string;
+  username?: string;
+  email?: string;
+  role?: string;
   user?: User;
 }
 
@@ -65,7 +69,7 @@ export interface UpdateRequest{
 }
 
 export interface User {
-  id: string;
+  id: number | string;
   username: string;
   email: string;
   role?: string;
