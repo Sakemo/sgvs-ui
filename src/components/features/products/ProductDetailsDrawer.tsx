@@ -1,12 +1,13 @@
 import type React from "react";
-import type { ProductResponse } from "../../../api/types/domain";
+import { StockControlType, type ProductResponse } from "../../../api/types/domain";
 import { useTranslation } from "react-i18next";
 import Button from "../../common/ui/Button";
-import { LuPencil, LuX } from "react-icons/lu";
+import { LuCheck, LuPencil, LuX } from "react-icons/lu";
 import Badge from "../../common/ui/Badge";
 import { calculateProfitMargin, formatCurrency, formatDate } from "../../../utils/formatters";
 import { marginBadgeColors } from "./utils/MarginBadgeColors";
 import PricingAssistant from "./utils/PricingAssistant";
+import { useSettings } from "../../../contexts/utils/UseSettings";
 
 interface ProductDetailsDrawerProps {
     product: ProductResponse;
@@ -34,6 +35,10 @@ const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({
     product, onClose, onEdit
 }) => {
     const { t } = useTranslation();
+    const { settings } = useSettings();
+    const showPerItemStockIndicator =
+      settings?.stockControlType !== undefined &&
+      settings.stockControlType !== StockControlType.GLOBAL;
 
     const margin = calculateProfitMargin(product.salePrice, product.costPrice);
 
@@ -73,6 +78,21 @@ const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({
           } />
           <DetailRow label={t('product.costPrice')} value={product.costPrice ? formatCurrency(product.costPrice) : undefined} />
           <DetailRow label={t('common.stock')} value={`${product.stockQuantity} ${t(`unitOfSale.${product.unitOfSale.toLowerCase()}`)}`} />
+          {showPerItemStockIndicator && (
+            <DetailRow
+              label={t('product.form.managesStock')}
+              value={
+                <Badge variant="outline" colorScheme={product.managesStock ? 'green' : 'gray'}>
+                  <span className="inline-flex items-center gap-1">
+                    {product.managesStock ? <LuCheck className="h-3.5 w-3.5" /> : <LuX className="h-3.5 w-3.5" />}
+                    {product.managesStock
+                      ? t('product.manageStockEnabled', 'Stock managed')
+                      : t('product.manageStockDisabled', 'Stock not managed')}
+                  </span>
+                </Badge>
+              }
+            />
+          )}
           <DetailRow label={t('product.unitOfSale')} value={
               <span className="capitalize">{t(`unitOfSale.${product.unitOfSale.toLowerCase()}`)}</span>
             }

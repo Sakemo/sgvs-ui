@@ -2,14 +2,15 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
-import { type ProductResponse } from '../../../api/types/domain';
+import { StockControlType, type ProductResponse } from '../../../api/types/domain';
 
 import Table, { type TableColumn } from '../../common/Table';
 import Button from '../../common/ui/Button';
 import Badge from '../../common/ui/Badge';
 import { calculateProfitMargin, formatCurrency, formatTimeAgo } from '../../../utils/formatters';
-import { LuCopy, LuPencil, LuPower, LuPowerOff, LuTrash2 } from 'react-icons/lu';
+import { LuCheck, LuCopy, LuPencil, LuPower, LuPowerOff, LuTrash2, LuX } from 'react-icons/lu';
 import { marginBadgeColors } from './utils/MarginBadgeColors';
+import { useSettings } from '../../../contexts/utils/UseSettings';
 
 interface ProductsTableProps {
   products: ProductResponse[];
@@ -33,6 +34,10 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
   selectedProductId,
 }) => {
   const { t } = useTranslation();
+  const { settings } = useSettings();
+  const showPerItemStockIndicator =
+    settings?.stockControlType !== undefined &&
+    settings.stockControlType !== StockControlType.GLOBAL;
 
   const columns: TableColumn<ProductResponse>[] = [
     { header: t('product.table.name'), accessor: 'name', headerClassName: 'w-1/3' },
@@ -49,7 +54,28 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
     headerClassName: 'text-center', },
     {
       header: t('product.table.stock'),
-      accessor: (row) => `${row.stockQuantity} ${t(`unitOfSale.${row.unitOfSale.toLowerCase()}`)}`,
+      accessor: (row) => (
+        <div className="flex items-center justify-center gap-2">
+          <span>{row.stockQuantity} {t(`unitOfSale.${row.unitOfSale.toLowerCase()}`)}</span>
+          {showPerItemStockIndicator && (
+            <span
+              title={
+                row.managesStock
+                  ? t('product.manageStockEnabled', 'Stock managed')
+                  : t('product.manageStockDisabled', 'Stock not managed')
+              }
+              className={clsx(
+                'inline-flex items-center rounded-full border px-1.5 py-0.5',
+                row.managesStock
+                  ? 'border-green-200 text-green-700 dark:border-green-800 dark:text-green-300'
+                  : 'border-gray-300 text-gray-600 dark:border-gray-700 dark:text-gray-400'
+              )}
+            >
+              {row.managesStock ? <LuCheck className="h-3 w-3" /> : <LuX className="h-3 w-3" />}
+            </span>
+          )}
+        </div>
+      ),
       className: 'text-center'
     },
     { header: t('product.table.status'), accessor: (row) => ( <Badge variant="outline" colorScheme={row.active ? 'green' : 'gray'}>{row.active ? t('common.active') : t('common.inactive')}</Badge> ), className: 'text-center' },

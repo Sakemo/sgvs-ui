@@ -70,12 +70,16 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
   // --- Handlers Auxiliares ---
   const handleDeleteCategory = (categoryId: number) => {
     showConfirmation({
-      title: "Delete Category?",
-      description: "Are you sure? This will affect all products in this category.",
+      title: t("category.confirmDeleteTitle", "Delete category?"),
+      description: t(
+        "category.confirmDeleteDesc",
+        "Are you sure? This will affect all products in this category."
+      ),
+      confirmText: t("actions.delete", "Delete"),
       onConfirm: async () => {
         try {
           await deleteCategory(categoryId);
-          notificationService.success(t("category.deleteSucess"));
+          notificationService.success(t("category.deleteSuccess", "Category deleted."));
           onDataRefresh();
         } catch (err) {
           notificationService.error(t("errors.deleteCategory" + err));

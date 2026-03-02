@@ -35,6 +35,9 @@
     "allCategories": "All Categories",
     "on": "On",
     "off": "Off"
+    ,
+    "yes": "Yes",
+    "no": "No"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -66,7 +69,7 @@
     "create": "Create",
     "close": "Close",
     "keepCreatingSales": "Register and start new sale",
-    "confirm": "Are you sure you want to",
+    "confirm": "Confirm",
     "activate": "Activate",
     "deactivate": "Deactivate",
     "confirmDeletePermanent": "Permanently delete this item? This action cannot be undone.",
@@ -275,11 +278,23 @@
     "costPrice": "Cost Price",
     "minimumStock": "Minimum Stock",
     "margin": "Profit Margin",
+    "manageStockEnabled": "Stock control enabled",
+    "manageStockDisabled": "Stock control disabled",
     "desiredMargin": "Margin (%)",
     "smartPricing": "Smart Pricing",
     "details": {
       "title": "Product Details"
     }
+  },
+  "category": {
+    "objectName": "Category",
+    "addTitle": "Add Category",
+    "editTitle": "Edit Category",
+    "addSuccess": "Category added",
+    "editSuccess": "Category edited",
+    "deleteSuccess": "Category deleted.",
+    "confirmDeleteTitle": "Delete category?",
+    "confirmDeleteDesc": "Are you sure? This will affect all products in this category."
   },
   "customer": {
     "objectName": "Customer",

@@ -35,6 +35,9 @@
     "allCategories": "Todas as Categorias",
     "on": "Ligado",
     "off": "Desligado"
+    ,
+    "yes": "Sim",
+    "no": "Não"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -67,7 +70,7 @@
     "create": "Criar",
     "close": "Fechar",
     "keepCreatingSales": "Registrar e iniciar nova venda",
-    "confirm": "Você tem certeza que deseja",
+    "confirm": "Confirmar",
     "activate": "Ativar",
     "deactivate": "Desativar",
     "confirmDeletePermanent": "Deletar permanentemente este item? Esta ação não pode ser desfeita.",
@@ -276,11 +279,23 @@
     "costPrice": "Preço de Custo",
     "minimumStock": "Estoque Mínimo",
     "margin": "Margem de Lucro",
+    "manageStockEnabled": "Controle de estoque ativo",
+    "manageStockDisabled": "Controle de estoque inativo",
     "desiredMargin": "Margem (%)",
     "smartPricing": "Precificação Inteligente",
     "details": {
       "title": "Detalhes do Produto"
     }
+  },
+  "category": {
+    "objectName": "Categoria",
+    "addTitle": "Adicionar Categoria",
+    "editTitle": "Editar Categoria",
+    "addSuccess": "Categoria adicionada",
+    "editSuccess": "Categoria editada",
+    "deleteSuccess": "Categoria excluída.",
+    "confirmDeleteTitle": "Excluir categoria?",
+    "confirmDeleteDesc": "Tem certeza? Isso pode afetar todos os produtos desta categoria."
   },
   "customer": {
     "objectName": "Cliente",
