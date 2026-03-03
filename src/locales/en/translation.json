@@ -34,10 +34,10 @@
     "allPaymentMethods": "All Payment Methods",
     "allCategories": "All Categories",
     "on": "On",
-    "off": "Off"
-    ,
+    "off": "Off",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "noResults": "No results found."
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -79,7 +79,13 @@
     "hide": "Hide",
     "logout": "Sign Out",
     "registerNew": "Register New Account",
-    "deleteAccount": "Delete My Account"
+    "deleteAccount": "Delete My Account",
+    "saveChanges": "Save Changes",
+    "confirmPayment": "Confirm Payment",
+    "searchByClient": "Search by client...",
+    "searchByProduct": "Search by product...",
+    "settleDebt": "Settle Debt",
+    "settlePayment": "Settle Payment"
   },
   "theme": {
     "switchToDark": "Dark Mode",
@@ -166,7 +172,13 @@
     "saveSettings": "Failed to save settings.",
     "updateProfile": "Failed to update profile.",
     "deleteAccount": "Failed to delete account.",
-    "genericSave": "An unexpected error occurred while saving."
+    "genericSave": "An unexpected error occurred while saving.",
+    "calculatePrice": "Failed to calculate price.",
+    "deleteCategory": "Failed to delete category.",
+    "deleteSale": "Failed to delete sale.",
+    "fetchPendingSales": "Failed to load pending sales.",
+    "fetchSales": "Failed to load sales.",
+    "recordPayment": "Failed to record payment."
   },
   "settings": {
     "pageTitle": "Settings",
@@ -237,7 +249,12 @@
     }
   },
   "payment": {
-    "success": "Payment recorded successfully."
+    "success": "Payment recorded successfully.",
+    "noPendingSales": "This customer has no pending sales.",
+    "noSalesSelected": "Please select at least one sale to pay.",
+    "settleDebtFor": "Settle Debt for",
+    "settleTitle": "Settle Payment",
+    "totalToPay": "Total to Pay"
   },
   "product": {
     "objectName": "Product",
@@ -284,6 +301,18 @@
     "smartPricing": "Smart Pricing",
     "details": {
       "title": "Product Details"
+    },
+    "confirmCopyTitle": "Copy Product?",
+    "confirmCopyDesc": "This will create a new, inactive copy of the product.",
+    "confirmDeleteTitle": "Delete Product?",
+    "confirmToggleTitle": "Change status to {{action}}?",
+    "confirmToggleDesc": "Are you sure you want to proceed?",
+    "copySucess": "Product copied successfully!",
+    "deleteSucess": "Product deleted successfully!",
+    "saveSuccess": "Product saved successfully!",
+    "statusUpdated": "Status updated: {{action}}",
+    "assistant": {
+      "title": "Assistant Insights"
     }
   },
   "category": {
@@ -319,6 +348,16 @@
       "za": "Name (Z-A)",
       "highestDebt": "Highest Debt",
       "lowestDebt": "Lowest Debt"
+    },
+    "addTitle": "Add Customer",
+    "confirmDeleteTitle": "Delete customer?",
+    "confirmToggleTitle": "Change status to {{action}}?",
+    "creditEnabled": "Credit Enabled",
+    "deleteSuccess": "Customer deleted successfully.",
+    "lastCreditPurchase": "Last Credit Purchase",
+    "saveSuccess": "Customer saved successfully.",
+    "details": {
+      "title": "Customer Details"
     }
   },
   "sale": {
@@ -373,5 +412,23 @@
     "unit": "unit",
     "weight": "kg",
     "volume": "L"
+  },
+  "formatters": {
+    "invalidDate": "Invalid date",
+    "today": "Today",
+    "yesterday": "Yesterday"
+  },
+  "provider": {
+    "addTitle": "Add New Provider"
+  },
+  "validation": {
+    "customerRequiredForCredit": "A customer is required for on-credit sales.",
+    "details": "Could not load product details.",
+    "insufficientStock": "Insufficient stock (available: {{available}}).",
+    "integerQuantityRequired": "For unit items, quantity must be an integer.",
+    "invalidQuantity": "Select a product and enter a valid quantity.",
+    "nameRequired": "Name is required.",
+    "saleItemsRequired": "At least one item is required for the sale.",
+    "valueRequired": "Value is required."
   }
 }

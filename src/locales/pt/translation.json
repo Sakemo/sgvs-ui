@@ -34,10 +34,10 @@
     "allPaymentMethods": "Todas as Formas",
     "allCategories": "Todas as Categorias",
     "on": "Ligado",
-    "off": "Desligado"
-    ,
+    "off": "Desligado",
     "yes": "Sim",
-    "no": "Não"
+    "no": "Não",
+    "noResults": "Nenhum resultado encontrado."
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -80,7 +80,12 @@
     "hide": "Ocultar",
     "logout": "Sair",
     "registerNew": "Cadastrar Nova Conta",
-    "deleteAccount": "Excluir Minha Conta"
+    "deleteAccount": "Excluir Minha Conta",
+    "confirmPayment": "Confirmar Pagamento",
+    "searchByClient": "Buscar por cliente...",
+    "searchByProduct": "Buscar por produto...",
+    "settleDebt": "Quitar Dívida",
+    "settlePayment": "Quitar Pagamento"
   },
   "theme": {
     "switchToDark": "Modo Escuro",
@@ -167,7 +172,13 @@
     "saveSettings": "Falha ao salvar configurações.",
     "updateProfile": "Falha ao atualizar perfil.",
     "deleteAccount": "Falha ao excluir conta.",
-    "genericSave": "Ocorreu um erro inesperado ao salvar."
+    "genericSave": "Ocorreu um erro inesperado ao salvar.",
+    "calculatePrice": "Falha ao calcular preço.",
+    "deleteCategory": "Falha ao excluir categoria.",
+    "deleteSale": "Falha ao excluir venda.",
+    "fetchPendingSales": "Falha ao carregar vendas pendentes.",
+    "fetchSales": "Falha ao carregar vendas.",
+    "recordPayment": "Falha ao registrar pagamento."
   },
   "settings": {
     "pageTitle": "Configurações",
@@ -238,7 +249,12 @@
     }
   },
   "payment": {
-    "success": "Pagamento registrado com sucesso."
+    "success": "Pagamento registrado com sucesso.",
+    "noPendingSales": "Este cliente nao possui vendas pendentes.",
+    "noSalesSelected": "Selecione ao menos uma venda para pagar.",
+    "settleDebtFor": "Quitar divida de",
+    "settleTitle": "Quitar Pagamento",
+    "totalToPay": "Total a Pagar"
   },
   "product": {
     "objectName": "Produto",
@@ -285,6 +301,18 @@
     "smartPricing": "Precificação Inteligente",
     "details": {
       "title": "Detalhes do Produto"
+    },
+    "confirmCopyTitle": "Copiar produto?",
+    "confirmCopyDesc": "Isso criara uma nova copia inativa do produto.",
+    "confirmDeleteTitle": "Excluir produto?",
+    "confirmToggleTitle": "Alterar status para {{action}}?",
+    "confirmToggleDesc": "Tem certeza que deseja continuar?",
+    "copySucess": "Produto copiado com sucesso!",
+    "deleteSucess": "Produto excluido com sucesso!",
+    "saveSuccess": "Produto salvo com sucesso!",
+    "statusUpdated": "Status atualizado: {{action}}",
+    "assistant": {
+      "title": "Insights do Assistente"
     }
   },
   "category": {
@@ -316,10 +344,20 @@
     "confirmToggleDesc": "Tem certeza? Isso pode afetar vendas em andamento.",
     "statusUpdated": "Status atualizado - {{action}}",
     "sort": {
-        "az": "Nome (A-Z)",
-        "za": "Nome (Z-A)",
-        "highestDebt": "Maior Saldo Devedor",
-        "lowestDebt": "Menor Saldo Devedor"
+      "az": "Nome (A-Z)",
+      "za": "Nome (Z-A)",
+      "highestDebt": "Maior Saldo Devedor",
+      "lowestDebt": "Menor Saldo Devedor"
+    },
+    "addTitle": "Adicionar Cliente",
+    "confirmDeleteTitle": "Excluir cliente?",
+    "confirmToggleTitle": "Alterar status para {{action}}?",
+    "creditEnabled": "Credito habilitado",
+    "deleteSuccess": "Cliente excluido com sucesso.",
+    "lastCreditPurchase": "Ultima compra no fiado",
+    "saveSuccess": "Cliente salvo com sucesso.",
+    "details": {
+      "title": "Detalhes do Cliente"
     }
   },
   "sale": {
@@ -374,5 +412,23 @@
     "unit": "un",
     "weight": "kg",
     "volume": "L"
+  },
+  "formatters": {
+    "invalidDate": "Data invalida",
+    "today": "Hoje",
+    "yesterday": "Ontem"
+  },
+  "provider": {
+    "addTitle": "Adicionar Fornecedor"
+  },
+  "validation": {
+    "customerRequiredForCredit": "Um cliente e obrigatorio para vendas no fiado.",
+    "details": "Nao foi possivel carregar os detalhes do produto.",
+    "insufficientStock": "Estoque insuficiente (disponivel: {{available}}).",
+    "integerQuantityRequired": "Para itens por unidade, a quantidade deve ser inteira.",
+    "invalidQuantity": "Selecione um produto e informe uma quantidade valida.",
+    "nameRequired": "Nome e obrigatorio.",
+    "saleItemsRequired": "Adicione ao menos um item para registrar a venda.",
+    "valueRequired": "Valor e obrigatorio."
   }
 }

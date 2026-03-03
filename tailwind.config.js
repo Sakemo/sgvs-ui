@@ -6,6 +6,20 @@ export default {
   ],
   darkMode: 'class',
   theme: {
+    borderRadius: {
+      none: '0',
+      sm: '0.1875rem',  // 3px
+      DEFAULT: '0.25rem', // 4px
+      md: '0.25rem', // 4px
+      lg: '0.375rem', // 6px
+      xl: '0.5rem', // 8px
+      '2xl': '0.625rem', // 10px
+      '3xl': '0.75rem', // 12px
+      full: '9999px',
+      card: '0.5rem', // 8px
+      btn: '0.375rem', // 6px
+      input: '0.375rem', // 6px
+    },
     extend: {
       colors: {
         'brand-primary': '#7AA2F7',          // Tokyo Night Blue
@@ -23,11 +37,6 @@ export default {
       },
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-      },
-      borderRadius: {
-        'card': '0.75rem', // 12px (um pouco mais sutil que o anterior)
-        'btn': '0.5rem',  // 8px
-        'input': '0.5rem', // 8px, para consistência
       },
       boxShadow: {
         'soft': '0 2px 12px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.04)',

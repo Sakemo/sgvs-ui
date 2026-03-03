@@ -34,6 +34,20 @@ interface FormRestockItem extends RestockItemRequest {
   name: string;
 }
 
+const buildAutomaticRestockName = (items: FormRestockItem[]): string => {
+  if (items.length === 0) return "";
+  const first = items[0];
+  const baseName = `${first.quantity}x ${first.name}`;
+  if (items.length === 1) return baseName;
+  return `${baseName} +${items.length - 1}`;
+};
+
+const buildAutomaticRestockDescription = (items: FormRestockItem[]): string => {
+  if (items.length === 0) return "";
+  const lines = items.map((item) => `- ${item.quantity}x ${item.name}`);
+  return `Itens comprados:\n${lines.join("\n")}`;
+};
+
 interface ExpenseFormModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -116,6 +130,15 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
     }, 0);
   }, [restockItems]);
 
+  const automaticRestockName = useMemo(
+    () => buildAutomaticRestockName(restockItems),
+    [restockItems]
+  );
+  const automaticRestockDescription = useMemo(
+    () => buildAutomaticRestockDescription(restockItems),
+    [restockItems]
+  );
+
   // -- effects --
   useEffect(() => {
     if (isRestocking) {
@@ -125,6 +148,24 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
       }));
     }
   }, [isRestocking, restockTotalValue]);
+
+  useEffect(() => {
+    if (isRestocking && !isEditMode) {
+      setFormData((prev) => ({
+        ...prev,
+        name: automaticRestockName,
+      }));
+    }
+  }, [automaticRestockName, isRestocking, isEditMode]);
+
+  useEffect(() => {
+    if (isRestocking && !isEditMode) {
+      setFormData((prev) => ({
+        ...prev,
+        description: automaticRestockDescription,
+      }));
+    }
+  }, [automaticRestockDescription, isRestocking, isEditMode]);
 
   useEffect(() => {
     if (debouncedProductQuery.length < 1) {
@@ -209,12 +250,14 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
       }
 
       const payload: ExpenseRequest = {
-        name: formData.name || "",
+        name: isRestocking ? automaticRestockName || formData.name || "" : formData.name || "",
         value: totalValue,
         expenseDate: new Date(formData.expenseDate!).toISOString(),
         expenseType: formData.expenseType!,
         paymentMethod: formData.paymentMethod!,
-        description: formData.description || null,
+        description: isRestocking
+          ? automaticRestockDescription || formData.description || null
+          : formData.description || null,
         restockItems: isRestocking
           ? restockItems.map(({ productId, quantity, unitCostPrice }) => ({
               productId,
@@ -270,6 +313,7 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
           name="name"
           value={formData.name || ""}
           onChange={handleChange}
+          disabled={isRestocking}
           required
         />
 
@@ -393,6 +437,7 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
             name="description"
             value={formData.description || ""}
             onChange={handleChange}
+            disabled={isRestocking}
             rows={3}
           />
         </AdvancedOptions>

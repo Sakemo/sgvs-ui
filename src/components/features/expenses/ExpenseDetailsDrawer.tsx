@@ -46,7 +46,11 @@ const ExpenseDetailsDrawer: React.FC<ExpenseDetailsDrawerProps> = ({
                             {t(`paymentMethods.${expense.paymentMethod.toLowerCase()}`)}
                         </Badge>
                     } />
-                    <DetailRow label={t('common.createdAt')} value={formatDate(expense.updatedAt)} />
+                    <DetailRow
+                        label={t('common.description')}
+                        value={<span className="whitespace-pre-line">{expense.description || '-'}</span>}
+                    />
+                    <DetailRow label={t('common.createdAt')} value={formatDate(expense.createdAt)} />
                 </dl>
             </div>
         </aside>
