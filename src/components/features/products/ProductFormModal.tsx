@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
   createProduct,
@@ -34,7 +34,7 @@ import CategoryFormModal from "../categories/CategoryFormModal";
 interface ProductFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSaveSuccess: () => void;
+  onSaveSuccess: (savedProduct?: ProductResponse) => void;
   productToEdit?: ProductResponse | null;
   categories: EntitySummary[];
   providers: EntitySummary[];
@@ -82,7 +82,18 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
           notificationService.success(t("category.deleteSuccess", "Category deleted."));
           onDataRefresh();
         } catch (err) {
-          notificationService.error(t("errors.deleteCategory" + err));
+          const axiosError = err as AxiosError<{ message?: string }>;
+          const status = axiosError.response?.status;
+          const apiMessage = axiosError.response?.data?.message;
+
+          if (status === 422) {
+            notificationService.error(
+              apiMessage || t("errors.deleteCategoryBlocked", "Não é possível excluir esta categoria porque ela está vinculada a produtos ou vendas.")
+            );
+            return;
+          }
+
+          notificationService.error(apiMessage || t("errors.deleteCategory"));
         }
       },
     });
@@ -118,7 +129,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
   };
 
   // --- Inicialização ---
-  const getInitialFormData = useCallback((): ProductRequest => {
+  const getInitialFormData = (): ProductRequest => {
     if (isEditMode && productToEdit) {
       return {
         name: productToEdit.name,
@@ -151,13 +162,17 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
       categoryId: categories[0]?.id,
       providerId: undefined,
     };
-  }, [isEditMode, productToEdit, categories]);
+  };
 
-  const [formData, setFormData] = useState<Partial<ProductRequest>>(getInitialFormData());
+  const [formData, setFormData] = useState<Partial<ProductRequest>>(() => getInitialFormData());
   const [isLoading, setIsLoading] = useState(false);
+  const wasOpenRef = useRef(false);
 
   useEffect(() => {
-    if (isOpen) {
+    const isOpening = isOpen && !wasOpenRef.current;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+
+    if (isOpening) {
       setKeepAdding(false);
       setFormData(getInitialFormData());
 
@@ -171,13 +186,17 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
         setIsSmartPricing(true);
       }
 
-      const timer = setTimeout(() => {
+      timer = setTimeout(() => {
         nameInputRef.current?.focus();
       }, 100);
-
-      return () => clearTimeout(timer);
     }
-  }, [isOpen, getInitialFormData, productToEdit, isEditMode]);
+
+    wasOpenRef.current = isOpen;
+
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [isOpen, isEditMode, productToEdit, categories]);
 
   // Fallback para categoria padrão
   useEffect(() => {
@@ -274,18 +293,16 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
         providerId: formData.providerId ?? null,
       };
 
-      if (isEditMode && productToEdit) {
-        await updateProduct(productToEdit.id, payload);
-      } else {
-        await createProduct(payload);
-      }
+      const savedProduct = isEditMode && productToEdit
+        ? await updateProduct(productToEdit.id, payload)
+        : await createProduct(payload);
 
       if (keepAdding && !isEditMode) {
         setFormData(getInitialFormData());
         setIsSmartPricing(true);
         onDataRefresh();
       } else {
-        onSaveSuccess();
+        onSaveSuccess(savedProduct);
       }
     } catch (error) {
       const axiosError = error as AxiosError<{ message?: string; errors?: Record<string, string> }>;
@@ -346,10 +363,16 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
                     <span className="block truncate">{option.label}</span>
                     <div className="flex-shrink-0">
                       <Button
+                        type="button"
                         variant="ghost"
                         size="icon"
                         className="h-7 w-7"
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
                         onClick={(e) => {
+                          e.preventDefault();
                           e.stopPropagation();
                           const categorySummary: EntitySummary = { id: Number(option.value), name: option.label };
                           openCategoryModalForEdit(categorySummary);
@@ -357,10 +380,16 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
                         iconLeft={<LuPencil />}
                       />
                       <Button
+                        type="button"
                         variant="ghost"
                         size="icon"
                         className="h-7 w-7 text-red-600"
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
                         onClick={(e) => {
+                          e.preventDefault();
                           e.stopPropagation();
                           handleDeleteCategory(Number(option.value));
                         }}

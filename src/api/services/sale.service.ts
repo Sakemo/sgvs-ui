@@ -61,8 +61,17 @@ export const getSalesTotalByPaymentMethod = async (params: {
 };
 
 export const getSalesSummary = async (params: GetSalesParams):Promise<GroupSummary[]> => {
-    const groupBy = params.orderBy?.split(',')[0];
-    if (groupBy !== 'saleDate' && groupBy !== 'customer.name'){
+    const orderByField = params.orderBy?.split(',')[0];
+    const groupBy =
+      orderByField === 'saleDate'
+        ? 'day'
+        : orderByField === 'customer.name'
+          ? 'customer'
+          : orderByField === 'paymentMethod'
+            ? 'paymentMethod'
+            : undefined;
+
+    if (!groupBy){
         return [];
     }
 

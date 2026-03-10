@@ -116,7 +116,10 @@ const ProductsPage: React.FC = () => {
     
     const handleCloseModal = () => setIsModalOpen(false);
     
-    const handleSaveSuccess = () => {
+    const handleSaveSuccess = (savedProduct?: ProductResponse) => {
+        if (savedProduct && selectedProduct?.id === savedProduct.id) {
+            setSelectedProduct(savedProduct);
+        }
         handleCloseModal();
         fetchProducts();
         notificationService.success(t('product.saveSuccess', 'Product saved successfully!'))

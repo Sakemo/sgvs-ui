@@ -11,8 +11,9 @@ export const registerUser = async (data: RegisterRequest): Promise<AuthResponse>
     return response.data;
 };
 
-export const updateProfile = async (data: UpdateRequest): Promise<void> => {
-    await apiClient.put('/users/me', data);
+export const updateProfile = async (data: UpdateRequest): Promise<AuthResponse> => {
+    const response = await apiClient.put<AuthResponse>('/users/me', data);
+    return response.data;
 };
 
 export const deleteProfile = async (): Promise<void> => {

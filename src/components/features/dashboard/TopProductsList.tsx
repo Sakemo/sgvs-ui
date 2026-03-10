@@ -11,6 +11,7 @@ interface TopProductsListProps {
 
 const TopProductsList: React.FC<TopProductsListProps> = ({ data, isLoading }) => {
   const { t } = useTranslation();
+  const topThreeProducts = data.slice(0, 3);
 
   return (
     <Card className="h-full flex flex-col">
@@ -27,9 +28,9 @@ const TopProductsList: React.FC<TopProductsListProps> = ({ data, isLoading }) =>
         </div>
       ) : (
         <div className="flex-grow">
-          {data.length > 0 ? (
+          {topThreeProducts.length > 0 ? (
             <ul className="space-y-4">
-              {data.map((product, index) => (
+              {topThreeProducts.map((product, index) => (
                 <li key={product.label} className="flex justify-between items-center gap-4">
                   <div className="flex items-center gap-3">
                     <span className="text-sm font-bold text-text-secondary">{index + 1}.</span>

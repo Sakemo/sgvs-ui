@@ -52,8 +52,20 @@ const CustomerFormModal: React.FC<CustomerFormModalProps> = ({
         const { name, value, type } = e.target;
         const isCheckbox = type === "checkbox";
         const isNumber = type === "number";
+        const sanitizedValue = name === "taxId"
+            ? value.replace(/[^0-9.\-/\s]/g, "")
+            : name === "phone"
+              ? value.replace(/[^0-9()+\-\s]/g, "")
+              : value;
 
-        setFormData(prev => ({ ...prev, [name]: isCheckbox ? (e.target as HTMLInputElement).checked : isNumber ? (value === '' ? undefined : parseFloat(value)) : value }));
+        setFormData(prev => ({
+            ...prev,
+            [name]: isCheckbox
+                ? (e.target as HTMLInputElement).checked
+                : isNumber
+                  ? (sanitizedValue === '' ? undefined : parseFloat(sanitizedValue))
+                  : sanitizedValue
+        }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -61,7 +73,6 @@ const CustomerFormModal: React.FC<CustomerFormModalProps> = ({
         setIsLoading(true);
         try {
             const payload = formData as CustomerRequest;
-            console.log(payload);
             if(isEditMode && customerToEdit) {
                 await updateCustomer(customerToEdit.id, payload);
             } else {
@@ -70,10 +81,15 @@ const CustomerFormModal: React.FC<CustomerFormModalProps> = ({
             onSaveSucess();
         } catch (error) {
             const axiosError = error as AxiosError<{ message?: string, errors?: Record<string, string> }>;
-            const errorStr = t('errors.genericSave' + ` - ${error}`)
-            if (axiosError.response?.data?.errors){
-                notificationService.error(errorStr)
+            const status = axiosError.response?.status;
+            const apiMessage = axiosError.response?.data?.message;
+
+            if (status === 409) {
+                notificationService.error(t('errors.duplicateCustomerTaxId'));
+                return;
             }
+
+            notificationService.error(apiMessage || t('errors.genericSave'));
         } finally {
             setIsLoading(false);
         }
@@ -97,8 +113,20 @@ const CustomerFormModal: React.FC<CustomerFormModalProps> = ({
                 </div>
 
                 <AdvancedOptions className="grid grid-cols-2 [&>*:nth-child(3)]:col-span-2 gap-4">
-                    <Input label={t('customer.taxId')} name="taxId" value={formData.taxId || ''} onChange={handleChange}/>
-                    <Input label={t('customer.phone')} name="phone" value={formData.phone || ''} onChange={handleChange} />
+                    <Input
+                        label={t('customer.taxId')}
+                        name="taxId"
+                        value={formData.taxId || ''}
+                        onChange={handleChange}
+                        inputMode="numeric"
+                    />
+                    <Input
+                        label={t('customer.phone')}
+                        name="phone"
+                        value={formData.phone || ''}
+                        onChange={handleChange}
+                        inputMode="tel"
+                    />
                     <Textarea label={t('customer.address')} name="address" value={formData.address || ''} onChange={handleChange} rows={2} />
                 </AdvancedOptions>
 

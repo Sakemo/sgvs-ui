@@ -175,6 +175,8 @@
     "genericSave": "An unexpected error occurred while saving.",
     "calculatePrice": "Failed to calculate price.",
     "deleteCategory": "Failed to delete category.",
+    "deleteCategoryBlocked": "This category cannot be deleted because it is linked to products or sales.",
+    "duplicateCustomerTaxId": "A customer with this Tax ID already exists in your account.",
     "deleteSale": "Failed to delete sale.",
     "fetchPendingSales": "Failed to load pending sales.",
     "fetchSales": "Failed to load sales.",
@@ -403,8 +405,8 @@
   },
   "paymentMethods": {
     "cash": "Cash",
-    "debit": "Debit",
-    "credit": "Credit",
+    "debit": "Debit Card",
+    "credit": "Credit Card",
     "on_credit": "On Credit",
     "bank_transfer": "Bank Transfer"
   },

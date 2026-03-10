@@ -15,7 +15,7 @@ import { useNavigate } from 'react-router-dom';
 
 const AccountSettings: React.FC = () => {
   const { t } = useTranslation();
-  const { user, logout } = useAuth();
+  const { user, logout, refreshSession } = useAuth();
   const confirm = useConfirmation();
   const navigate = useNavigate();
 
@@ -47,13 +47,27 @@ const AccountSettings: React.FC = () => {
   const handleSaveField = async (field: 'username' | 'email' | 'password') => {
     setIsLoading(true);
     try {
-      await updateProfile({
+      const updated = await updateProfile({
         ...formData,
         password: field === 'password' ? formData.password : undefined
       });
+
+      if (updated.token && updated.id != null && updated.username && updated.email) {
+        refreshSession(updated.token, {
+          id: updated.id,
+          username: updated.username,
+          email: updated.email,
+        });
+        setFormData({
+          username: updated.username,
+          email: updated.email,
+          password: '',
+        });
+      }
+
       notificationService.success(t('settings.account.updateSuccess'));
       setEditingField(null);
-    } catch (err) {
+    } catch {
       notificationService.error(t('errors.updateProfile'));
     } finally {
       setIsLoading(false);
@@ -70,7 +84,7 @@ const AccountSettings: React.FC = () => {
           await deleteProfile();
           logout();
           navigate('/login');
-        } catch (err) {
+        } catch {
           notificationService.error(t('errors.deleteAccount'));
         }
       },

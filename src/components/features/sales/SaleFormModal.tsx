@@ -285,109 +285,127 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
       isOpen={isOpen}
       onClose={onClose}
       title={t("sale.addSale")}
-      className="sm:max-w-4xl"
+      className="sm:max-w-6xl"
     >
       <form onSubmit={handleSubmit}>
-        <div className="p-6 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <AutocompleteInput
-              label={t("common.client")}
-              placeholder={t("actions.searchByName")}
-              options={customerAutocompleteOptions}
-              selected={selectedCustomerOption}
-              onSelect={setSelectedCustomerOption}
-              onQueryChange={setCustomerQuery}
-              isLoading={isSearching.customers}
-            />
-            <Select
-              label={t("common.paymentMethod")}
-              name="paymentMethod"
-              value={paymentMethod}
-              onChange={(e) =>
-                setPaymentMethod(e.target.value as PaymentMethod)
-              }
-            >
-              {Object.values(PaymentMethod).map((pm) => (
-                <option key={pm} value={pm}>
-                  {t(`paymentMethods.${pm.toLowerCase()}`)}
-                </option>
-              ))}
-            </Select>
-          </div>
+        <div className="p-6">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.7fr_1fr] gap-6">
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <AutocompleteInput
+                  label={t("common.client")}
+                  placeholder={t("actions.searchByName")}
+                  options={customerAutocompleteOptions}
+                  selected={selectedCustomerOption}
+                  onSelect={setSelectedCustomerOption}
+                  onQueryChange={setCustomerQuery}
+                  isLoading={isSearching.customers}
+                />
+                <Select
+                  label={t("common.paymentMethod")}
+                  name="paymentMethod"
+                  value={paymentMethod}
+                  onChange={(e) =>
+                    setPaymentMethod(e.target.value as PaymentMethod)
+                  }
+                >
+                  {Object.values(PaymentMethod).map((pm) => (
+                    <option key={pm} value={pm}>
+                      {t(`paymentMethods.${pm.toLowerCase()}`)}
+                    </option>
+                  ))}
+                </Select>
+              </div>
 
-          <Card>
-            <h3 className="text-lg font-semibold mb-4">
-              {t("sale.addItem")}
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_auto] gap-4 items-end">
-              <AutocompleteInput
-                label={t("product.objectName")}
-                placeholder={t("actions.searchByName")}
-                options={productAutocompleteOptions}
-                selected={selectedProductOption}
-                onSelect={setSelectedProductOption}
-                onQueryChange={setProductQuery}
-                isLoading={isSearching.products}
+              <Card>
+                <h3 className="text-lg font-semibold mb-4">
+                  {t("sale.addItem")}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_auto] gap-4 items-end">
+                  <AutocompleteInput
+                    label={t("product.objectName")}
+                    placeholder={t("actions.searchByName")}
+                    options={productAutocompleteOptions}
+                    selected={selectedProductOption}
+                    onSelect={setSelectedProductOption}
+                    onQueryChange={setProductQuery}
+                    isLoading={isSearching.products}
+                  />
+                  <Input
+                    label={t("sale.quantity")}
+                    type="number"
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                    step={
+                      selectedProductDetails?.unitOfSale === UnitOfSale.UNIT
+                        ? "1"
+                        : "0.01"
+                    }
+                    min={
+                      selectedProductDetails?.unitOfSale === UnitOfSale.UNIT
+                        ? "1"
+                        : "0.01"
+                    }
+                    disabled={!selectedProductOption}
+                  />
+                  <Button
+                    type="button"
+                    onClick={handleAddItem}
+                    disabled={!selectedProductOption}
+                    iconLeft={<LuPlus />}
+                  >
+                    {t("actions.add")}
+                  </Button>
+                </div>
+              </Card>
+
+              <Textarea
+                label={t("common.description")}
+                name="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                rows={2}
               />
-              <Input
-                label={t("sale.quantity")}
-                type="number"
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
-                step={
-                  selectedProductDetails?.unitOfSale === UnitOfSale.UNIT
-                    ? "1"
-                    : "0.01"
-                }
-                min={
-                  selectedProductDetails?.unitOfSale === UnitOfSale.UNIT
-                    ? "1"
-                    : "0.01"
-                }
-                disabled={!selectedProductOption}
-              />
-              <Button
-                type="button"
-                onClick={handleAddItem}
-                disabled={!selectedProductOption}
-                iconLeft={<LuPlus />}
-              >
-                {t("actions.add")}
-              </Button>
             </div>
-          </Card>
 
-          {items.length > 0 && (
-            <div>
+            <div className="flex flex-col min-h-[280px] lg:min-h-[420px]">
               <h3 className="text-lg font-semibold mb-2">
                 {t("sale.itemsInSale")}
               </h3>
-              <ul className="max-h-48 overflow-y-auto border border-border-light dark:border-border-dark rounded-md divide-y divide-border-light dark:divide-border-dark">
-                {items.map((item) => (
-                  <li
-                    key={item.productId}
-                    className="p-3 flex justify-between items-center"
-                  >
-                    <div>
-                      <p className="font-medium">{item.name}</p>
-                      <p className="text-xs text-text-secondary">{`${item.quantity} x ${formatCurrency(item.salePrice)}`}</p>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <p className="font-semibold">
-                        {formatCurrency(item.totalValue)}
-                      </p>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleRemoveItem(item.productId)}
+              <div className="border border-border-light dark:border-border-dark rounded-md flex-1 min-h-0">
+                {items.length === 0 ? (
+                  <div className="h-full flex items-center justify-center text-sm text-text-secondary px-4 text-center">
+                    {t("common.noResults")}
+                  </div>
+                ) : (
+                  <ul className="h-full overflow-y-auto divide-y divide-border-light dark:divide-border-dark">
+                    {items.map((item) => (
+                      <li
+                        key={item.productId}
+                        className="p-3 flex justify-between items-center"
                       >
-                        <LuTrash2 className="h-4 w-4 text-red-500" />
-                      </Button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+                        <div>
+                          <p className="font-medium">{item.name}</p>
+                          <p className="text-xs text-text-secondary">{`${item.quantity} x ${formatCurrency(item.salePrice)}`}</p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <p className="font-semibold">
+                            {formatCurrency(item.totalValue)}
+                          </p>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleRemoveItem(item.productId)}
+                          >
+                            <LuTrash2 className="h-4 w-4 text-red-500" />
+                          </Button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
               <div className="mt-4 text-right">
                 <span className="text-text-secondary">
                   {t("sale.totalValue")}:{" "}
@@ -397,15 +415,7 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
                 </span>
               </div>
             </div>
-          )}
-
-          <Textarea
-            label={t("common.description")}
-            name="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={2}
-          />
+          </div>
         </div>
 
         <footer className="bg-gray-50 dark:bg-card-dark/50 px-6 py-4 flex justify-end gap-2">

@@ -9,6 +9,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   login: (token: string, userData: User) => void;
+  refreshSession: (token: string, userData: User) => void;
   logout: () => void;
   isAuthenticated: boolean;
 }
@@ -124,6 +125,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     broadcastEvent('LOGIN');
   };
 
+  const refreshSession = (token: string, userData: User) => {
+    sessionStorage.setItem(TOKEN_KEY, token);
+    sessionStorage.setItem(USER_KEY, JSON.stringify(userData));
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
+    setUser(userData);
+    setIsAuthenticated(true);
+  };
+
   const logout = () => {
     clearSession();
     applyLoggedOutState();
@@ -131,7 +141,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated }}>
+    <AuthContext.Provider value={{ user, login, refreshSession, logout, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );

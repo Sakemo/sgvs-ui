@@ -175,6 +175,8 @@
     "genericSave": "Ocorreu um erro inesperado ao salvar.",
     "calculatePrice": "Falha ao calcular preço.",
     "deleteCategory": "Falha ao excluir categoria.",
+    "deleteCategoryBlocked": "Não é possível excluir esta categoria porque ela está vinculada a produtos ou vendas.",
+    "duplicateCustomerTaxId": "Já existe um cliente com este CPF/CNPJ na sua conta.",
     "deleteSale": "Falha ao excluir venda.",
     "fetchPendingSales": "Falha ao carregar vendas pendentes.",
     "fetchSales": "Falha ao carregar vendas.",
@@ -403,8 +405,8 @@
   },
   "paymentMethods": {
     "cash": "Dinheiro",
-    "debit": "Débito",
-    "credit": "Crédito",
+    "debit": "Cartão de Débito",
+    "credit": "Cartão de Crédito",
     "on_credit": "Fiado",
     "bank_transfer": "PIX / Transferência"
   },
