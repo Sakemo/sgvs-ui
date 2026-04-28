@@ -73,7 +73,7 @@ const DashboardPage: React.FC = () => {
         };
         const data = await getDashboardSummary(params);
         setDashboardData(data);
-      } catch (error) {
+      } catch {
         notificationService.error(t("errors.fetchDashboardData"));
       } finally {
         setIsLoading(false);
@@ -87,7 +87,7 @@ const DashboardPage: React.FC = () => {
     try {
       const products = await getLowStockProducts();
       setLowStockProducts(products);
-    } catch (error) {
+    } catch {
       notificationService.error(t("errors.fetchLowStockProducts"));
     } finally {
       setIsLoadingLowStock(false);
@@ -97,11 +97,11 @@ const DashboardPage: React.FC = () => {
   useEffect(() => {
     fetchData(dateFilter);
     fetchLowStockProducts();
-  }, [dateFilter, fetchData]);
+  }, [dateFilter, fetchData, fetchLowStockProducts]);
 
   return (
-    <div className="space-y-6 dark:text-gray-200">
-      <header className="flex flex-wrap justify-between items-center gap-4">
+    <div className="space-y-4 dark:text-[#F7F1ED]">
+      <header className="flex flex-wrap items-center justify-between gap-4">
         <div className="w-90">
           <LowStockAlert
             products={lowStockProducts}
@@ -117,70 +117,72 @@ const DashboardPage: React.FC = () => {
         </div>
       </header>
 
-      <main className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <MetricCard
-            title={t("dashboard.grossRevenue")}
-            value={dashboardData?.grossRevenue.value ?? 0}
-            percentageChange={dashboardData?.grossRevenue.percentageChange ?? 0}
-            sparklineData={dashboardData?.grossRevenue.sparklineData ?? []}
-            isLoading={isLoading}
-          />
-          <MetricCard
-            title={t("dashboard.netProfit")}
-            value={dashboardData?.netProfit.value ?? 0}
-            percentageChange={dashboardData?.netProfit.percentageChange ?? 0}
-            sparklineData={dashboardData?.netProfit.sparklineData ?? []}
-            isLoading={isLoading}
-          />
-          <TopProductsList
-            data={dashboardData?.topSellingProducts ?? []}
-            isLoading={isLoading}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div className="lg:col-span-2">
+      <main className="space-y-4">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
+          <div className="lg:col-span-7">
             <SalesTrendChart
               data={dashboardData?.revenueAndProfitTrend ?? []}
               isLoading={isLoading}
             />
           </div>
 
-          <div className="flex flex-col gap-6">
+          <div className="lg:col-span-5">
+            <div className="grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2">
+              <MetricCard
+                title={t("dashboard.grossRevenue")}
+                value={dashboardData?.grossRevenue.value ?? 0}
+                percentageChange={dashboardData?.grossRevenue.percentageChange ?? 0}
+                sparklineData={dashboardData?.grossRevenue.sparklineData ?? []}
+                isLoading={isLoading}
+                className="min-h-[152px] p-3"
+                changeColorVariant="blue"
+              />
+              <MetricCard
+                title={t("dashboard.netProfit")}
+                value={dashboardData?.netProfit.value ?? 0}
+                percentageChange={dashboardData?.netProfit.percentageChange ?? 0}
+                sparklineData={dashboardData?.netProfit.sparklineData ?? []}
+                isLoading={isLoading}
+                className="min-h-[152px] p-3"
+                changeColorVariant="profit"
+              />
+              <MetricCard
+                title={t("dashboard.totalExpenses")}
+                value={-Math.abs(dashboardData?.totalExpense.value ?? 0)}
+                percentageChange={dashboardData?.totalExpense.percentageChange ?? 0}
+                sparklineData={dashboardData?.totalExpense.sparklineData ?? []}
+                isLoading={isLoading}
+                className="min-h-[152px] p-3"
+                changeColorVariant="expense"
+              />
+              <MetricCard
+                title={t("dashboard.totalReceivables")}
+                value={dashboardData?.totalReceivables.value ?? 0}
+                percentageChange={
+                  dashboardData?.totalReceivables.percentageChange ?? 0
+                }
+                sparklineData={dashboardData?.totalReceivables.sparklineData ?? []}
+                isLoading={isLoading}
+                className="min-h-[152px] p-3"
+                changeColorVariant="yellow"
+              />
+            </div>
+          </div>
+
+          <div className="lg:col-span-7 lg:min-h-[320px]">
+            <TopProductsList
+              data={dashboardData?.topSellingProducts ?? []}
+              averageTicket={dashboardData?.averageTicket}
+              isLoading={isLoading}
+            />
+          </div>
+
+          <div className="lg:col-span-5 lg:min-h-[320px]">
             <PaymentMethodDonut
               data={dashboardData?.salesByPaymentMethod ?? []}
               isLoading={isLoading}
             />
           </div>
-        </div>
-
-        <div className="grid grid-cols-3 gap-4">
-          <MetricCard
-            title={t("dashboard.totalExpenses")}
-            value={dashboardData?.totalExpense.value ?? 0}
-            percentageChange={dashboardData?.totalExpense.percentageChange ?? 0}
-            sparklineData={dashboardData?.totalExpense.sparklineData ?? []}
-            isLoading={isLoading}
-          />
-          <MetricCard
-            title={t("dashboard.totalReceivables")}
-            value={dashboardData?.totalReceivables.value ?? 0}
-            percentageChange={
-              dashboardData?.totalReceivables.percentageChange ?? 0
-            }
-            sparklineData={dashboardData?.totalReceivables.sparklineData ?? []}
-            isLoading={isLoading}
-          />
-          <MetricCard
-            title={t("dashboard.averageTicket")}
-            value={dashboardData?.averageTicket.value ?? 0}
-            percentageChange={
-              dashboardData?.averageTicket.percentageChange ?? 0
-            }
-            sparklineData={dashboardData?.averageTicket.sparklineData ?? []}
-            isLoading={isLoading}
-          />
         </div>
       </main>
     </div>

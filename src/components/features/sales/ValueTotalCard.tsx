@@ -10,8 +10,8 @@ const valueTextVariants = cva(
     variants: {
       color: {
         default: 'text-brand-primary dark:text-brand-accent',
-        blue: 'text-blue-600 dark:text-blue-400',
-        green: 'text-green-600 dark:text-green-500',
+        blue: 'text-brand-accent dark:text-brand-secondary-accent',
+        green: 'text-brand-primary dark:text-brand-primary',
         red: 'text-red-600 dark:text-red-500',
       },
     },

@@ -47,6 +47,8 @@
     "customers": "Clientes",
     "expenses": "Despesas",
     "settings": "Configurações",
+    "collapse": "Compactar sidebar",
+    "expand": "Expandir sidebar",
     "language": "Idioma",
     "portuguese": "PT-BR",
     "english": "EN-US",
@@ -148,7 +150,7 @@
     "revenueProfitTrend": "Tendência de Receita e Lucro",
     "revenue": "Receita",
     "profit": "Lucro",
-    "receivables": "Recebíveis",
+    "receivables": "Fiado",
     "salesByPaymentMethod": "Vendas por Forma de Pagamento",
     "topSellingProducts": "Produtos Mais Vendidos",
     "noSalesData": "Sem dados de vendas para este período.",
@@ -185,10 +187,19 @@
   "settings": {
     "pageTitle": "Configurações",
     "saveSuccess": "Configurações salvas com sucesso.",
+    "interface": {
+      "title": "Interface",
+      "description": "Personalize o idioma e a aparência da aplicação."
+    },
     "language": {
       "title": "Idioma Padrão",
       "description": "Define o idioma padrão da aplicação.",
       "label": "Idioma"
+    },
+    "theme": {
+      "label": "Aparência",
+      "light": "Modo claro",
+      "dark": "Modo escuro"
     },
     "stock": {
       "title": "Gestão de Estoque",

@@ -14,12 +14,25 @@ interface BackendErrorPayload {
   error?: string;
   details?: string;
   fieldErrors?: BackendFieldError[];
-  errors?: BackendFieldError[];
+  errors?: Record<string, string> | BackendFieldError[];
 }
 
 const getFieldErrors = (payload?: BackendErrorPayload): BackendFieldError[] => {
   if (!payload) return [];
-  return payload.fieldErrors ?? payload.errors ?? [];
+  const errors = payload.fieldErrors ?? payload.errors;
+  
+  if (Array.isArray(errors)) {
+    return errors;
+  }
+  
+  if (errors && typeof errors === 'object') {
+    return Object.entries(errors).map(([field, message]) => ({
+      field,
+      message: typeof message === 'string' ? message : String(message)
+    }));
+  }
+  
+  return [];
 };
 
 const hasPasswordValidationError = (
@@ -88,4 +101,30 @@ export const getAuthErrorMessage = (
   }
 
   return t(`auth.${flow}.error`);
+};
+
+export const getFieldErrorMessage = (error: unknown, fieldName: string): string | null => {
+  if (!axios.isAxiosError(error)) {
+    return null;
+  }
+
+  const axiosError = error as AxiosError<BackendErrorPayload>;
+  const response = axiosError.response;
+  if (!response) {
+    return null;
+  }
+
+  const payload = response.data;
+  const fieldErrors = getFieldErrors(payload);
+  
+  const fieldError = fieldErrors.find((err) => {
+    const errField = (err.field ?? "").toLowerCase();
+    return errField === fieldName.toLowerCase();
+  });
+  
+  if (fieldError) {
+    return fieldError.message || fieldError.defaultMessage || null;
+  }
+  
+  return null;
 };

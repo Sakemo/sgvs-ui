@@ -58,22 +58,22 @@ const LoginPage: React.FC = () => {
           <h1 className="text-3xl font-bold text-brand-primary dark:text-brand-accent mb-2">
             flick.business
           </h1>
-          <h2 className="text-xl font-semibold text-text-primary dark:text-gray-200">
+          <h2 className="text-xl font-semibold text-text-primary dark:text-[#F7F1ED]">
             {t("auth.login.title")}
           </h2>
-          <p className="mt-2 text-sm text-text-secondary dark:text-gray-400">
+          <p className="mt-2 text-sm text-text-secondary dark:text-[#CABEB6]">
             {t("auth.login.subtitle")}
           </p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="mt-8 space-y-6 bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 transition-colors"
+          className="mt-8 space-y-6 rounded-xl border border-border-light bg-card-light p-8 shadow-card transition-colors dark:border-border-dark dark:bg-card-dark"
         >
           <div>
             <label
               htmlFor="username"
-              className="block text-sm font-medium text-text-primary dark:text-gray-200 mb-2"
+              className="mb-2 block text-sm font-medium text-text-primary dark:text-[#F7F1ED]"
             >
               {t("auth.login.identifierLabel")}
             </label>
@@ -85,7 +85,7 @@ const LoginPage: React.FC = () => {
               required
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-primary dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-primary/50 dark:focus:ring-brand-accent/70 focus:border-transparent transition-colors"
+              className="w-full rounded-lg border border-border-light bg-[#FFF8F4] px-3 py-2 text-text-primary placeholder-[#8A817B] transition-colors focus:border-transparent focus:outline-none focus:ring-2 focus:ring-brand-primary/50 dark:border-border-dark dark:bg-[#16372D] dark:text-[#F7F1ED] dark:placeholder-[#B7AAA2] dark:focus:ring-brand-accent/70"
               placeholder={t("auth.login.identifierPlaceholder")}
             />
           </div>
@@ -93,7 +93,7 @@ const LoginPage: React.FC = () => {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-text-primary dark:text-gray-200 mb-2"
+              className="mb-2 block text-sm font-medium text-text-primary dark:text-[#F7F1ED]"
             >
               {t("common.password")}
             </label>
@@ -105,7 +105,7 @@ const LoginPage: React.FC = () => {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-text-primary dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-primary/50 dark:focus:ring-brand-accent/70 focus:border-transparent transition-colors"
+              className="w-full rounded-lg border border-border-light bg-[#FFF8F4] px-3 py-2 text-text-primary placeholder-[#8A817B] transition-colors focus:border-transparent focus:outline-none focus:ring-2 focus:ring-brand-primary/50 dark:border-border-dark dark:bg-[#16372D] dark:text-[#F7F1ED] dark:placeholder-[#B7AAA2] dark:focus:ring-brand-accent/70"
               placeholder={t("auth.login.passwordPlaceholder")}
             />
           </div>
@@ -114,14 +114,14 @@ const LoginPage: React.FC = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-brand-primary hover:bg-brand-primary/90 dark:bg-brand-accent dark:hover:bg-brand-accent/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary/50 dark:focus:ring-brand-accent/70 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full flex justify-center rounded-lg border border-transparent bg-brand-primary px-4 py-3 text-sm font-medium text-[#1E1E1E] shadow-soft transition-colors hover:bg-brand-accent hover:text-[#F7F1ED] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary/50 dark:bg-brand-primary dark:text-[#1E1E1E] dark:hover:bg-brand-accent dark:hover:text-[#F7F1ED] dark:focus:ring-brand-accent/70 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isLoading ? t("auth.login.loading") : t("auth.login.submit")}
             </button>
           </div>
 
           <div className="text-center">
-            <span className="text-sm text-text-secondary dark:text-gray-400">
+            <span className="text-sm text-text-secondary dark:text-[#CABEB6]">
               {t("auth.login.noAccount")}{" "}
               <Link
                 to="/register"
@@ -134,7 +134,7 @@ const LoginPage: React.FC = () => {
         </form>
 
         <div className="text-center">
-          <p className="text-xs text-text-secondary dark:text-gray-500">
+          <p className="text-xs text-text-secondary dark:text-[#9E938C]">
             {t("auth.systemCaption")}
           </p>
         </div>

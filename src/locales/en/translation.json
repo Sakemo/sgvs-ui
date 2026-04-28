@@ -47,6 +47,8 @@
     "customers": "Customers",
     "expenses": "Expenses",
     "settings": "Settings",
+    "collapse": "Collapse sidebar",
+    "expand": "Expand sidebar",
     "language": "Language",
     "portuguese": "PT-BR",
     "english": "EN-US",
@@ -148,7 +150,7 @@
     "revenueProfitTrend": "Revenue & Profit Trend",
     "revenue": "Revenue",
     "profit": "Profit",
-    "receivables": "Receivables",
+    "receivables": "On Credit",
     "salesByPaymentMethod": "Sales by Payment Method",
     "topSellingProducts": "Top Selling Products",
     "noSalesData": "No sales data for this period.",
@@ -185,10 +187,19 @@
   "settings": {
     "pageTitle": "Settings",
     "saveSuccess": "Settings saved successfully.",
+    "interface": {
+      "title": "Interface",
+      "description": "Customize the application's language and appearance."
+    },
     "language": {
       "title": "Default Language",
       "description": "Sets the application's default language.",
       "label": "Language"
+    },
+    "theme": {
+      "label": "Appearance",
+      "light": "Light mode",
+      "dark": "Dark mode"
     },
     "stock": {
       "title": "Stock Management",

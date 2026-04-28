@@ -41,8 +41,8 @@ const Modal: React.FC<ModalProps> = ({
                             leaveTo="opacity-0 scale-95"
                         >
                             <Dialog.Panel className={`w-full max-w-md transform overflow-hidden rounded-card bg-card-light dark:bg-card-dark text-left align-middle shadow-xl transition-all ${className}`}>
-                                <header className="flex items-center justify-between p-4 border-b border-border-light dark:border-border-dark">
-                                    <Dialog.Title as="h3" className="text-lg font-semibold leading-6 text-text-primary dark:text-white">
+                                <header className="flex items-center justify-between p-4 border-b border-border-light dark:border-border-dark-subtle">
+                                    <Dialog.Title as="h3" className="text-lg font-semibold leading-6 text-text-primary dark:text-text-dark-primary">
                                         {title}
                                     </Dialog.Title>
                                     <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close Modal">

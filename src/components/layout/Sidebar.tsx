@@ -3,6 +3,8 @@ import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import {
+  LuChevronsLeft,
+  LuChevronsRight,
   LuLayoutDashboard,
   LuPackage,
   LuUsers,
@@ -12,7 +14,6 @@ import {
   LuChartBar,
 } from 'react-icons/lu';
 import { type IconType } from 'react-icons';
-import ThemeToggleButton from './common/ThemeToggleButton';
 
 interface NavItem {
   path: string;
@@ -25,9 +26,13 @@ interface NavGroup {
   children: NavItem[];
 }
 
-const Sidebar: React.FC = () => {
-  const { t, i18n } = useTranslation();
-  const currentLanguage = i18n.resolvedLanguage?.startsWith('pt') ? 'pt' : 'en';
+interface SidebarProps {
+  isCollapsed: boolean;
+  onToggleCollapse: () => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse }) => {
+  const { t } = useTranslation();
 
   const mainNavItems: (NavItem | NavGroup)[] = [
     {
@@ -52,51 +57,69 @@ const Sidebar: React.FC = () => {
       ],
     },
   ];
-  
+
   const footerNavItem: NavItem = {
     path: '/settings', labelKey: 'sidebar.settings', icon: LuSettings,
   };
 
   const linkBaseClasses = 'flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium transition-colors duration-150';
-  const linkInactiveClasses = 'text-text-secondary hover:bg-gray-100 hover:text-text-primary dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white';
-  const linkActiveClasses = 'text-brand-primary bg-brand-primary/10  dark:bg-brand-primary/10 dark:text-brand-accent font-semibold';
-  const languageButtonBaseClasses =
-    'px-3 py-1.5 text-xs rounded-btn border transition-colors duration-150';
-  const languageButtonActiveClasses =
-    'bg-brand-primary text-white border-brand-primary dark:bg-brand-primary dark:text-white dark:border-brand-primary';
-  const languageButtonInactiveClasses =
-    'bg-transparent text-text-secondary border-border-light hover:text-text-primary hover:border-brand-primary dark:text-gray-300 dark:border-border-dark dark:hover:text-white dark:hover:border-brand-primary';
+  const iconOnlyLinkClasses = 'mx-auto h-11 w-11 justify-center gap-0 px-0';
+  const linkInactiveClasses = 'text-text-secondary hover:bg-brand-primary/8 hover:text-text-primary dark:text-[#D7CEC8] dark:hover:bg-brand-primary/14 dark:hover:text-[#F7F1ED]';
+  const linkActiveClasses = 'bg-brand-primary/12 text-[#2E6430] dark:bg-brand-primary/18 dark:text-[#F7F1ED] font-semibold';
 
   return (
-    <aside className="w-64 flex-shrink-0 bg-card-light dark:bg-card-dark border-r border-border-light dark:border-border-dark flex flex-col">
-      <div className="p-4 border-b border-border-light dark:border-border-dark">
-        <h1 className="text-xl font-bold text-text-primary dark:text-white text-center">
-          flick.business
-        </h1>
+    <aside
+      className={clsx(
+        'flex flex-shrink-0 flex-col overflow-hidden border-r border-border-light bg-card-light transition-[width] duration-200 dark:border-border-dark dark:bg-card-dark',
+        isCollapsed ? 'w-20' : 'w-64'
+      )}
+    >
+      <div className="border-b border-border-light p-4 dark:border-border-dark">
+        <div className={clsx('flex items-center', isCollapsed ? 'justify-center' : 'justify-between gap-3')}>
+          {!isCollapsed && (
+            <h1 className="truncate text-xl font-bold text-text-primary dark:text-[#F7F1ED]">
+              flick.business
+            </h1>
+          )}
+          <button
+            type="button"
+            onClick={onToggleCollapse}
+            title={t(isCollapsed ? 'sidebar.expand' : 'sidebar.collapse')}
+            aria-label={t(isCollapsed ? 'sidebar.expand' : 'sidebar.collapse')}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-btn text-text-secondary transition-colors duration-150 hover:bg-brand-primary/8 hover:text-text-primary dark:text-[#D7CEC8] dark:hover:bg-brand-primary/14 dark:hover:text-[#F7F1ED]"
+          >
+            {isCollapsed ? <LuChevronsRight className="h-5 w-5" /> : <LuChevronsLeft className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
       
-      <nav className="flex-1 p-4 space-y-4">
+      <nav className={clsx('flex-1 p-4', isCollapsed ? 'space-y-3' : 'space-y-4')}>
         {mainNavItems.map((item) => (
           'groupLabelKey' in item ? (
             <div key={item.groupLabelKey}>
-              <div className="px-3 text-xs uppercase text-text-secondary dark:text-gray-400 font-semibold mb-1">
-                {t(item.groupLabelKey)}
-              </div>
+              {!isCollapsed && (
+                <div className="mb-1 px-3 text-xs font-semibold uppercase text-text-secondary dark:text-[#B7AAA2]">
+                  {t(item.groupLabelKey)}
+                </div>
+              )}
               <div className="space-y-1">
                 {item.children.map((child) => (
                   <NavLink
                     key={child.path}
                     to={child.path}
                     end={child.path === '/'}
+                    title={t(child.labelKey)}
+                    aria-label={t(child.labelKey)}
                     className={({ isActive }) =>
                       clsx(
                         linkBaseClasses,
+                        isCollapsed && iconOnlyLinkClasses,
                         isActive ? linkActiveClasses : linkInactiveClasses
                       )
                     }
                   >
                     <child.icon className="h-5 w-5 flex-shrink-0" />
-                    <span>{t(child.labelKey)}</span>
+                    <span className={clsx(isCollapsed && 'sr-only')}>{t(child.labelKey)}</span>
                   </NavLink>
                 ))}
               </div>
@@ -107,56 +130,32 @@ const Sidebar: React.FC = () => {
               to={item.path}
               end={item.path === '/'}
               className={({ isActive }) =>
-                clsx(linkBaseClasses, isActive ? linkActiveClasses : linkInactiveClasses)
+                clsx(linkBaseClasses, isCollapsed && iconOnlyLinkClasses, isActive ? linkActiveClasses : linkInactiveClasses)
               }
             >
               <item.icon className="h-5 w-5 flex-shrink-0" />
-              <span>{t(item.labelKey)}</span>
+              <span className={clsx(isCollapsed && 'sr-only')}>{t(item.labelKey)}</span>
             </NavLink>
           )
         ))}
       </nav>
       
-      <div className="p-4 border-t border-border-light dark:border-border-dark">
-        <ThemeToggleButton />
-        <div className="mt-4">
-          <p className="px-1 text-xs uppercase text-text-secondary dark:text-gray-400 font-semibold mb-2">
-            {t('sidebar.language')}
-          </p>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => i18n.changeLanguage('pt')}
-              className={clsx(
-                languageButtonBaseClasses,
-                currentLanguage === 'pt' ? languageButtonActiveClasses : languageButtonInactiveClasses
-              )}
-            >
-              {t('sidebar.portuguese')}
-            </button>
-            <button
-              type="button"
-              onClick={() => i18n.changeLanguage('en')}
-              className={clsx(
-                languageButtonBaseClasses,
-                currentLanguage === 'en' ? languageButtonActiveClasses : languageButtonInactiveClasses
-              )}
-            >
-              {t('sidebar.english')}
-            </button>
-          </div>
-        </div>
-        <div className="mt-4">
-          <NavLink
-            to={footerNavItem.path}
-            className={({ isActive }) =>
-              clsx(linkBaseClasses, isActive ? linkActiveClasses : linkInactiveClasses)
-            }
-          >
-            <footerNavItem.icon className="h-5 w-5 flex-shrink-0" />
-            <span>{t(footerNavItem.labelKey)}</span>
-          </NavLink>
-        </div>
+      <div className="border-t border-border-light p-4 dark:border-border-dark">
+        <NavLink
+          to={footerNavItem.path}
+          title={t(footerNavItem.labelKey)}
+          aria-label={t(footerNavItem.labelKey)}
+          className={({ isActive }) =>
+            clsx(
+              linkBaseClasses,
+              isCollapsed && iconOnlyLinkClasses,
+              isActive ? linkActiveClasses : linkInactiveClasses
+            )
+          }
+        >
+          <footerNavItem.icon className="h-5 w-5 flex-shrink-0" />
+          <span className={clsx(isCollapsed && 'sr-only')}>{t(footerNavItem.labelKey)}</span>
+        </NavLink>
       </div>
     </aside>
   );

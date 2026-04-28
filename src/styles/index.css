@@ -11,17 +11,142 @@
   }
   
   body {
-    @apply text-text-primary; 
+    @apply bg-bg-light text-text-primary; 
     @apply transition-colors duration-200 ease-in-out;
   }
 
   /* Estilos base para o modo escuro */
   .dark body {
-    @apply bg-bg-dark text-gray-200;
+    @apply bg-bg-dark text-text-dark-primary;
   }
-  
+
+  /* Modo escuro - Estilos de profundidade */
+  .dark {
+    color-scheme: dark;
+  }
+
+  .dark body > * {
+    @apply transition-colors duration-200;
+  }
+
   /* Anel de foco para acessibilidade, usando as cores da nova paleta */
   *:focus-visible {
-    @apply outline-none ring-2 ring-offset-2 ring-brand-primary/50 dark:ring-brand-accent/70 dark:ring-offset-bg-dark;
+    @apply outline-none ring-2 ring-offset-2 ring-brand-primary/50 dark:ring-accent-dark-green/70 dark:ring-offset-bg-dark;
+  }
+
+  ::selection {
+    background: rgba(83, 177, 84, 0.22);
+    color: #1E1E1E;
+  }
+
+  .dark ::selection {
+    background: rgba(93, 191, 111, 0.25);
+    color: #E8E9EB;
+  }
+
+  /* Scrollbar styling para dark mode */
+  .dark ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .dark ::-webkit-scrollbar-track {
+    @apply bg-bg-dark-secondary;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    @apply bg-border-dark rounded;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    @apply bg-border-dark-subtle;
+  }
+}
+
+@layer components {
+  /* Card component styling */
+  .card-base {
+    @apply rounded-card shadow-card transition-all duration-200;
+  }
+
+  .light .card-base {
+    @apply bg-card-light text-text-primary border border-border-light;
+  }
+
+  .dark .card-base {
+    @apply bg-card-dark text-text-dark-primary border border-border-dark-subtle;
+  }
+
+  .dark .card-base:hover {
+    @apply bg-card-dark-hover border-border-dark;
+  }
+
+  /* Button styling */
+  .btn-base {
+    @apply rounded-btn font-medium transition-all duration-200 focus-visible:ring-2;
+  }
+
+  .dark .btn-base:hover {
+    @apply shadow-lg;
+  }
+
+  /* Input styling */
+  .input-base {
+    @apply rounded-input border transition-colors duration-200 px-3 py-2;
+  }
+
+  .light .input-base {
+    @apply bg-card-light border-border-light text-text-primary placeholder-text-secondary/50;
+  }
+
+  .dark .input-base {
+    @apply bg-bg-dark-tertiary border-border-dark-subtle text-text-dark-primary placeholder-text-dark-tertiary;
+  }
+
+  .dark .input-base:focus {
+    @apply bg-card-dark-hover border-accent-dark-green/50 ring-2 ring-accent-dark-green/20;
+  }
+
+  /* Text utilities */
+  .text-secondary {
+    @apply text-text-secondary;
+  }
+
+  .dark .text-secondary {
+    @apply text-text-dark-secondary;
+  }
+
+  .text-tertiary {
+    @apply text-text-muted;
+  }
+
+  .dark .text-tertiary {
+    @apply text-text-dark-tertiary;
+  }
+
+  /* Border utilities */
+  .border-base {
+    @apply border-border-light;
+  }
+
+  .dark .border-base {
+    @apply border-border-dark-subtle;
+  }
+
+  /* Badge/Tag styling for dark mode */
+  .badge-dark-success {
+    @apply bg-accent-dark-success/20 text-accent-dark-success border border-accent-dark-success/40;
+  }
+
+  .badge-dark-error {
+    @apply bg-accent-dark-red/20 text-accent-dark-red border border-accent-dark-red/40;
+  }
+
+  .badge-dark-warning {
+    @apply bg-accent-dark-yellow/20 text-accent-dark-yellow border border-accent-dark-yellow/40;
+  }
+
+  .badge-dark-info {
+    @apply bg-accent-dark-blue/20 text-accent-dark-blue border border-accent-dark-blue/40;
   }
 }

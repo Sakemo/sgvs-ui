@@ -5,7 +5,7 @@ import { notificationService } from '../lib/notification.service';
 import { registerUser } from '../api/services/auth.service';
 import { useTranslation } from 'react-i18next';
 import type { AuthResponse, User } from '../api/types/domain';
-import { getAuthErrorMessage } from '../lib/auth-error-message';
+import { getAuthErrorMessage, getFieldErrorMessage } from '../lib/auth-error-message';
 
 const toUserFromAuthResponse = (
   data: AuthResponse,
@@ -29,20 +29,30 @@ const RegisterPage: React.FC = () => {
     password: '',
     confirmPassword: ''
   });
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
 
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value
     });
+    // Limpar erro do campo quando o usuário digita
+    if (fieldErrors[name]) {
+      setFieldErrors({
+        ...fieldErrors,
+        [name]: ''
+      });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFieldErrors({});
 
     if (formData.password !== formData.confirmPassword) {
       notificationService.error(t('auth.register.passwordMismatch'));
@@ -63,6 +73,12 @@ const RegisterPage: React.FC = () => {
       notificationService.success(t('auth.register.success'));
       navigate('/');
     } catch (error) {
+      // Tentar extrair erros de campo da resposta
+      const passwordError = getFieldErrorMessage(error, 'password');
+      if (passwordError) {
+        setFieldErrors({ password: passwordError });
+      }
+      
       notificationService.error(getAuthErrorMessage(error, t, 'register'));
     } finally {
       setIsLoading(false);
@@ -76,17 +92,17 @@ const RegisterPage: React.FC = () => {
           <h1 className="text-3xl font-bold text-brand-primary dark:text-brand-accent mb-2">
             flick.business
           </h1>
-          <h2 className="text-xl font-semibold text-text-primary dark:text-gray-200">
+          <h2 className="text-xl font-semibold text-text-primary dark:text-[#F7F1ED]">
             {t('auth.register.title')}
           </h2>
-          <p className="mt-2 text-sm text-text-secondary dark:text-gray-400">
+          <p className="mt-2 text-sm text-text-secondary dark:text-[#CABEB6]">
             {t('auth.register.subtitle')}
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-6 bg-card-light dark:bg-card-dark p-8 rounded-xl shadow-lg border border-border-light dark:border-border-dark">
+        <form onSubmit={handleSubmit} className="mt-8 space-y-6 rounded-xl border border-border-light bg-card-light p-8 shadow-card dark:border-border-dark dark:bg-card-dark">
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-text-primary dark:text-gray-200 mb-2">
+            <label htmlFor="username" className="mb-2 block text-sm font-medium text-text-primary dark:text-[#F7F1ED]">
               {t('common.username')}
             </label>
             <input
@@ -97,13 +113,13 @@ const RegisterPage: React.FC = () => {
               required
               value={formData.username}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-border-light dark:border-border-dark rounded-input bg-transparent text-text-primary dark:text-gray-200 placeholder-text-secondary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 dark:focus:ring-brand-accent/70 transition-colors"
+              className="w-full rounded-input border border-border-light bg-[#FFF8F4] px-3 py-2 text-text-primary placeholder-[#8A817B] transition-colors focus:outline-none focus:ring-2 focus:ring-brand-primary/50 dark:border-border-dark dark:bg-[#16372D] dark:text-[#F7F1ED] dark:placeholder-[#B7AAA2] dark:focus:ring-brand-accent/70"
               placeholder={t('auth.register.usernamePlaceholder')}
             />
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-text-primary dark:text-gray-200 mb-2">
+            <label htmlFor="email" className="mb-2 block text-sm font-medium text-text-primary dark:text-[#F7F1ED]">
               {t('common.email')}
             </label>
             <input
@@ -114,13 +130,13 @@ const RegisterPage: React.FC = () => {
               required
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-border-light dark:border-border-dark rounded-input bg-transparent text-text-primary dark:text-gray-200 placeholder-text-secondary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 dark:focus:ring-brand-accent/70 transition-colors"
+              className="w-full rounded-input border border-border-light bg-[#FFF8F4] px-3 py-2 text-text-primary placeholder-[#8A817B] transition-colors focus:outline-none focus:ring-2 focus:ring-brand-primary/50 dark:border-border-dark dark:bg-[#16372D] dark:text-[#F7F1ED] dark:placeholder-[#B7AAA2] dark:focus:ring-brand-accent/70"
               placeholder={t('auth.register.emailPlaceholder')}
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-text-primary dark:text-gray-200 mb-2">
+            <label htmlFor="password" className="mb-2 block text-sm font-medium text-text-primary dark:text-[#F7F1ED]">
               {t('common.password')}
             </label>
             <input
@@ -131,13 +147,22 @@ const RegisterPage: React.FC = () => {
               required
               value={formData.password}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-border-light dark:border-border-dark rounded-input bg-transparent text-text-primary dark:text-gray-200 placeholder-text-secondary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 dark:focus:ring-brand-accent/70 transition-colors"
+              className={`w-full rounded-input border bg-[#FFF8F4] px-3 py-2 text-text-primary placeholder-[#8A817B] transition-colors focus:outline-none focus:ring-2 dark:bg-[#16372D] dark:text-[#F7F1ED] dark:placeholder-[#B7AAA2] ${
+                fieldErrors.password
+                  ? 'border-red-500 dark:border-red-500 focus:ring-red-500/50'
+                  : 'border-border-light dark:border-border-dark focus:ring-brand-primary/50 dark:focus:ring-brand-accent/70'
+              }`}
               placeholder={t('auth.register.passwordPlaceholder')}
             />
+            {fieldErrors.password && (
+              <p className="mt-1 text-sm text-red-500 dark:text-red-400">
+                {fieldErrors.password}
+              </p>
+            )}
           </div>
 
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-text-primary dark:text-gray-200 mb-2">
+            <label htmlFor="confirmPassword" className="mb-2 block text-sm font-medium text-text-primary dark:text-[#F7F1ED]">
               {t('auth.register.confirmPasswordLabel')}
             </label>
             <input
@@ -148,7 +173,7 @@ const RegisterPage: React.FC = () => {
               required
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-border-light dark:border-border-dark rounded-input bg-transparent text-text-primary dark:text-gray-200 placeholder-text-secondary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 dark:focus:ring-brand-accent/70 transition-colors"
+              className="w-full rounded-input border border-border-light bg-[#FFF8F4] px-3 py-2 text-text-primary placeholder-[#8A817B] transition-colors focus:outline-none focus:ring-2 focus:ring-brand-primary/50 dark:border-border-dark dark:bg-[#16372D] dark:text-[#F7F1ED] dark:placeholder-[#B7AAA2] dark:focus:ring-brand-accent/70"
               placeholder={t('auth.register.confirmPasswordPlaceholder')}
             />
           </div>
@@ -157,14 +182,14 @@ const RegisterPage: React.FC = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-btn shadow-sm text-sm font-medium text-white bg-brand-primary hover:bg-brand-primary/90 dark:bg-brand-accent dark:hover:bg-brand-accent/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary/50 dark:focus:ring-brand-accent/70 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full flex justify-center rounded-btn border border-transparent bg-brand-primary px-4 py-3 text-sm font-medium text-[#1E1E1E] shadow-soft transition-colors hover:bg-brand-accent hover:text-[#F7F1ED] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary/50 dark:bg-brand-primary dark:text-[#1E1E1E] dark:hover:bg-brand-accent dark:hover:text-[#F7F1ED] dark:focus:ring-brand-accent/70 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isLoading ? t('auth.register.loading') : t('auth.register.submit')}
             </button>
           </div>
 
           <div className="text-center">
-            <span className="text-sm text-text-secondary dark:text-gray-400">
+            <span className="text-sm text-text-secondary dark:text-[#CABEB6]">
               {t('auth.register.hasAccount')}{' '}
               <Link
                 to="/login"

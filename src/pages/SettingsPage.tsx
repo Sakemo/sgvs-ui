@@ -11,13 +11,17 @@ import { notificationService } from '../lib/notification.service';
 import AccountSettings from '../components/features/settings/AccountSettings';
 import Select from '../components/common/ui/Select';
 import Card from '../components/common/ui/Card';
+import { useTheme } from '../contexts/utils/UseTheme';
+import type { Theme } from '../contexts/ThemeContext';
 
 const SettingsPage: React.FC = () => {
   const { t, i18n } = useTranslation();
 
   const { settings: initialSettings, isLoading, refetchSettings } = useSettings();
+  const { theme, setTheme } = useTheme();
   const [formData, setFormData] = useState<Partial<GeneralSettingsRequest>>({});
   const [language, setLanguage] = useState<'pt' | 'en'>('en');
+  const [selectedTheme, setSelectedTheme] = useState<Theme>('light');
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -30,11 +34,16 @@ const SettingsPage: React.FC = () => {
     setLanguage(i18n.resolvedLanguage?.startsWith('pt') ? 'pt' : 'en');
   }, [i18n.resolvedLanguage]);
 
+  useEffect(() => {
+    setSelectedTheme(theme);
+  }, [theme]);
+
   const hasSettingsChanges =
     JSON.stringify(initialSettings) !== JSON.stringify({ ...initialSettings, ...formData });
   const currentLanguage = i18n.resolvedLanguage?.startsWith('pt') ? 'pt' : 'en';
   const hasLanguageChanges = language !== currentLanguage;
-  const isDirty = hasSettingsChanges || hasLanguageChanges;
+  const hasThemeChanges = selectedTheme !== theme;
+  const isDirty = hasSettingsChanges || hasLanguageChanges || hasThemeChanges;
 
   const handleFormChange = (updatedValues: Partial<GeneralSettingsRequest>) => {
     setFormData(prev => ({ ...prev, ...updatedValues }));
@@ -57,9 +66,13 @@ const SettingsPage: React.FC = () => {
         localStorage.setItem('i18nextLng', language);
       }
 
+      if (hasThemeChanges) {
+        setTheme(selectedTheme);
+      }
+
       notificationService.success(t('settings.saveSuccess'));
 
-    } catch (err) {
+    } catch {
       notificationService.error(t('errors.saveSettings'));
     } finally {
       setIsSaving(false);
@@ -87,17 +100,28 @@ const SettingsPage: React.FC = () => {
           />
         )}
         <Card>
-          <h2 className="text-lg font-semibold mb-2">{t('settings.language.title')}</h2>
-          <p className="text-sm text-text-secondary mb-4">{t('settings.language.description')}</p>
-          <Select
-            label={t('settings.language.label')}
-            value={language}
-            onChange={(e) => setLanguage(e.target.value as 'pt' | 'en')}
-            disabled={isSaving}
-          >
-            <option value="pt">{t('sidebar.portuguese')}</option>
-            <option value="en">{t('sidebar.english')}</option>
-          </Select>
+          <h2 className="mb-2 text-lg font-semibold">{t('settings.interface.title')}</h2>
+          <p className="mb-4 text-sm text-text-secondary">{t('settings.interface.description')}</p>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Select
+              label={t('settings.language.label')}
+              value={language}
+              onChange={(e) => setLanguage(e.target.value as 'pt' | 'en')}
+              disabled={isSaving}
+            >
+              <option value="pt">{t('sidebar.portuguese')}</option>
+              <option value="en">{t('sidebar.english')}</option>
+            </Select>
+            <Select
+              label={t('settings.theme.label')}
+              value={selectedTheme}
+              onChange={(e) => setSelectedTheme(e.target.value as Theme)}
+              disabled={isSaving}
+            >
+              <option value="light">{t('settings.theme.light')}</option>
+              <option value="dark">{t('settings.theme.dark')}</option>
+            </Select>
+          </div>
         </Card>
         <AccountSettings />
       </main>

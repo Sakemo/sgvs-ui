@@ -22,26 +22,47 @@ export default {
     },
     extend: {
       colors: {
-        'brand-primary': '#7AA2F7',          // Tokyo Night Blue
-        'brand-accent': '#7DCFFF',           // Tokyo Night Cyan
-        'brand-secondary-accent': '#BB9AF7', // Tokyo Night Magenta
-        'brand-muted': '#565F89',            // Tokyo Night Comment
-        'bg-light': '#E1E2E7',               // Tokyo Night Day Background
-        'bg-dark': '#1A1B26',                // Tokyo Night Night Background
-        'card-light': '#FFFFFF',             // Elevated Light Surface
-        'card-dark': '#24283B',              // Tokyo Night Surface
-        'text-primary': '#1F2335',           // Tokyo Night Day Foreground
-        'text-secondary': '#545C7E',         // Tokyo Night Muted Foreground
-        'border-light': '#C0CAF5',           // Tokyo Night Day Border
-        'border-dark': '#414868',            // Tokyo Night Night Border
+        // Brand Colors
+        'brand-primary': '#53B154',          // Accent Green
+        'brand-accent': '#418C46',           // Darker Accent Green
+        'brand-secondary-accent': '#84C97F', // Soft Green Tint
+        'brand-muted': '#8A817B',            // Warm Neutral
+        
+        // Light Mode
+        'bg-light': '#F7F1ED',               // Soft Off-White
+        'card-light': '#FFFCFA',             // Elevated Light Surface
+        'text-primary': '#1E1E1E',           // Charcoal
+        'text-secondary': '#4F5C54',         // Soft Neutral Green
+        'border-light': '#E2DAD4',           // Warm Border
+        
+        // Dark Mode - Improved Palette
+        'bg-dark': '#0F1419',                // Very Dark Base (almost black, slightly blue-tinted)
+        'bg-dark-secondary': '#1A1F28',      // Slightly elevated surface
+        'bg-dark-tertiary': '#242B36',       // Even lighter surface for depth
+        'card-dark': '#151B24',              // Card base (subtle elevation)
+        'card-dark-hover': '#1E2534',        // Card hover state
+        'card-dark-accent': '#1F3A34',       // Subtle green-tinted elevated surface
+        'text-dark-primary': '#E8E9EB',      // Bright text for primary content
+        'text-dark-secondary': '#A0A6AE',    // Muted text for secondary content
+        'text-dark-tertiary': '#7A8190',     // Very muted text for hints
+        'border-dark': '#2A3139',             // Stronger borders for clarity
+        'border-dark-subtle': '#1F2633',     // Subtle borders
+        
+        // Dark Mode - Accent Variations
+        'accent-dark-green': '#5DBF6F',      // Bright green for dark mode
+        'accent-dark-green-muted': '#3A8B4C', // Muted green
+        'accent-dark-blue': '#4A9FD8',       // Secondary accent
+        'accent-dark-red': '#E85555',        // Status/error
+        'accent-dark-yellow': '#F5B956',     // Warning
+        'accent-dark-success': '#5DBF6F',    // Success
       },
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        'soft': '0 2px 12px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.04)',
-        'card': '0 4px 16px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -2px rgba(0, 0, 0, 0.05)',
-        'hover': '0 6px 20px -3px rgba(0, 0, 0, 0.09), 0 4px 8px -3px rgba(0, 0, 0, 0.06)',
+        'soft': '0 12px 28px -24px rgba(30, 30, 30, 0.28), 0 8px 18px -24px rgba(83, 177, 84, 0.18)',
+        'card': '0 18px 42px -30px rgba(30, 30, 30, 0.32), 0 10px 22px -24px rgba(1, 47, 34, 0.22)',
+        'hover': '0 24px 52px -32px rgba(30, 30, 30, 0.38), 0 12px 28px -26px rgba(83, 177, 84, 0.2)',
       },
       spacing: {
         'section': '4rem',

@@ -1,4 +1,4 @@
-import { format, formatDistanceToNowStrict, isToday, isYesterday, parseISO, type Locale } from 'date-fns';
+import { format, formatDistanceToNowStrict, isToday, isYesterday, isTomorrow, parseISO, type Locale } from 'date-fns';
 import { ptBR, enUS } from 'date-fns/locale';
 import i18n from '../i18n';
 
@@ -112,7 +112,7 @@ export const formatDate = (
     const date = parseISO(dateString);
     const locale = getCurrentLocale();
     const timeFormat = 'HH:mm';
-    const dateFormat = locale === ptBR ? 'dd/MM/yyyy' : 'MM/dd/yyyy';
+    const dateFormatWithoutYear = locale === ptBR ? 'dd/MM' : 'MM/dd';
 
     let relativeDatePart: string;
 
@@ -120,8 +120,10 @@ export const formatDate = (
       relativeDatePart = i18n.t('formatters.today', 'Hoje');
     } else if (isYesterday(date)) {
       relativeDatePart = i18n.t('formatters.yesterday', 'Ontem');
+    } else if (isTomorrow(date)) {
+      relativeDatePart = i18n.t('formatters.tomorrow', 'Amanhã');
     } else {
-      relativeDatePart = format(date, dateFormat, { locale });
+      relativeDatePart = format(date, dateFormatWithoutYear, { locale });
     }
 
     if (options.showTime) {

@@ -10,13 +10,13 @@ interface PricingAssistantProps {
 }
 
 const assistantConfig = {
-  abusive: { Icon: LuTriangleAlert, color: 'text-purple-500' },
-  healthy: { Icon: LuThumbsUp, color: 'text-green-500' },
-  warning: { Icon: LuInfo, color: 'text-yellow-500' },
-  low: { Icon: LuTriangleAlert, color: 'text-orange-500' },
+  abusive: { Icon: LuTriangleAlert, color: 'text-[#012F22] dark:text-[#DCE8D4]' },
+  healthy: { Icon: LuThumbsUp, color: 'text-brand-primary' },
+  warning: { Icon: LuInfo, color: 'text-brand-accent dark:text-brand-secondary-accent' },
+  low: { Icon: LuTriangleAlert, color: 'text-[#4F6F45] dark:text-[#B9D8B4]' },
   loss: { Icon: LuTriangleAlert, color: 'text-red-500' },
-  no_cost: { Icon: LuBadgePercent, color: 'text-gray-500' },
-  zero: { Icon: LuBadgePercent, color: 'text-gray-500' },
+  no_cost: { Icon: LuBadgePercent, color: 'text-[#8A817B]' },
+  zero: { Icon: LuBadgePercent, color: 'text-[#8A817B]' },
 };
 
 const PricingAssistant: React.FC<PricingAssistantProps> = ({ status }) => {
@@ -32,11 +32,11 @@ const PricingAssistant: React.FC<PricingAssistantProps> = ({ status }) => {
   const defaultMessage = `Default message for ${status}`;
 
   return (
-    <Card className="p-3 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+    <Card className="border-brand-primary/20 bg-brand-primary/8 p-3 dark:border-brand-primary/18 dark:bg-brand-primary/10">
       <div className="flex items-start gap-3">
         <Icon className={`h-5 w-5 flex-shrink-0 ${color}`} />
         <div>
-          <h4 className="text-sm font-semibold text-text-primary dark:text-gray-200">
+          <h4 className="text-sm font-semibold text-text-primary dark:text-[#F7F1ED]">
             {t('product.assistant.title', 'Assistant Insights')}
           </h4>
           <p className="text-xs text-text-secondary mt-1">

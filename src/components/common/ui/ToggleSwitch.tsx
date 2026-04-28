@@ -18,8 +18,8 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
         onChange={onChange}
         className={clsx(
           'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out',
-          'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-bg-dark',
-          enabled ? 'bg-brand-primary' : 'bg-gray-200 dark:bg-gray-700'
+          'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-bg-dark dark:focus-visible:ring-accent-dark-green',
+          enabled ? 'bg-brand-primary dark:bg-accent-dark-green' : 'bg-border-light dark:bg-border-dark'
         )}
       >
         <span
@@ -32,7 +32,7 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
       </Switch>
       {label && (
         <Switch.Label as="span" className="ml-3 text-sm">
-          <span className="font-medium text-text-primary dark:text-gray-200">{label}</span>
+          <span className="font-medium text-text-primary dark:text-text-dark-primary">{label}</span>
         </Switch.Label>
       )}
     </Switch.Group>

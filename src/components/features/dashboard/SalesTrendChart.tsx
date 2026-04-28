@@ -1,9 +1,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { type TimeSeriesDataPoint } from '../../../api/types/domain';
 import Card from '../../common/ui/Card';
-import { formatCurrency } from '../../../utils/formatters';
+import { formatCurrency, formatDate } from '../../../utils/formatters';
 
 interface TooltipPayload {
     name: string;
@@ -23,9 +23,10 @@ interface SalesTrendChartProps {
 }
 const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
+    const formattedLabel = label ? formatDate(label, { showTime: false }) : label;
     return (
-      <div className="rounded-card border border-border-light bg-card-light/80 dark:bg-card-dark/80 p-3 shadow-lg backdrop-blur-sm">
-        <p className="font-semibold text-text-primary dark:text-white">{label}</p>
+      <div className="rounded-card border border-border-light bg-card-light/90 p-3 shadow-lg backdrop-blur-sm dark:border-border-dark dark:bg-card-dark/90">
+        <p className="font-semibold text-text-primary dark:text-[#F7F1ED]">{formattedLabel}</p>
         {payload.map((p, index: number) => (
           <p key={index} style={{ color: p.color }} className="text-sm">
             {`${p.name}: ${formatCurrency(p.value)}`}
@@ -39,62 +40,48 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label })
 
 const SalesTrendChart: React.FC<SalesTrendChartProps> = ({ data, isLoading }) => {
   const { t } = useTranslation();
+
+  const formatDateTick = (dateString: string): string => {
+    return formatDate(dateString, { showTime: false });
+  };
+
   return (
-    <Card>
-      <h2 className="text-lg font-semibold mb-4">{t('dashboard.revenueProfitTrend')}</h2>
-      <div className="h-80">
+    <Card className="h-full p-3">
+      <div className="h-[320px] -m-3 p-3">
         {isLoading ? (
           <div className="w-full h-full bg-gray-200 dark:bg-gray-700 rounded-md animate-pulse" />
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
-              <defs>
-                <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#00BFFF" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="#00BFFF" stopOpacity={0.05} />
-                </linearGradient>
-                <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#22C55E" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="#22C55E" stopOpacity={0.05} />
-                </linearGradient>
-                <linearGradient id="colorReceivables" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="#F59E0B" stopOpacity={0.05} />
-                </linearGradient>
-              </defs>
+            <BarChart
+              data={data}
+              margin={{ top: 10, right: 10, left: 0, bottom: 5 }}
+              barCategoryGap="16%"
+              barGap={2}
+            >
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(128, 128, 128, 0.2)" />
-              <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="rgba(128, 128, 128, 0.5)" />
-              <YAxis tickFormatter={(value) => formatCurrency(value as number)} tick={{ fontSize: 12 }} stroke="rgba(128, 128, 128, 0.5)" />
+              <XAxis dataKey="date" tickFormatter={formatDateTick} tick={{ fontSize: 11 }} stroke="rgba(128, 128, 128, 0.5)" />
+              <YAxis hide />
               <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <Area
-                type="monotone"
+              <Legend verticalAlign="top" height={36} align="right" />
+              <Bar
                 dataKey="revenue"
                 name={t('dashboard.revenue')}
-                stroke="#00BFFF"
-                strokeWidth={2}
-                fillOpacity={1}
-                fill="url(#colorRevenue)"
+                fill="#53B154"
+                maxBarSize={28}
               />
-              <Area
-                type="monotone"
+              <Bar
                 dataKey="profit"
                 name={t('dashboard.profit')}
-                stroke="#22C55E"
-                strokeWidth={2}
-                fillOpacity={1}
-                fill="url(#colorProfit)"
+                fill="#84C97F"
+                maxBarSize={28}
               />
-              <Area
-                type="monotone"
+              <Bar
                 dataKey="receivables"
                 name={t('dashboard.receivables')}
-                stroke="#F59E0B"
-                strokeWidth={2}
-                fillOpacity={1}
-                fill="url(#colorReceivables)"
+                fill="#1E1E1E"
+                maxBarSize={28}
               />
-            </AreaChart>
+            </BarChart>
           </ResponsiveContainer>
         )}
       </div>
