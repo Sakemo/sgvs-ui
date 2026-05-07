@@ -5,7 +5,7 @@ import { startOfMonth, endOfMonth, startOfYear, endOfYear } from 'date-fns';
 import { LuPlus } from 'react-icons/lu';
 
 // API & Types
-import { getSales, deleteSalePermanently, getSalesGrossTotal, getSalesTotalByPaymentMethod, getSalesSummary, type GetSalesParams, type GroupSummary, type TotalByPaymentMethod } from '../api/services/sale.service';
+import { getSales, deleteSalePermanently, getSalesGrossTotal, getSalesSummary, type GetSalesParams, type GroupSummary } from '../api/services/sale.service';
 import { getTotalExpenses } from '../api/services/expense.service';
 import { getProducts } from '../api/services/product.service';
 import { getCustomers } from '../api/services/customer.service';
@@ -25,21 +25,17 @@ import useDebounce from '../hooks/useDebounce';
 import AutocompleteInput from '../components/common/AutoCompleteInput';
 import { notificationService } from '../lib/notification.service';
 import { formatDate } from '../utils/formatters';
-import { useConfirmation } from '../contexts/utils/UseConfirmation';
 import { recordPayment } from '../api/services/payment.service';
 import PaySaleModal from '../components/features/sales/PaySaleModal';
 
 const SalesPage: React.FC = () => {
   const { t } = useTranslation();
   
-  const showConfirmation = useConfirmation();
-
   // Data State
   const [salesPage, setSalesPage] = useState<Page<SaleResponse> | null>(null);
   const [saleToPay, setSaleToPay] = useState<SaleResponse | null>(null);
   const [grossTotal, setGrossTotal] = useState(0);
   const [netProfit, setNetProfit] = useState(0);
-  const [totalsByPaymentMethod, setTotalsByPaymentMethod] = useState<TotalByPaymentMethod[]>([]);
   const [groupSummaries, setGroupSummaries] = useState<Record<string, GroupSummary>>({});
   
   // UI State
@@ -161,11 +157,10 @@ const SalesPage: React.FC = () => {
     try {
       const params: GetSalesParams = { ...filters, page: currentPage, size: 10 };
       
-      const [salesData, grossTotalData, expensesData, paymentTotalsData, customersData, productsData] = await Promise.all([
+      const [salesData, grossTotalData, expensesData, customersData, productsData] = await Promise.all([
         getSales(params),
         getSalesGrossTotal(params),
         getTotalExpenses({ startDate: params.startDate, endDate: params.endDate }),
-        getSalesTotalByPaymentMethod({ startDate: params.startDate, endDate: params.endDate }),
         getCustomers({ isActive: true }),
         getProducts({ size: 1000 })
       ]);
@@ -173,7 +168,6 @@ const SalesPage: React.FC = () => {
       setSalesPage(salesData);
       setGrossTotal(grossTotalData);
       setNetProfit(grossTotalData - expensesData);
-      setTotalsByPaymentMethod(paymentTotalsData);
       
       // ???
       setCustomerOptions(customersData);

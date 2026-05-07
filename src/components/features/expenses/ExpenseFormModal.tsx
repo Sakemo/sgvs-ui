@@ -44,7 +44,7 @@ const buildAutomaticRestockName = (items: FormRestockItem[]): string => {
 
 const buildAutomaticRestockDescription = (items: FormRestockItem[]): string => {
   if (items.length === 0) return "";
-  const lines = items.map((item) => `- ${item.quantity}x ${item.name}`);
+  const lines = items.map((item) => `- ${item.quantity}x ${item.name} ${formatCurrency(item.unitCostPrice)} cada`);
   return `Itens comprados:\n${lines.join("\n")}`;
 };
 
@@ -292,138 +292,144 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
       isOpen={isOpen}
       onClose={onClose}
       title={isEditMode ? t("expense.editTitle") : t("expense.addTitle")}
+      className="sm:max-w-3xl"
     >
-      <form onSubmit={handleSubmit} className="p-6 space-y-4">
-        <Select
-          label={`${t("expense.expenseType")} *`}
-          name="expenseType"
-          value={formData.expenseType || ""}
-          onChange={handleChange}
-          required
-        >
-          {Object.values(ExpenseType).map((type) => (
-            <option key={type} value={type}>
-              {t(`expenseCategories.${type.toLowerCase()}`)}
-            </option>
-          ))}
-        </Select>
-
-        <Input
-          label={t("common.name") + " *"}
-          name="name"
-          value={formData.name || ""}
-          onChange={handleChange}
-          disabled={isRestocking}
-          required
-        />
-
-        {isRestocking ? (
-          <Card>
-            <h3 className="text-md font-semibold mb-3">
-              {t("expense.addRestockItems")}
-            </h3>
-            <div className="space-y-3">
-              <AutocompleteInput
-                label={t("product.objectName")}
-                options={productOptions.map((p) => ({
-                  value: p.id,
-                  label: p.name,
-                }))}
-                selected={selectedProduct}
-                onSelect={setSelectedProduct}
-                onQueryChange={setProductQuery}
-                isLoading={isSearchingProducts}
-              />
-              <div className="grid grid-cols-2 gap-3">
-                <Input
-                  label={t("sale.quantity")}
-                  name="quantity"
-                  type="number"
-                  value={quantity}
-                  onChange={(e) => setQuantity(e.target.value)}
-                />
-                <Input
-                  label={t("product.costPrice")}
-                  name="unitCostPrice"
-                  type="number"
-                  step="0.01"
-                  value={unitCostPrice}
-                  onChange={(e) => setUnitCostPrice(e.target.value)}
-                  disabled={!selectedProduct}
-                />
-              </div>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={handleAddItem}
-                disabled={!selectedProduct || !quantity || !unitCostPrice}
-              >
-                {t("actions.add")}
-              </Button>
-            </div>
-            {restockItems.length > 0 && (
-              <ul className="mt-4 space-y-2">
-                {restockItems.map((item) => (
-                  <li
-                    key={item.productId}
-                    className="flex justify-between items-center text-sm p-2 bg-gray-50 dark:bg-gray-700/50 rounded-md"
-                  >
-                    <div>
-                      <p className="font-medium">{item.name}</p>
-                      <p className="text-xs text-text-secondary">
-                        {item.quantity} x {formatCurrency(item.unitCostPrice)}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <p className="font-semibold">
-                        {formatCurrency(item.quantity * item.unitCostPrice)}
-                      </p>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleRemoveItem(item.productId)}
-                        iconLeft={<LuTrash2 />}
-                      />
-                    </div>
-                  </li>
-                ))}
-                  <div className="mt-4 pt-4 border-t border-border-light dark:border-border-dark flex justify-between items-center font-bold">
-        <span>{t('common.total')}</span>
-        <span>{formatCurrency(restockTotalValue)}</span>
-    </div>
-              </ul>
-            )}
-          </Card>
-        ) : (
-          <Input
-            label={t("common.value") + " *"}
-            name="value"
-            type="number"
-            step="0.01"
-            value={formData.value ?? ""}
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6 p-6">
+        
+        {/* COLUNA ESQUERDA - CAMPOS PRINCIPAIS */}
+        <div className="space-y-4">
+          <Select
+            label={`${t("expense.expenseType")} *`}
+            name="expenseType"
+            value={formData.expenseType || ""}
             onChange={handleChange}
             required
+          >
+            {Object.values(ExpenseType).map((type) => (
+              <option key={type} value={type}>
+                {t(`expenseCategories.${type.toLowerCase()}`)}
+              </option>
+            ))}
+          </Select>
+
+          <Input
+            label={t("common.name") + " *"}
+            name="name"
+            value={formData.name || ""}
+            onChange={handleChange}
+            disabled={isRestocking}
+            required
           />
-        )}
 
-        <Select
-          label={`${t("common.paymentMethod")} *`}
-          name="paymentMethod"
-          value={formData.paymentMethod || ""}
-          onChange={handleChange}
-          required
-        >
-          {Object.values(PaymentMethod).map((type) => (
-            <option key={type} value={type}>
-              {t(
-                `paymentMethods.${type.toLowerCase()}`
+          {isRestocking ? (
+            <Card>
+              <h3 className="text-md font-semibold mb-3">
+                {t("expense.addRestockItems")}
+              </h3>
+              <div className="space-y-3">
+                <AutocompleteInput
+                  label={t("product.objectName")}
+                  options={productOptions.map((p) => ({
+                    value: p.id,
+                    label: p.name,
+                  }))}
+                  selected={selectedProduct}
+                  onSelect={setSelectedProduct}
+                  onQueryChange={setProductQuery}
+                  isLoading={isSearchingProducts}
+                />
+                <div className="grid grid-cols-2 gap-3">
+                  <Input
+                    label={t("sale.quantity")}
+                    name="quantity"
+                    type="number"
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                  />
+                  <Input
+                    label={t("product.costPrice")}
+                    name="unitCostPrice"
+                    type="number"
+                    step="0.01"
+                    value={unitCostPrice}
+                    onChange={(e) => setUnitCostPrice(e.target.value)}
+                    disabled={!selectedProduct}
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={handleAddItem}
+                  disabled={!selectedProduct || !quantity || !unitCostPrice}
+                >
+                  {t("actions.add")}
+                </Button>
+              </div>
+              {restockItems.length > 0 && (
+                <ul className="mt-4 space-y-2">
+                  {restockItems.map((item) => (
+                    <li
+                      key={item.productId}
+                      className="flex justify-between items-center text-sm p-2 bg-gray-50 dark:bg-gray-700/50 rounded-md"
+                    >
+                      <div>
+                        <p className="font-medium">{item.name}</p>
+                        <p className="text-xs text-text-secondary">
+                          {item.quantity} x {formatCurrency(item.unitCostPrice)}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <p className="font-semibold">
+                          {formatCurrency(item.quantity * item.unitCostPrice)}
+                        </p>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleRemoveItem(item.productId)}
+                          iconLeft={<LuTrash2 />}
+                        />
+                      </div>
+                    </li>
+                  ))}
+                    <div className="mt-4 pt-4 border-t border-border-light dark:border-border-dark flex justify-between items-center font-bold">
+          <span>{t('common.total')}</span>
+          <span>{formatCurrency(restockTotalValue)}</span>
+      </div>
+                </ul>
               )}
-            </option>
-          ))}
-        </Select>
+            </Card>
+          ) : (
+            <Input
+              label={t("common.value") + " *"}
+              name="value"
+              type="number"
+              step="0.01"
+              value={formData.value ?? ""}
+              onChange={handleChange}
+              required
+            />
+          )}
 
-        <AdvancedOptions className="grid grid-cols-2 auto-rows-auto gap-4 [&>*:nth-child(3)]:col-span-2">
+          <Select
+            label={`${t("common.paymentMethod")} *`}
+            name="paymentMethod"
+            value={formData.paymentMethod || ""}
+            onChange={handleChange}
+            required
+          >
+            {Object.values(PaymentMethod).map((type) => (
+              <option key={type} value={type}>
+                {t(
+                  `paymentMethods.${type.toLowerCase()}`
+                )}
+              </option>
+            ))}
+          </Select>
+        </div>
+
+        {/* COLUNA DIREITA - OPÇÕES AVANÇADAS */}
+        <AdvancedOptions className="space-y-4">
           <Input
             label={t("expense.expenseDate")}
             name="expenseDate"
@@ -438,11 +444,12 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
             value={formData.description || ""}
             onChange={handleChange}
             disabled={isRestocking}
-            rows={3}
+            rows={9}
+            style={{ resize: "none" }}
           />
         </AdvancedOptions>
 
-        <div className="flex justify-end gap-2 pt-4 border-t border-border-light dark:border-border-dark">
+        <div className="lg:col-span-2 flex justify-end gap-2 pt-4 border-t border-border-light dark:border-border-dark">
           <Button
             type="button"
             variant="secondary"

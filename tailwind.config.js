@@ -29,8 +29,8 @@ export default {
         'brand-muted': '#8A817B',            // Warm Neutral
         
         // Light Mode
-        'bg-light': '#F7F1ED',               // Soft Off-White
-        'card-light': '#FFFCFA',             // Elevated Light Surface
+        'bg-light': '#e9e7e5',               // Soft Off-White
+        'card-light': '#F7F1ED',             // Elevated Light Surface
         'text-primary': '#1E1E1E',           // Charcoal
         'text-secondary': '#4F5C54',         // Soft Neutral Green
         'border-light': '#E2DAD4',           // Warm Border

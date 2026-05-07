@@ -418,7 +418,7 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
           </div>
         </div>
 
-        <footer className="bg-gray-50 dark:bg-card-dark/50 px-6 py-4 flex justify-end gap-2">
+        <footer className="card-light/50 dark:bg-card-dark/50 px-6 py-4 flex justify-end gap-2">
           <ToggleSwitch enabled={keepCreatingSales} onChange={setKeepCreatingSales} label={t('actions.keepCreatingSales')} />
           <Button
             type="button"

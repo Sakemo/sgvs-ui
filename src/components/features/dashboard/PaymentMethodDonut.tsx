@@ -109,10 +109,10 @@ const PaymentMethodDonut: React.FC<PaymentMethodDonutProps> = ({ data, isLoading
               {chartData.map((entry, index) => (
                 <li
                   key={entry.originalLabel}
-                  className="flex items-start justify-between gap-3 rounded-lg px-2 py-1.5 transition-colors hover:bg-brand-primary/8 dark:hover:bg-brand-primary/12"
+                  className="flex items-start justify-between gap-3 rounded-lg py-1.5 transition-colors hover:bg-brand-primary/8  dark:hover:bg-brand-primary/12"
                   onMouseEnter={() => setActiveIndex(index)}
                 >
-                  <div className="flex min-w-0 items-center gap-2">
+                  <div className="flex min-w-0 items-center  gap-2">
                     <span
                       className="mt-1 h-2.5 w-2.5 flex-shrink-0 rounded-full"
                       style={{ backgroundColor: getColor(entry.originalLabel) }}

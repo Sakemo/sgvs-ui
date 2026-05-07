@@ -1,30 +1,16 @@
-
 import apiClient from "../../lib/apiClient";
-import type { Page, ProductRequest, ProductResponse } from "../types/domain";
-import type { LowStockProduct } from "../types/domain";
+import { dispatchLowStockUpdatedEvent } from "../../lib/lowStockEvents";
+import type { LowStockProduct, Page, ProductRequest, ProductResponse } from "../types/domain";
 
-export interface GetProductsParams {
-    name?: string;
-    categoryId?: number;
-    orderBy?: string;
-    page?: number;
-    size?: number;
-}
-
-/**
- * Parâmetros para a busca e filtragem de produtos.
- */
 export interface GetProductsParams {
   name?: string;
   categoryId?: number;
+  providerId?: number;
   orderBy?: string;
   page?: number;
   size?: number;
 }
 
-/**
- * Busca uma lista paginada de produtos com base nos filtros fornecidos.
- */
 export const getProducts = async (
   params: GetProductsParams
 ): Promise<Page<ProductResponse>> => {
@@ -34,80 +20,62 @@ export const getProducts = async (
   return response.data;
 };
 
-/**
- * Busca um único produto pelo seu ID.
- */
 export const getProductById = async (id: number): Promise<ProductResponse> => {
   const response = await apiClient.get<ProductResponse>(`/products/${id}`);
   return response.data;
 };
 
-/**
- * Cria um novo produto.
- */
 export const createProduct = async (
   data: ProductRequest
 ): Promise<ProductResponse> => {
   const response = await apiClient.post<ProductResponse>("/products", data);
-  return response.data;
+  const product = response.data;
+  dispatchLowStockUpdatedEvent();
+  return product;
 };
 
-/**
- * Atualiza um produto existente.
- */
 export const updateProduct = async (
   id: number,
   data: ProductRequest
 ): Promise<ProductResponse> => {
   const response = await apiClient.put<ProductResponse>(`/products/${id}`, data);
-  return response.data;
+  const product = response.data;
+  dispatchLowStockUpdatedEvent();
+  return product;
 };
 
-/**
- * Cria uma cópia de um produto existente.
- */
 export const copyProduct = async (id: number): Promise<ProductResponse> => {
   const response = await apiClient.post<ProductResponse>(`/products/${id}/copy`);
   return response.data;
 };
 
-/**
- * Busca produtos com estoque baixo
- */
 export const getLowStockProducts = async (): Promise<LowStockProduct[]> => {
-  const response = await apiClient.get<LowStockProduct[]>('/products/low-stock');
+  const response = await apiClient.get<LowStockProduct[]>("/products/low-stock");
   return response.data;
 };
 
-/**
- * Busca sugestões de produtos
- */
 export const getProductSuggestions = async (): Promise<ProductResponse[]> => {
-    const response = await apiClient.get<ProductResponse[]>('/products/suggestions');
-    return response.data;
+  const response = await apiClient.get<ProductResponse[]>("/products/suggestions");
+  return response.data;
 };
 
-/**
- * Alterna o status (ativo/inativo) de um produto.
- * Nota: No backend, isso corresponde ao DELETE lógico do projeto antigo.
- */
 export const toggleProductStatus = async (id: number): Promise<void> => {
   await apiClient.patch(`/products/${id}/status`);
 };
 
-/**
- * Deleta um produto permanentemente do banco de dados.
- */
 export const deleteProductPermanently = async (id: number): Promise<void> => {
   await apiClient.delete(`/products/${id}/permanent`);
 };
 
-export const calculateSuggestedPrice = async (costPrice: number, margin: number): Promise<number> => {
-  const response = await apiClient.get<number>('/products/calculate-price', {
+export const calculateSuggestedPrice = async (
+  costPrice: number,
+  margin: number
+): Promise<number> => {
+  const response = await apiClient.get<number>("/products/calculate-price", {
     params: {
       costPrice,
-      desiredProfitMargin: margin
-    }
+      desiredProfitMargin: margin,
+    },
   });
   return response.data;
 };

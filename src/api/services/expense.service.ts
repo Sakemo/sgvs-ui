@@ -1,4 +1,5 @@
 import apiClient from "../../lib/apiClient";
+import { dispatchLowStockUpdatedEvent } from "../../lib/lowStockEvents";
 import type { ExpenseRequest, ExpenseResponse, Page } from "../types/domain";
 
 export interface GetExpensesParams {
@@ -28,13 +29,16 @@ export const getTotalExpenses = async (params: { startDate?: string | null; endD
 
 export const createExpense = async (data: ExpenseRequest): Promise<ExpenseResponse> => {
     const response = await apiClient.post<ExpenseResponse>('/expenses', data);
-    console.log(response.data);
-    return response.data;
+    const expense = response.data;
+    dispatchLowStockUpdatedEvent();
+    return expense;
 };
 
 export const updateExpense = async (id: number, data: ExpenseRequest): Promise<ExpenseResponse> => {
     const response = await apiClient.put<ExpenseResponse>(`/expenses/${id}`, data);
-    return response.data;
+    const expense = response.data;
+    dispatchLowStockUpdatedEvent();
+    return expense;
 };
 
 export const deleteExpense = async (id: number): Promise<void> => {

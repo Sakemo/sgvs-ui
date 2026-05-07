@@ -8,7 +8,7 @@ export interface ConfirmationOptions {
     onConfirm: () => void;
 }
 
-export const ConfirmationModalContext = createContext((options: ConfirmationOptions) => {});
+export const ConfirmationModalContext = createContext((_options: ConfirmationOptions) => {});
 
 
 export const useConfirmation = () => {

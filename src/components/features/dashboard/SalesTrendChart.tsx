@@ -4,6 +4,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { type TimeSeriesDataPoint } from '../../../api/types/domain';
 import Card from '../../common/ui/Card';
 import { formatCurrency, formatDate } from '../../../utils/formatters';
+import { useTheme } from '../../../contexts/utils/UseTheme';
 
 interface TooltipPayload {
     name: string;
@@ -40,10 +41,16 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label })
 
 const SalesTrendChart: React.FC<SalesTrendChartProps> = ({ data, isLoading }) => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
 
   const formatDateTick = (dateString: string): string => {
     return formatDate(dateString, { showTime: false });
   };
+
+  // Define colors based on theme
+  const gridStroke = theme === 'dark' ? 'rgba(160, 166, 174, 0.3)' : 'rgba(128, 128, 128, 0.2)';
+  const xAxisStroke = theme === 'dark' ? 'rgba(160, 166, 174, 0.5)' : 'rgba(128, 128, 128, 0.5)';
+  const receivablesColor = theme === 'dark' ? '#4A9FD8' : '#1E1E1E';
 
   return (
     <Card className="h-full p-3">
@@ -58,8 +65,8 @@ const SalesTrendChart: React.FC<SalesTrendChartProps> = ({ data, isLoading }) =>
               barCategoryGap="16%"
               barGap={2}
             >
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(128, 128, 128, 0.2)" />
-              <XAxis dataKey="date" tickFormatter={formatDateTick} tick={{ fontSize: 11 }} stroke="rgba(128, 128, 128, 0.5)" />
+              <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
+              <XAxis dataKey="date" tickFormatter={formatDateTick} tick={{ fontSize: 11 }} stroke={xAxisStroke} />
               <YAxis hide />
               <Tooltip content={<CustomTooltip />} />
               <Legend verticalAlign="top" height={36} align="right" />
@@ -78,7 +85,7 @@ const SalesTrendChart: React.FC<SalesTrendChartProps> = ({ data, isLoading }) =>
               <Bar
                 dataKey="receivables"
                 name={t('dashboard.receivables')}
-                fill="#1E1E1E"
+                fill={receivablesColor}
                 maxBarSize={28}
               />
             </BarChart>

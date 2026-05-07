@@ -285,5 +285,15 @@ export type CategoryResponse = EntitySummary;
 export type CategoryRequest = Omit<EntitySummary, 'id'>;
 
 // --- Provider ---
-export type ProviderResponse = EntitySummary;
-export type ProviderRequest = Omit<EntitySummary, 'id'>;
+export interface Provider {
+  id: number;
+  name: string;
+  cnpj?: string | null;
+  notes?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  address?: string | null;
+}
+
+export type ProviderResponse = Provider;
+export type ProviderRequest = Omit<Provider, 'id'>;

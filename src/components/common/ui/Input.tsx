@@ -39,6 +39,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
         </div>
+        {error && (
+          <p className="mt-1 text-xs text-red-500 dark:text-accent-dark-red">
+            {error}
+          </p>
+        )}
       </div>
     );
   }

@@ -98,7 +98,7 @@ const SalesTable: React.FC<SalesTableProps> = ({
             {(row) => { // Usando a função "render prop"
                 if ('isGroupHeader' in row) {
                     return (
-                        <tr key={row.groupKey} className="bg-gray-100 dark:bg-gray-800/60 sticky top-0 z-10">
+                        <tr key={row.groupKey} className="bg-gray-200 dark:bg-gray-800/60 sticky top-0 z-10">
                             <td colSpan={columns.length} className="px-4 py-2 font-semibold">
                                 <div className="flex justify-between items-center">
                                     <span className="text-sm text-text-secondary">{row.title}</span>

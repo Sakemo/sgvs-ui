@@ -44,6 +44,7 @@
     "reports": "Relatórios",
     "sales": "Vendas",
     "products": "Produtos",
+    "providers": "Fornecedores",
     "customers": "Clientes",
     "expenses": "Despesas",
     "settings": "Configurações",
@@ -68,7 +69,7 @@
     "clearFilter": "Limpar Filtro",
     "cancel": "Cancelar",
     "save": "Salvar",
-    "saveChanges": "Salvar Alterações",
+    "saveChanges": "Salvar",
     "create": "Criar",
     "close": "Fechar",
     "keepCreatingSales": "Registrar e iniciar nova venda",
@@ -164,11 +165,14 @@
     "fetchReport": "Falha ao gerar relatórios.",
     "fetchExpenses": "Falha ao carregar despesas.",
     "fetchCustomers": "Falha ao carregar clientes.",
+    "fetchProviders": "Falha ao carregar fornecedores.",
     "fetchCategories": "Falha ao carregar categorias.",
     "fetchInitialData": "Falha ao carregar dados da página.",
     "toggleStatus": "Falha ao atualizar status.",
     "copyProduct": "Falha ao copiar produto.",
+    "copyProvider": "Falha ao copiar fornecedor.",
     "deleteProduct": "Falha ao deletar produto.",
+    "deleteProvider": "Falha ao deletar fornecedor.",
     "deleteExpense": "Falha ao deletar despesa.",
     "deleteCustomer": "Falha ao deletar cliente.",
     "saveSettings": "Falha ao salvar configurações.",
@@ -281,7 +285,7 @@
       "name": "Nome",
       "category": "Categoria",
       "salePrice": "Preço",
-      "margin": "Margem",
+      "margin": "Margem Liquida",
       "stock": "Estoque",
       "status": "Status",
       "lastUpdated": "Última Atualização",
@@ -432,7 +436,43 @@
     "yesterday": "Ontem"
   },
   "provider": {
-    "addTitle": "Adicionar Fornecedor"
+    "pageTitle": "Fornecedores",
+    "addTitle": "Adicionar Fornecedor",
+    "addProvider": "Adicionar Fornecedor",
+    "editTitle": "Editar Fornecedor",
+    "cnpj": "CNPJ",
+    "cnpjPlaceholder": "Digite o CNPJ (opcional)",
+    "notes": "Observações",
+    "notesPlaceholder": "Observações adicionais (opcional)",
+    "phone": "Telefone",
+    "phonePlaceholder": "Digite o telefone (opcional)",
+    "email": "E-mail",
+    "emailPlaceholder": "Digite o e-mail (opcional)",
+    "address": "Endereço",
+    "addressPlaceholder": "Digite o endereço (opcional)",
+    "suppliedProducts": "Produtos fornecidos",
+    "noProductsFound": "Nenhum produto vinculado a este fornecedor.",
+    "confirmCopyTitle": "Copiar fornecedor?",
+    "confirmCopyDesc": "Isso criara uma nova copia do fornecedor.",
+    "confirmDeleteTitle": "Excluir fornecedor?",
+    "copySuccess": "Fornecedor copiado com sucesso!",
+    "deleteSuccess": "Fornecedor excluido com sucesso!",
+    "saveSuccess": "Fornecedor salvo com sucesso!",
+    "sort": {
+      "az": "Nome (A-Z)",
+      "za": "Nome (Z-A)"
+    },
+    "table": {
+      "name": "Nome",
+      "cnpj": "CNPJ",
+      "phone": "Telefone",
+      "email": "E-mail",
+      "empty": "Nenhum fornecedor encontrado."
+    },
+    "details": {
+      "title": "Detalhes do Fornecedor",
+      "infoTitle": "Informacoes do fornecedor"
+    }
   },
   "validation": {
     "customerRequiredForCredit": "Um cliente e obrigatorio para vendas no fiado.",
@@ -442,6 +482,9 @@
     "invalidQuantity": "Selecione um produto e informe uma quantidade valida.",
     "nameRequired": "Nome e obrigatorio.",
     "saleItemsRequired": "Adicione ao menos um item para registrar a venda.",
-    "valueRequired": "Valor e obrigatorio."
+    "valueRequired": "Valor e obrigatorio.",
+    "phoneInvalidCharacters": "Telefone contém caracteres inválidos",
+    "phoneMinDigits": "Telefone deve conter pelo menos 10 dígitos",
+    "phoneMaxDigits": "Telefone não pode ter mais de 15 dígitos"
   }
 }

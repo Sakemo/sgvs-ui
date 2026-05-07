@@ -106,7 +106,7 @@ const SaleDetailsModal: React.FC<SaleDetailsModalProps> = ({
         )}
       </div>
 
-        <footer className="bg-gray-50 dark:bg-card-dark/50 px-6 py-4 flex justify-end">
+        <footer className="card-light/50 dark:bg-card-dark/50 px-6 py-4 flex justify-end">
             <Button variant="secondary" onClick={onClose}>
                 {t('actions.close', 'Close')}
             </Button>

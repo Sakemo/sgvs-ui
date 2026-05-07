@@ -22,6 +22,7 @@ import Pagination from '../components/common/Pagination';
 import { getProviders } from '../api/services/provider.service';
 import { useConfirmation } from '../contexts/utils/UseConfirmation';
 import { notificationService } from '../lib/notification.service';
+import type { ProviderResponse } from '../api/types/domain';
 
 const ProductsPage: React.FC = () => {
     const { t } = useTranslation();
@@ -30,10 +31,9 @@ const ProductsPage: React.FC = () => {
     // Data State
     const [productsPage, setProductsPage] = useState<Page<ProductResponse> | null>(null);
     const [categories, setCategories] = useState<EntitySummary[]>([]);
-    const [providers, setProviders] = useState<EntitySummary[]>([]);
+    const [providers, setProviders] = useState<ProviderResponse[]>([]);
 
     // UI State
-    const [isLoadingPage, setIsLoadingPage] = useState(true);
     const [isLoadingTable, setIsLoadingTable] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [productToEdit, setProductToEdit] = useState<ProductResponse | null>(null);
@@ -69,7 +69,7 @@ const ProductsPage: React.FC = () => {
         } catch (err) {
             notificationService.error(t(`errors.fetchInitialData` + err ));
         } finally {
-            setIsLoadingPage(false);
+            // Dependency fetch only hydrates filters and modal options.
         }
     }, [t]);
 

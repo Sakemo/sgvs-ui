@@ -5,9 +5,7 @@ import { startOfMonth, endOfMonth, startOfYear, endOfYear } from "date-fns";
 
 // API & Types
 import { getDashboardSummary } from "../api/services/dashboard.service";
-import { getLowStockProducts } from "../api/services/product.service";
 import type { DashboardResponse } from "../api/types/domain";
-import type { LowStockProduct } from "../api/types/domain";
 
 // Components
 import DateFilterDropdown, {
@@ -17,7 +15,6 @@ import MetricCard from "../components/features/dashboard/MetricCard";
 import SalesTrendChart from "../components/features/dashboard/SalesTrendChart";
 import TopProductsList from "../components/features/dashboard/TopProductsList";
 import PaymentMethodDonut from "../components/features/dashboard/PaymentMethodDonut";
-import LowStockAlert from "../components/features/dashboard/LowStockAlert";
 import { notificationService } from "../lib/notification.service";
 
 const DashboardPage: React.FC = () => {
@@ -27,13 +24,9 @@ const DashboardPage: React.FC = () => {
   const [dashboardData, setDashboardData] = useState<DashboardResponse | null>(
     null,
   );
-  const [lowStockProducts, setLowStockProducts] = useState<LowStockProduct[]>(
-    [],
-  );
 
   // UI State
   const [isLoading, setIsLoading] = useState(true);
-  const [isLoadingLowStock, setIsLoadingLowStock] = useState(true);
 
   // Filters State
   const [dateFilter, setDateFilter] = useState<DateFilterOption>("this_month");
@@ -82,32 +75,13 @@ const DashboardPage: React.FC = () => {
     [t],
   );
 
-  const fetchLowStockProducts = useCallback(async () => {
-    setIsLoadingLowStock(true);
-    try {
-      const products = await getLowStockProducts();
-      setLowStockProducts(products);
-    } catch {
-      notificationService.error(t("errors.fetchLowStockProducts"));
-    } finally {
-      setIsLoadingLowStock(false);
-    }
-  }, [t]);
-
   useEffect(() => {
     fetchData(dateFilter);
-    fetchLowStockProducts();
-  }, [dateFilter, fetchData, fetchLowStockProducts]);
+  }, [dateFilter, fetchData]);
 
   return (
     <div className="space-y-4 dark:text-[#F7F1ED]">
       <header className="flex flex-wrap items-center justify-between gap-4">
-        <div className="w-90">
-          <LowStockAlert
-            products={lowStockProducts}
-            isLoading={isLoadingLowStock}
-          />
-        </div>
         <div className="w-full sm:w-auto">
           <DateFilterDropdown
             selectedOption={dateFilter}

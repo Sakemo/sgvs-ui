@@ -44,6 +44,7 @@
     "reports": "Reports",
     "sales": "Sales",
     "products": "Products",
+    "providers": "Providers",
     "customers": "Customers",
     "expenses": "Expenses",
     "settings": "Settings",
@@ -82,7 +83,7 @@
     "logout": "Sign Out",
     "registerNew": "Register New Account",
     "deleteAccount": "Delete My Account",
-    "saveChanges": "Save Changes",
+    "saveChanges": "Save",
     "confirmPayment": "Confirm Payment",
     "searchByClient": "Search by client...",
     "searchByProduct": "Search by product...",
@@ -164,11 +165,14 @@
     "fetchReport": "Failed to generate reports.",
     "fetchExpenses": "Failed to load expenses.",
     "fetchCustomers": "Failed to load customers.",
+    "fetchProviders": "Failed to load providers.",
     "fetchCategories": "Failed to load categories.",
     "fetchInitialData": "Failed to load page data.",
     "toggleStatus": "Failed to update status.",
     "copyProduct": "Failed to copy product.",
+    "copyProvider": "Failed to copy provider.",
     "deleteProduct": "Failed to delete product.",
+    "deleteProvider": "Failed to delete provider.",
     "deleteExpense": "Failed to delete expense.",
     "deleteCustomer": "Failed to delete customer.",
     "saveSettings": "Failed to save settings.",
@@ -204,7 +208,7 @@
     "stock": {
       "title": "Stock Management",
       "globalTitle": "Global Control",
-      "globalDesc": "Validate and decrement stock for all products during every sale.",
+      "globalDesc": "Validate and update stock for all products during every sale.",
       "perItemTitle": "Per-Item Control",
       "perItemDesc": "Manage stock individually. Only products with stock control enabled will be validated.",
       "noneTitle": "No Control",
@@ -432,7 +436,43 @@
     "yesterday": "Yesterday"
   },
   "provider": {
-    "addTitle": "Add New Provider"
+    "pageTitle": "Providers",
+    "addTitle": "Add New Provider",
+    "addProvider": "Add Provider",
+    "editTitle": "Edit Provider",
+    "cnpj": "CNPJ",
+    "cnpjPlaceholder": "Enter CNPJ (optional)",
+    "notes": "Notes",
+    "notesPlaceholder": "Additional notes (optional)",
+    "phone": "Phone",
+    "phonePlaceholder": "Enter phone number (optional)",
+    "email": "Email",
+    "emailPlaceholder": "Enter email address (optional)",
+    "address": "Address",
+    "addressPlaceholder": "Enter address (optional)",
+    "suppliedProducts": "Supplied products",
+    "noProductsFound": "No products linked to this provider.",
+    "confirmCopyTitle": "Copy provider?",
+    "confirmCopyDesc": "This will create a new copy of the provider.",
+    "confirmDeleteTitle": "Delete provider?",
+    "copySuccess": "Provider copied successfully!",
+    "deleteSuccess": "Provider deleted successfully!",
+    "saveSuccess": "Provider saved successfully!",
+    "sort": {
+      "az": "Name (A-Z)",
+      "za": "Name (Z-A)"
+    },
+    "table": {
+      "name": "Name",
+      "cnpj": "CNPJ",
+      "phone": "Phone",
+      "email": "Email",
+      "empty": "No providers found."
+    },
+    "details": {
+      "title": "Provider Details",
+      "infoTitle": "Provider information"
+    }
   },
   "validation": {
     "customerRequiredForCredit": "A customer is required for on-credit sales.",
@@ -442,6 +482,9 @@
     "invalidQuantity": "Select a product and enter a valid quantity.",
     "nameRequired": "Name is required.",
     "saleItemsRequired": "At least one item is required for the sale.",
-    "valueRequired": "Value is required."
+    "valueRequired": "Value is required.",
+    "phoneInvalidCharacters": "Phone contains invalid characters",
+    "phoneMinDigits": "Phone must contain at least 10 digits",
+    "phoneMaxDigits": "Phone cannot have more than 15 digits"
   }
 }

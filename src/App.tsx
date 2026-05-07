@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import MainLayout from "./components/layout/MainLayout";
 import ProductsPage from "./pages/ProductsPage";
+import ProvidersPage from "./pages/ProvidersPage";
 import CustomerPage from "./pages/CustomersPage";
 import ExpensesPage from "./pages/ExpensesPage";
 import SalesPage from "./pages/SalesPage";
@@ -66,6 +67,7 @@ function App() {
                   <Route path="/expenses" element={<ExpensesPage />} />
                   <Route path="/reports" element={<ReportsPage />} />
                   <Route path="/products" element={<ProductsPage />} />
+                  <Route path="/providers" element={<ProvidersPage />} />
                   <Route path="/customers" element={<CustomerPage />} />
                   <Route path="/settings" element={<SettingsPage />} />
                 </Route>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
+import LowStockPopup from '../features/dashboard/LowStockPopup';
 
 const MainLayout: React.FC = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(() => {
@@ -22,6 +23,7 @@ const MainLayout: React.FC = () => {
           <Outlet />
         </div>
       </main>
+      <LowStockPopup />
     </div>
   );
 };

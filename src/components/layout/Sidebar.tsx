@@ -7,6 +7,7 @@ import {
   LuChevronsRight,
   LuLayoutDashboard,
   LuPackage,
+  LuTruck,
   LuUsers,
   LuShoppingCart,
   LuDollarSign,
@@ -53,6 +54,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse }) => {
       groupLabelKey: 'sidebar.groups.operations',
       children: [
         { path: '/products', labelKey: 'sidebar.products', icon: LuPackage },
+        { path: '/providers', labelKey: 'sidebar.providers', icon: LuTruck },
         { path: '/customers', labelKey: 'sidebar.customers', icon: LuUsers },
       ],
     },

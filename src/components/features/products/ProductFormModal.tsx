@@ -55,8 +55,6 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
   const showConfirmation = useConfirmation();
   const isEditMode = !!productToEdit;
 
-  const [categoryQuery, setCategoryQuery] = useState("");
-  const [isSearchingCategories, setIsSearchingCategories] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [categoryToEdit, setCategoryToEdit] = useState<EntitySummary | null>(null);
   const [isProviderModalOpen, setIsProviderModalOpen] = useState(false);
@@ -323,192 +321,192 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
         isOpen={isOpen}
         onClose={onClose}
         title={isEditMode ? t("product.editTitle") : t("product.addTitle", "Add Product")}
+        className="sm:max-w-6xl"
       >
-        <form onSubmit={handleSubmit} className="space-y-4">
-
-          {/* BLOCO 1: NOME E CATEGORIA */}
-          <div className="grid grid-cols-1 md:grid-cols-2 md:[&>*:nth-child(1)]:col-span-2 gap-4">
-            <Input
-              ref={nameInputRef}
-              label={`${t("product.form.name")} *`}
-              name="name"
-              value={formData.name || ""}
-              onChange={handleChange}
-              required
-            />
-
-            <div className="flex items-end gap-2 md:col-span-2">
-              <AutocompleteInput
-                label={`${t("common.category")} *`}
-                placeholder={t("actions.searchByName")}
-                options={categories.map((c) => ({ value: c.id, label: c.name }))}
-                selected={
-                  formData.categoryId
-                    ? {
-                        value: formData.categoryId,
-                        label: categories.find((c) => c.id === formData.categoryId)?.name || "",
-                      }
-                    : null
-                }
-                onSelect={(option) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    categoryId: option ? Number(option.value) : undefined,
-                  }))
-                }
-                onQueryChange={setCategoryQuery}
-                isLoading={isSearchingCategories}
-                renderOption={(option) => (
-                  <div className="flex items-center justify-between w-full">
-                    <span className="block truncate">{option.label}</span>
-                    <div className="flex-shrink-0">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7"
-                        onMouseDown={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                        }}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          const categorySummary: EntitySummary = { id: Number(option.value), name: option.label };
-                          openCategoryModalForEdit(categorySummary);
-                        }}
-                        iconLeft={<LuPencil />}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 text-red-600"
-                        onMouseDown={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                        }}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleDeleteCategory(Number(option.value));
-                        }}
-                        iconLeft={<LuTrash />}
-                      />
-                    </div>
-                  </div>
-                )}
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={openCategoryModalForAdd}
-                title={t("category.addTitle")}
-                iconLeft={<LuPlus />}
-              />
-            </div>
-          </div>
-
-          {/* BLOCO 2: CHECKBOXES */}
-          <div className="flex flex-col sm:flex-row gap-4 py-2">
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                id="active"
-                name="active"
-                checked={formData.active ?? true}
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6 p-6">
+          
+          {/* COLUNA ESQUERDA - CAMPOS PRINCIPAIS */}
+          <div className="space-y-4">
+            {/* BLOCO 1: NOME E CATEGORIA */}
+            <div className="space-y-4">
+              <Input
+                ref={nameInputRef}
+                label={`${t("product.form.name")} *`}
+                name="name"
+                value={formData.name || ""}
                 onChange={handleChange}
-                className="h-4 w-4 rounded"
+                required
               />
-              <label htmlFor="active">
-                {t("product.form.activeProduct")}
-              </label>
+
+              <div className="flex items-end gap-2">
+                <AutocompleteInput
+                  label={`${t("common.category")} *`}
+                  placeholder={t("actions.searchByName")}
+                  options={categories.map((c) => ({ value: c.id, label: c.name }))}
+                  selected={
+                    formData.categoryId
+                      ? {
+                          value: formData.categoryId,
+                          label: categories.find((c) => c.id === formData.categoryId)?.name || "",
+                        }
+                      : null
+                  }
+                  onSelect={(option) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      categoryId: option ? Number(option.value) : undefined,
+                    }))
+                  }
+                  onQueryChange={() => undefined}
+                  isLoading={false}
+                  renderOption={(option) => (
+                    <div className="flex items-center justify-between w-full">
+                      <span className="block truncate">{option.label}</span>
+                      <div className="flex-shrink-0">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7"
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const categorySummary: EntitySummary = { id: Number(option.value), name: option.label };
+                            openCategoryModalForEdit(categorySummary);
+                          }}
+                          iconLeft={<LuPencil />}
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 text-red-600"
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleDeleteCategory(Number(option.value));
+                          }}
+                          iconLeft={<LuTrash />}
+                        />
+                      </div>
+                    </div>
+                  )}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={openCategoryModalForAdd}
+                  title={t("category.addTitle")}
+                  iconLeft={<LuPlus />}
+                />
+              </div>
             </div>
 
-            {settings?.stockControlType === StockControlType.PER_ITEM && (
+            {/* BLOCO 2: CHECKBOXES */}
+            <div className="flex flex-col sm:flex-row gap-4 py-2">
               <div className="flex items-center space-x-2">
                 <input
                   type="checkbox"
-                  id="managesStock"
-                  name="managesStock"
-                  checked={formData.managesStock ?? true}
+                  id="active"
+                  name="active"
+                  checked={formData.active ?? true}
                   onChange={handleChange}
                   className="h-4 w-4 rounded"
                 />
-                <label htmlFor="managesStock">
-                  {t("product.form.managesStock")}
+                <label htmlFor="active">
+                  {t("product.form.activeProduct")}
                 </label>
               </div>
-            )}
-          </div>
 
-          {/* BLOCO 3: PRECIFICAÇÃO INTELIGENTE (COM SWITCH) */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-border-light dark:border-border-dark">
-
-            {/* Header da Seção com Toggle */}
-            <div className="sm:col-span-3 flex justify-between items-center pb-2 border-b border-gray-200 dark:border-gray-700 mb-2">
-                <h4 className="text-sm font-semibold text-text-primary dark:text-gray-200 flex items-center gap-2">
-                    <LuCalculator className="h-4 w-4 text-brand-primary"/>
-                    {t("product.smartPricing")}
-                </h4>
-                <ToggleSwitch
-                    enabled={isSmartPricing}
-                    onChange={setIsSmartPricing}
-                    label={isSmartPricing ? t('common.on') : t('common.off')}
-                />
-            </div>
-
-            {/* Inputs de Preço */}
-            <Input
-              label={t("product.costPrice")}
-              name="costPrice"
-              type="number"
-              step="0.01"
-              value={formData.costPrice ?? ""}
-              onChange={handleChange}
-              // Custo sempre editável
-            />
-
-            <Input
-              label={t("product.desiredMargin")}
-              name="desiredProfitMargin"
-              type="number"
-              step="0.01"
-              value={formData.desiredProfitMargin ?? 30}
-              onChange={handleChange}
-              iconLeft={<LuCalculator className="text-gray-400 h-4 w-4" />}
-              // Desativa se Smart Pricing OFF
-              disabled={!isSmartPricing}
-              className={!isSmartPricing ? "opacity-50 cursor-not-allowed bg-gray-100 dark:bg-gray-700" : ""}
-            />
-
-            <div className="relative">
-                <Input
-                    label={`${t("product.salePrice")} *`}
-                    name="salePrice"
-                    type="number"
-                    step="0.01"
-                    value={formData.salePrice ?? ""}
+              {settings?.stockControlType === StockControlType.PER_ITEM && (
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="managesStock"
+                    name="managesStock"
+                    checked={formData.managesStock ?? true}
                     onChange={handleChange}
-                    required
-                    // Se Smart Pricing ON -> ReadOnly (calculado)
-                    // Se Smart Pricing OFF -> Editável
-                    readOnly={isSmartPricing}
-                    className={isSmartPricing ? "bg-gray-100 dark:bg-gray-700 focus:ring-0 cursor-default" : ""}
-                />
-                {isCalculating && (
-                    <div className="absolute right-3 top-9">
-                        <div className="animate-spin h-4 w-4 border-2 border-brand-primary border-t-transparent rounded-full"></div>
-                    </div>
-                )}
+                    className="h-4 w-4 rounded"
+                  />
+                  <label htmlFor="managesStock">
+                    {t("product.form.managesStock")}
+                  </label>
+                </div>
+              )}
+            </div>
+
+            {/* BLOCO 3: PRECIFICAÇÃO INTELIGENTE (COM SWITCH) */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-border-light dark:border-border-dark">
+
+              {/* Header da Seção com Toggle */}
+              <div className="sm:col-span-3 flex justify-between items-center pb-2 border-b border-gray-200 dark:border-gray-700 mb-2">
+                  <h4 className="text-sm font-semibold text-text-primary dark:text-gray-200 flex items-center gap-2">
+                      <LuCalculator className="h-4 w-4 text-brand-primary"/>
+                      {t("product.smartPricing")}
+                  </h4>
+                  <ToggleSwitch
+                      enabled={isSmartPricing}
+                      onChange={setIsSmartPricing}
+                      label={isSmartPricing ? t('common.on') : t('common.off')}
+                  />
+              </div>
+
+              {/* Inputs de Preço */}
+              <Input
+                label={t("product.costPrice")}
+                name="costPrice"
+                type="number"
+                step="0.01"
+                value={formData.costPrice ?? ""}
+                onChange={handleChange}
+              />
+
+              <Input
+                label={t("product.desiredMargin")}
+                name="desiredProfitMargin"
+                type="number"
+                step="0.01"
+                value={formData.desiredProfitMargin ?? 30}
+                onChange={handleChange}
+                iconLeft={<LuCalculator className="text-gray-400 h-4 w-4" />}
+                disabled={!isSmartPricing}
+                className={!isSmartPricing ? "opacity-50 cursor-not-allowed bg-gray-100 dark:bg-gray-700" : ""}
+              />
+
+              <div className="relative">
+                  <Input
+                      label={`${t("product.salePrice")} *`}
+                      name="salePrice"
+                      type="number"
+                      step="0.01"
+                      value={formData.salePrice ?? ""}
+                      onChange={handleChange}
+                      required
+                      readOnly={isSmartPricing}
+                      className={isSmartPricing ? "bg-gray-100 dark:bg-gray-700 focus:ring-0 cursor-default" : ""}
+                  />
+                  {isCalculating && (
+                      <div className="absolute right-3 top-9">
+                          <div className="animate-spin h-4 w-4 border-2 border-brand-primary border-t-transparent rounded-full"></div>
+                      </div>
+                  )}
+              </div>
             </div>
           </div>
 
-          {/* BLOCO 4: OPÇÕES AVANÇADAS (Estoque, Provider, Unidade) */}
-          <AdvancedOptions className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {/* COLUNA DIREITA - OPÇÕES AVANÇADAS */}
+          <AdvancedOptions className="space-y-4">
 
-            <div className="sm:col-span-3 grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <Input
                 label={t("common.stock")}
                 name="stockQuantity"
@@ -527,7 +525,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
               />
             </div>
 
-            <div className="sm:col-span-3 flex items-end gap-2">
+            <div className="flex items-end gap-2">
               <Select
                 label={t("product.provider")}
                 name="providerId"
@@ -551,7 +549,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
               />
             </div>
 
-            <div className="sm:col-span-3 grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <Input
                 label={t("product.barcode")}
                 name="barcode"
@@ -573,18 +571,18 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
               </Select>
             </div>
 
-            <div className="sm:col-span-3">
-              <Textarea
-                label={t("common.description")}
-                name="description"
-                value={formData.description || ""}
-                onChange={handleChange}
-                rows={3}
-              />
-            </div>
+
           </AdvancedOptions>
 
-          <footer className="grid grid-cols-4 [&>*:nth-child(1)]:col-span-2 gap-2 pt-4 border-t border-border-light dark:border-border-dark">
+          <Textarea
+            label={t("common.description")}
+            name="description"
+            value={formData.description || ""}
+            onChange={handleChange}
+            rows={3}
+          />
+          {/* FOOTER - SPANNING BOTH COLUMNS */}
+          <footer className="lg:col-span-2 grid grid-cols-4 [&>*:nth-child(2)]:col-span-2 gap-2 pt-4 border-t border-border-light dark:border-border-dark">
             {!isEditMode && (
               <ToggleSwitch
                 enabled={keepAdding}

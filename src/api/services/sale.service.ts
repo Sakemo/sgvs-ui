@@ -1,4 +1,5 @@
 import apiClient from "../../lib/apiClient";
+import { dispatchLowStockUpdatedEvent } from "../../lib/lowStockEvents";
 import type { Page, PaymentMethod, SaleRequest, SaleResponse } from "../types/domain";
 import { PaymentStatus } from "../types/domain";
 export interface GetSalesParams {
@@ -35,7 +36,9 @@ export const getSaleById = async (id: number): Promise<SaleResponse> => {
 
 export const registerSale = async (data: SaleRequest): Promise<SaleResponse> => {
     const response = await apiClient.post<SaleResponse>('/sales', data);
-    return response.data;
+    const sale = response.data;
+    dispatchLowStockUpdatedEvent();
+    return sale;
 };
 
 export const deleteSalePermanently = async (id: number):Promise<void> => {
