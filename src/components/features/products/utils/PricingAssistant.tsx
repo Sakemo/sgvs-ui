@@ -32,9 +32,9 @@ const PricingAssistant: React.FC<PricingAssistantProps> = ({ status }) => {
   const defaultMessage = `Default message for ${status}`;
 
   return (
-    <Card className="border-brand-primary/20 bg-brand-primary/8 p-3 dark:border-brand-primary/18 dark:bg-brand-primary/10">
-      <div className="flex items-start gap-3">
-        <Icon className={`h-5 w-5 flex-shrink-0 ${color}`} />
+    <Card className="!bg-transparent border-0 p-0 shadow-none">
+      <div className="flex items-center gap-3">
+        <Icon className={`h-5 w-5 ${color}`} />
         <div>
           <h4 className="text-sm font-semibold text-text-primary dark:text-[#F7F1ED]">
             {t('product.assistant.title', 'Assistant Insights')}

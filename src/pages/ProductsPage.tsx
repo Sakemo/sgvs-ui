@@ -218,7 +218,6 @@ const ProductsPage: React.FC = () => {
                         value={filters.orderBy}
                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleFilterChange('orderBy', e.target.value)}
                     >
-                        {/* O texto das opções herda a cor do <select> */}
                         {orderOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                     </Select>
                 </div>

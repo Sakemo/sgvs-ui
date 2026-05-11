@@ -12,10 +12,12 @@ const LowStockPopup: React.FC = () => {
   const { t } = useTranslation();
   const [products, setProducts] = useState<LowStockProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isMousePassthrough, setIsMousePassthrough] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(() => {
     return localStorage.getItem(STORAGE_KEY) === "true";
   });
   const previousProductCount = useRef<number>(0);
+  const popupRef = useRef<HTMLDivElement | null>(null);
 
   const fetchLowStock = useCallback(async () => {
     setIsLoading(true);
@@ -54,6 +56,43 @@ const LowStockPopup: React.FC = () => {
     localStorage.setItem(STORAGE_KEY, String(isCollapsed));
   }, [isCollapsed]);
 
+  useEffect(() => {
+    if (!isMousePassthrough) {
+      return;
+    }
+
+    const handleMouseMove = (event: MouseEvent) => {
+      const popupElement = popupRef.current;
+      if (!popupElement) {
+        setIsMousePassthrough(false);
+        return;
+      }
+
+      const rect = popupElement.getBoundingClientRect();
+      const isPointerInsidePopup =
+        event.clientX >= rect.left &&
+        event.clientX <= rect.right &&
+        event.clientY >= rect.top &&
+        event.clientY <= rect.bottom;
+
+      if (!isPointerInsidePopup) {
+        setIsMousePassthrough(false);
+      }
+    };
+
+    const handleWindowBlur = () => {
+      setIsMousePassthrough(false);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("blur", handleWindowBlur);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("blur", handleWindowBlur);
+    };
+  }, [isMousePassthrough]);
+
   const summaryText = useMemo(() => {
     if (isLoading) return "Carregando...";
     return `${products.length} produto${products.length === 1 ? "" : "s"} com estoque baixo`;
@@ -64,7 +103,13 @@ const LowStockPopup: React.FC = () => {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 w-full max-w-sm rounded-3xl border border-brand-primary/25 bg-white/95 shadow-[0_18px_42px_-22px_rgba(0,0,0,0.32)] backdrop-blur-sm transition-all duration-300 dark:border-brand-primary/35 dark:bg-slate-950/95">
+    <div
+      ref={popupRef}
+      onMouseEnter={() => setIsMousePassthrough(true)}
+      className={`fixed bottom-4 right-4 z-50 w-full max-w-sm rounded-3xl border border-brand-primary/25 bg-white/95 shadow-[0_18px_42px_-22px_rgba(0,0,0,0.32)] backdrop-blur-sm transition-all duration-300 dark:border-brand-primary/35 dark:bg-slate-950/95 ${
+        isMousePassthrough ? "pointer-events-none opacity-10" : "opacity-100"
+      }`}
+    >
       <div className="flex items-center justify-between gap-3 px-4 py-3">
         <div className="flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-accent dark:bg-brand-primary/15 dark:text-brand-primary">

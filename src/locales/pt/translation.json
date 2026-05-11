@@ -295,8 +295,8 @@
       "name": "Nome do Produto",
       "activeProduct": "Produto Ativo",
       "managesStock": "Controla Estoque",
-      "salePrice": "Preço de Venda",
-      "costPrice": "Preço de Custo"
+      "salePrice": "Venda",
+      "costPrice": "Custo"
     },
     "sort": {
       "az": "Nome (A-Z)",
@@ -308,8 +308,9 @@
     "unitOfSale": "Unidade de Venda",
     "provider": "Fornecedor",
     "barcode": "Código de Barras",
-    "salePrice": "Preço de Venda",
-    "costPrice": "Preço de Custo",
+    "salePrice": "Venda",
+    "costPrice": "Custo",
+    "profit": "Lucro",
     "minimumStock": "Estoque Mínimo",
     "margin": "Margem de Lucro",
     "manageStockEnabled": "Controle de estoque ativo",
