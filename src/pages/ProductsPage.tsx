@@ -189,16 +189,12 @@ const ProductsPage: React.FC = () => {
 
     return (
         <div className="space-y-6">
-            <header className="flex flex-wrap justify-between items-center gap-4">
+            <header className="flex flex-wrap justify-between gap-2">
                 <h1 className="text-2xl font-semibold text-text-primary dark:text-gray-200">
-                    {t('product.pageTitle', 'Products Management')}
+                    {t('product.pageTitle', 'Products')}
                 </h1>
-                <Button onClick={() => handleOpenModal(null)} iconLeft={<LuPlus />}>
-                    {t('product.addProduct', 'Add Product')}
-                </Button>
-            </header>
-
-            <Card>
+                
+            <div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Input
                         placeholder={t('actions.searchByName', 'Search by name...')}
@@ -210,7 +206,6 @@ const ProductsPage: React.FC = () => {
                         value={filters.categoryId ?? ''}
                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleFilterChange('categoryId', e.target.value ? Number(e.target.value) : undefined)}
                     >
-                        {/* O texto das opções herda a cor do <select> */}
                         <option value="">{t('common.allCategories')}</option>
                         {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
                     </Select>
@@ -221,7 +216,12 @@ const ProductsPage: React.FC = () => {
                         {orderOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                     </Select>
                 </div>
-            </Card>
+            </div>
+                <Button onClick={() => handleOpenModal(null)} iconLeft={<LuPlus />}>
+                    {t('product.addProduct', 'Add')}
+                </Button>
+            </header>
+
 
             <div className={clsx("flex flex-col lg:flex-row", selectedProduct ? "gap-6" : "gap-0")}>
                 <div className={clsx("transition-all duration-300 ease-in-out", selectedProduct ? "lg:w-2/3" : "w-full")}>                    

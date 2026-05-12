@@ -17,7 +17,7 @@ export const getExpenses = async (params: GetExpensesParams): Promise<Page<Expen
     return response.data;
 };
 
-export const getTotalExpenses = async (params: { startDate?: string | null; endDate?: string | null }): Promise<number> => {
+export const getTotalExpenses = async (params: { startDate?: string | null; endDate?: string | null; paymentMethod?: string }): Promise<number> => {
     try {
         const response = await apiClient.get<number>('/expenses/total', { params });
         return response.data;

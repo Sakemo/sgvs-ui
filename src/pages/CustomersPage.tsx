@@ -11,20 +11,27 @@ import {
 } from "../api/services/customer.service";
 import Button from "../components/common/ui/Button";
 import { LuPlus, LuSearch } from "react-icons/lu";
-import Card from "../components/common/ui/Card";
 import Input from "../components/common/ui/Input";
 import Select from "../components/common/ui/Select";
-import CustomerCard from "../components/features/customers/CustomerCard";
+import CustomersTable from "../components/features/customers/CustomersTable";
 import CustomerFormModal from "../components/features/customers/CustomerFormModal";
-import CustomerDetailsModal from "../components/features/customers/CustomerDetailsModal";
+import CustomerDetailsDrawer from "../components/features/customers/CustomerDetailsDrawer";
 import { useConfirmation } from "../contexts/utils/UseConfirmation";
 import { notificationService } from "../lib/notification.service";
 import CustomerPaymentModal from "../components/features/customers/CustomerPaymentModal";
+import clsx from "clsx";
 
 type ActivityFilter = "all" | "active" | "inactive";
 type DebtFilter = "all" | "debtors" | "non_debtors";
 
-const CustomerPage: React.FC = () => {
+interface CustomerFilters {
+    name: string;
+    activity: ActivityFilter;
+    debt: DebtFilter;
+    orderBy: string;
+}
+
+const CustomersPage: React.FC = () => {
   const { t } = useTranslation();
   const showConfirmation = useConfirmation();
 
@@ -38,12 +45,9 @@ const CustomerPage: React.FC = () => {
   const [customerToEdit, setCustomerToEdit] = useState<CustomerResponse | null>(
     null
   );
-  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
-  const [customerToView, setCustomerToView] = useState<CustomerResponse | null>(
-    null
-  );
+  const [selectedCustomer, setSelectedCustomer] = useState<CustomerResponse | null>(null);
 
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<CustomerFilters>({
     name: "",
     activity: "active" as ActivityFilter,
     debt: "all" as DebtFilter,
@@ -67,7 +71,7 @@ const CustomerPage: React.FC = () => {
     setLoading(true);
     try {
       const params: GetCustomersParams = {
-        name: debouncedNameFilter.trim() || undefined,
+        name: debouncedNameFilter?.trim() || undefined,
         orderBy: filters.orderBy,
         isActive:
           filters.activity === "all"
@@ -91,7 +95,7 @@ const CustomerPage: React.FC = () => {
     fetchCustomers();
   }, [fetchCustomers]);
 
-  const handleFilterChange = (field: keyof typeof filters, value: string) => {
+  const handleFilterChange = (field: keyof CustomerFilters, value: string) => {
     setFilters((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -136,8 +140,7 @@ const CustomerPage: React.FC = () => {
   };
 
   const handleViewDetails = (customer: CustomerResponse) => {
-    setCustomerToView(customer);
-    setIsDetailsModalOpen(true);
+    setSelectedCustomer(prev => (prev?.id === customer.id ? null : customer));
   };
 
   const handleSettleDebt = (customer: CustomerResponse) => {
@@ -160,6 +163,7 @@ const CustomerPage: React.FC = () => {
       onConfirm: async () => {
         try {
           await deleteCustomerPermanently(id);
+          if (selectedCustomer?.id === id) setSelectedCustomer(null);
           fetchCustomers();
           notificationService.success(
             t("customer.deleteSuccess")
@@ -177,76 +181,71 @@ const CustomerPage: React.FC = () => {
         <h1 className="text-2xl font-semibold dark:text-gray-200">
           {t("customer.pageTitle")}
         </h1>
+        <div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Input
+              placeholder={t("actions.searchByName")}
+              value={filters.name}
+              onChange={(e) => handleFilterChange("name", e.target.value)}
+              iconLeft={<LuSearch className="h-4 w-4 text-text-secondary" />}
+            />
+            <Select
+              value={filters.activity}
+              onChange={(e) => handleFilterChange("activity", e.target.value)}
+            >
+              <option value="active">{t("common.active")}</option>
+              <option value="inactive">{t("common.inactive")}</option>
+              <option value="all">{t("common.all")}</option>
+            </Select>
+            <Select
+              value={filters.debt}
+              onChange={(e) => handleFilterChange("debt", e.target.value)}
+            >
+              <option value="all">{t("common.all")}</option>
+              <option value="debtors">
+                {t("customer.debtors")}
+              </option>
+              <option value="non_debtors">
+                {t("customer.noDebt")}
+              </option>
+            </Select>
+            <Select
+              value={filters.orderBy}
+              onChange={(e) => handleFilterChange("orderBy", e.target.value)}
+            >
+              {orderOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </Select>
+          </div>
+        </div>
+
         <Button onClick={() => handleOpenModal(null)} iconLeft={<LuPlus />}>
           {t("customer.addCustomer")}
         </Button>
       </header>
-
-      <Card>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Input
-            placeholder={t("actions.searchByName")}
-            value={filters.name}
-            onChange={(e) => handleFilterChange("name", e.target.value)}
-            iconLeft={<LuSearch className="h-4 w-4 text-text-secondary" />}
+      <div className={clsx("flex flex-col lg:flex-row", selectedCustomer ? "gap-6" : "gap-0")}>
+        <div className={clsx("transition-all duration-300 ease-in-out", selectedCustomer ? "lg:w-2/3" : "w-full")}>
+          <CustomersTable
+            customers={customers}
+            isLoading={loading}
+            onEdit={handleOpenModal}
+            onToggleStatus={handleToggleStatus}
+            onDelete={handleDelete}
+            onViewDetails={handleViewDetails}
+            onSettleDebt={handleSettleDebt}
+            onRowClick={handleViewDetails}
+            selectedRowId={selectedCustomer?.id}
           />
-          <Select
-            value={filters.activity}
-            onChange={(e) => handleFilterChange("activity", e.target.value)}
-          >
-            <option value="active">{t("common.active")}</option>
-            <option value="inactive">{t("common.inactive")}</option>
-            <option value="all">{t("common.all")}</option>
-          </Select>
-          <Select
-            value={filters.debt}
-            onChange={(e) => handleFilterChange("debt", e.target.value)}
-          >
-            <option value="all">{t("common.all")}</option>
-            <option value="debtors">
-              {t("customer.debtors")}
-            </option>
-            <option value="non_debtors">
-              {t("customer.noDebt")}
-            </option>
-          </Select>
-          <Select
-            value={filters.orderBy}
-            onChange={(e) => handleFilterChange("orderBy", e.target.value)}
-          >
-            {orderOptions.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </Select>
         </div>
-      </Card>
-
-      {loading && <p className="p-6 text-center">{t("common.loading")}</p>}
-
-      {!loading &&
-        (customers.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {customers.map((customer) => (
-              <CustomerCard
-                key={customer.id}
-                customer={customer}
-                onEdit={handleOpenModal}
-                onToggleStatus={handleToggleStatus}
-                onViewDetails={handleViewDetails}
-                onDelete={handleDelete}
-                onSettleDebt={handleSettleDebt}
-              />
-            ))}
-          </div>
-        ) : (
-          <Card className="text-center p-8 text-text-secondary">
-            {t(
-              "customer.noCustomersFound"
-            )}
-          </Card>
-        ))}
+        <div className={clsx("transition-all duration-300 ease-in-out", selectedCustomer ? "lg:w-1/3 opacity-100" : "w-0 opacity-0 pointer-events-none")}>
+          {selectedCustomer && (
+            <CustomerDetailsDrawer customer={selectedCustomer} onClose={() => setSelectedCustomer(null)} onEdit={handleOpenModal} />
+          )}
+        </div>
+      </div>
 
       {isModalOpen && (
         <CustomerFormModal
@@ -254,14 +253,6 @@ const CustomerPage: React.FC = () => {
           onClose={() => setIsModalOpen(false)}
           onSaveSucess={handleSaveSucess}
           customerToEdit={customerToEdit}
-        />
-      )}
-
-      {isDetailsModalOpen && (
-        <CustomerDetailsModal
-          isOpen={isDetailsModalOpen}
-          onClose={() => setIsDetailsModalOpen(false)}
-          customer={customerToView}
         />
       )}
 
@@ -276,4 +267,4 @@ const CustomerPage: React.FC = () => {
     </div>
   );
 };
-export default CustomerPage;
+export default CustomersPage;

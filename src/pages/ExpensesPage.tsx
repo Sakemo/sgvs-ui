@@ -42,12 +42,12 @@ const ExpensesPage: React.FC = () => {
             const params: GetExpensesParams = {
                 ...filters,
                 name: debouncedNameFilter?.trim(),
-                page:currentPage,
-                size:10,
+                page: currentPage,
+                size: 10,
             };
             const data = await getExpenses(params);
             setExpensesPage(data);
-        } catch(err) {
+        } catch (err) {
             notificationService.error(t('errors.fetchExpenses'));
         } finally {
             setLoading(false);
@@ -64,11 +64,11 @@ const ExpensesPage: React.FC = () => {
     };
 
     const handleDateChange = (field: 'startDate' | 'endDate', value: string) => {
-        if(value) {
+        if (value) {
             const date = new Date(value);
             const isoString = field === 'startDate'
-                ? new Date(date.setHours(0,0,0,0)).toISOString()
-                : new Date(date.setHours(23,59,59,999)).toISOString();
+                ? new Date(date.setHours(0, 0, 0, 0)).toISOString()
+                : new Date(date.setHours(23, 59, 59, 999)).toISOString();
             handleFilterChange(field, isoString);
         } else {
             handleFilterChange(field, undefined);
@@ -117,48 +117,47 @@ const ExpensesPage: React.FC = () => {
                 <h1 className="text-2xl font-semibold dark:text-gray-200">
                     {t('expense.pageTitle')}
                 </h1>
+                <div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <Input placeholder={t('actions.searchByName')} value={filters.name} onChange={(e) => handleFilterChange('name', e.target.value)} iconLeft={<LuSearch className="text-text-secondary" />} />
+                        <Input type="date" value={startDateValue} onChange={(e) => handleDateChange('startDate', e.target.value)} />
+                        <Input type="date" value={endDateValue} onChange={(e) => handleDateChange('endDate', e.target.value)} />
+                        <Select value={filters.expenseType ?? ''} onChange={(e) => handleFilterChange('expenseType', e.target.value || undefined)}>
+                            <option value="">
+                                {t('common.allCategories')}
+                            </option>
+                            {Object.values(ExpenseType).map(type => (
+                                <option key={type} value={type}>
+                                    {t(`expenseCategories.${type.toLowerCase()}`)}
+                                </option>
+                            ))}
+                        </Select>
+                    </div>
+                </div>
+
                 <Button onClick={() => handleOpenModal(null)} iconLeft={<LuPlus />}>
                     {t('expense.addTitle')}
                 </Button>
             </header>
-
-            <Card>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <Input placeholder={t('actions.searchByName')} value={filters.name} onChange={(e) => handleFilterChange('name',e.target.value)} iconLeft={<LuSearch className="text-text-secondary" />} />
-                    <Input type="date" value={startDateValue} onChange={(e) => handleDateChange('startDate', e.target.value)} />
-                    <Input type="date" value={endDateValue} onChange={(e) => handleDateChange('endDate', e.target.value)} />
-                    <Select value={filters.expenseType ?? ''} onChange={(e) => handleFilterChange('expenseType', e.target.value || undefined)}>
-                        <option value="">
-                            {t('common.allCategories')}
-                        </option>
-                        {Object.values(ExpenseType).map(type => (
-                            <option key={type} value={type}>
-                                {t(`expenseCategories.${type.toLowerCase()}`)}
-                            </option>
-                        ))}
-                    </Select>
-                </div>
-            </Card>
-
             <div className={clsx("flex flex-col lg:flex-row", selectedExpense ? "gap-6" : "gap-0")}>
                 <div className={clsx("transition-all duration-300 ease-in-out", selectedExpense ? "lg:w-2/3" : "w-full")}>
-                <ExpensesTable
-                    expenses={expensesPage?.content ?? []}
-                    isLoading={loading}
-                    onEdit={handleOpenModal}
-                    onDelete={handleDelete}
-                    onRowClick={handleRowClick}
-                    selectedRowId={selectedExpense?.id}
-                />
-                {expensesPage && expensesPage.totalPages > 1 && (
-                    <div className="mt-6">
-                        <Pagination 
-                            currentPage={expensesPage.number}
-                            totalPages={expensesPage.totalPages}
-                            onPageChange={setCurrentPage}
-                        />
-                    </div>
-                )}
+                    <ExpensesTable
+                        expenses={expensesPage?.content ?? []}
+                        isLoading={loading}
+                        onEdit={handleOpenModal}
+                        onDelete={handleDelete}
+                        onRowClick={handleRowClick}
+                        selectedRowId={selectedExpense?.id}
+                    />
+                    {expensesPage && expensesPage.totalPages > 1 && (
+                        <div className="mt-6">
+                            <Pagination
+                                currentPage={expensesPage.number}
+                                totalPages={expensesPage.totalPages}
+                                onPageChange={setCurrentPage}
+                            />
+                        </div>
+                    )}
                 </div>
                 <div className={clsx("transition-all duration-300 ease-in-out", selectedExpense ? "lg:w-1/3 opacity-100" : "w-0 opacity-0 pointer-events-none")}>
                     {selectedExpense && (
@@ -168,7 +167,7 @@ const ExpensesPage: React.FC = () => {
             </div>
 
             {isModalOpen && (
-                <ExpenseFormModal 
+                <ExpenseFormModal
                     isOpen={isModalOpen}
                     onClose={() => setIsModalOpen(false)}
                     onSaveSuccess={handleSaveSuccess}

@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { cva, type VariantProps } from 'class-variance-authority';
 import Card from '../../common/ui/Card';
 import { formatCurrency } from '../../../utils/formatters';
+import { LuBadgeDollarSign } from 'react-icons/lu';
 
 const valueTextVariants = cva(
   'text-3xl font-bold mt-1',
@@ -44,7 +45,7 @@ const ValueTotalCard: React.FC<ValueTotalCardProps> = ({
         
         {isLoading ? (
           <div className="h-10 mt-1 flex items-center">
-            <div className="h-6 w-24 bg-gray-200 dark:bg-gray-700 rounded-md animate-pulse" />
+            <div className="h-6 w-24 bg-gray-200 dark:bg-gray-700 animate-pulse" />
           </div>
         ) : (
           <p className={clsx(valueTextVariants({ color }))}>

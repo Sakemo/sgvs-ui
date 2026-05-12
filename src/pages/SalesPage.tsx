@@ -5,7 +5,7 @@ import { startOfMonth, endOfMonth, startOfYear, endOfYear } from 'date-fns';
 import { LuPlus } from 'react-icons/lu';
 
 // API & Types
-import { getSales, deleteSalePermanently, getSalesGrossTotal, getSalesSummary, type GetSalesParams, type GroupSummary } from '../api/services/sale.service';
+import { getSales, deleteSalePermanently, getSalesGrossTotal, getSalesSummary, getSalesTotalByPaymentMethod, type GetSalesParams, type GroupSummary } from '../api/services/sale.service';
 import { getTotalExpenses } from '../api/services/expense.service';
 import { getProducts } from '../api/services/product.service';
 import { getCustomers } from '../api/services/customer.service';
@@ -16,7 +16,6 @@ import SalesTable, { type SaleTableRow } from '../components/features/sales/Sale
 import SaleFormModal from '../components/features/sales/SaleFormModal';
 import SaleDetailsModal from '../components/features/sales/SaleDetailModal';
 import Button from '../components/common/ui/Button';
-import Card from '../components/common/ui/Card';
 import Select from '../components/common/ui/Select';
 import Pagination from '../components/common/Pagination';
 import ValueTotalCard from '../components/features/sales/ValueTotalCard';
@@ -36,6 +35,7 @@ const SalesPage: React.FC = () => {
   const [saleToPay, setSaleToPay] = useState<SaleResponse | null>(null);
   const [grossTotal, setGrossTotal] = useState(0);
   const [netProfit, setNetProfit] = useState(0);
+  const [cashTotal, setCashTotal] = useState(0);
   const [groupSummaries, setGroupSummaries] = useState<Record<string, GroupSummary>>({});
   
   // UI State
@@ -157,10 +157,12 @@ const SalesPage: React.FC = () => {
     try {
       const params: GetSalesParams = { ...filters, page: currentPage, size: 10 };
       
-      const [salesData, grossTotalData, expensesData, customersData, productsData] = await Promise.all([
+      const [salesData, grossTotalData, expensesData, cashExpensesData, paymentTotalsData, customersData, productsData] = await Promise.all([
         getSales(params),
         getSalesGrossTotal(params),
         getTotalExpenses({ startDate: params.startDate, endDate: params.endDate }),
+        getTotalExpenses({ startDate: params.startDate, endDate: params.endDate, paymentMethod: PaymentMethod.CASH }),
+        getSalesTotalByPaymentMethod({ startDate: params.startDate, endDate: params.endDate }),
         getCustomers({ isActive: true }),
         getProducts({ size: 1000 })
       ]);
@@ -168,8 +170,9 @@ const SalesPage: React.FC = () => {
       setSalesPage(salesData);
       setGrossTotal(grossTotalData);
       setNetProfit(grossTotalData - expensesData);
+      const cashSalesTotal = paymentTotalsData.find(item => item.paymentMethod === PaymentMethod.CASH)?.total ?? 0;
+      setCashTotal(cashSalesTotal - cashExpensesData);
       
-      // ???
       setCustomerOptions(customersData);
       setProductOptions(productsData.content.map(p => ({ id: p.id, name: p.name })));
 
@@ -243,12 +246,8 @@ const SalesPage: React.FC = () => {
     <div className="space-y-6">
       <header className="flex flex-wrap justify-between items-center gap-4">
         <h1 className="text-2xl font-semibold dark:text-gray-200">{t('sale.pageTitle', 'Sales')}</h1>
-        <Button onClick={() => setIsFormModalOpen(true)} iconLeft={<LuPlus />}>
-          {t('sale.addSale', 'Register Sale')}
-        </Button>
-      </header>
-
-      <Card>
+        
+      <div className="text-gray-600 dark:text-gray-300">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           <DateFilterDropdown selectedOption={dateFilterOption} onSelect={handleDateFilterSelect} options={[
               { key: 'today', label: t('filter.today') },
@@ -284,12 +283,22 @@ const SalesPage: React.FC = () => {
             ))}
         </Select>
         </div>
-      </Card>
+      </div>
+        <Button onClick={() => setIsFormModalOpen(true)} iconLeft={<LuPlus />}>
+          {t('sale.addSale', 'Register Sale')}
+        </Button>
+      </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0">
         <ValueTotalCard isLoading={loading} value={grossTotal} title={t('sale.grossTotal')} />
         <ValueTotalCard isLoading={loading} value={netProfit} title={t('sale.netProfit')} color={netProfit >= 0 ? 'green' : 'red'} />
-        {/*<TotalByPaymentMethodCard isLoading={loading} totals={totalsByPaymentMethod} />*/}
+        <ValueTotalCard
+          isLoading={loading}
+          value={cashTotal}
+          title={t('sale.cashTotal')}
+          description={t('sale.cashTotalDescription')}
+          color="blue"
+        />
       </div>
 
       <SalesTable

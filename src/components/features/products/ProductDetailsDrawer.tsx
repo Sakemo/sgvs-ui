@@ -45,7 +45,6 @@ const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({
 
   return (
     <aside className="dark:text-gray-300 h-full flex flex-col rounded-card border border-border-light bg-card-light shadow-soft dark:border-border-dark dark:bg-card-dark !bg-brand-primary/10 dark:!bg-brand-accent/10">
-
       <header className="flex items-center justify-between p-1 border-b border-border-light dark:border-border-dark">
         <div>
           <PricingAssistant status={margin.status} />
@@ -93,7 +92,7 @@ const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({
                 </div>
               </div>
               <div className="rounded-full px-4 py-2 text-lg font-semibold">
-                {product.stockQuantity}<span className="text-sm">/{product.minimumStock}</span>
+                {product.stockQuantity}<span className="font-semibold text-justify text-sm leading-6 text-text-secondary dark:text-gray-400">/{product.minimumStock}</span>
                 <div className="mt-6 space-y-3">
                   <div>
                     <p className="text-xs uppercase tracking-[0.24em] text-text-secondary dark:text-gray-400">
@@ -107,7 +106,7 @@ const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({
                     <p className="text-xs uppercase tracking-[0.24em] text-text-secondary dark:text-gray-400">
                       {t('product.costPrice')}
                     </p>
-                    <p className="mt-2 text-xl font-semibold text-text-primary dark:text-gray-100">
+                    <p className="font-semibold text-justify text-sm leading-6 text-text-secondary dark:text-gray-400">
                       {product.costPrice !== null ? formatCurrency(product.costPrice) : t('common.notAvailable', 'Indisponível')}
                     </p>
                   </div>
@@ -115,7 +114,7 @@ const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({
                     <p className="text-xs uppercase tracking-[0.24em] text-text-secondary dark:text-gray-400">
                       {t('product.profit')}
                     </p>
-                    <p className="mt-2 text-xl font-semibold text-text-primary dark:text-gray-100">
+                    <p className="font-semibold text-justify text-sm leading-6 text-text-secondary dark:text-gray-400">
                       {profitValue !== null ? formatCurrency(profitValue) : t('common.na', 'N/A')}
                     </p>
                   </div>
@@ -127,11 +126,23 @@ const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({
 
           </section>
 
-            <section className="mt-1 col-span-full">
-              <dl className="divide-y divide-border-light dark:divide-border-dark">
-                <DetailRow  label={t('common.createdAt')} value={formatDate(product.createdAt)} />
-                <DetailRow label={t('common.updatedAt')} value={formatDate(product.updatedAt)} />
-              </dl>
+            <section className="mt-1 flex flex-row justify-end gap-4">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.24em] text-text-secondary dark:text-gray-400">
+                      {t('common.createdAt')}
+                    </p>
+                    <p className="font-semibold text-justify text-sm leading-6 text-text-secondary dark:text-gray-400">
+                      {formatDate(product.createdAt)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.24em] text-text-secondary dark:text-gray-400">
+                      {t('common.updatedAt')}
+                    </p>
+                    <p className="font-semibold text-justify text-sm leading-6 text-text-secondary dark:text-gray-400">
+                      {formatDate(product.updatedAt)}
+                    </p>
+                  </div>
             </section>
         </div>
       </div>

@@ -190,12 +190,8 @@ const ProvidersPage: React.FC = () => {
         <h1 className="text-2xl font-semibold text-text-primary dark:text-gray-200">
           {t("provider.pageTitle")}
         </h1>
-        <Button onClick={() => handleOpenModal(null)} iconLeft={<LuPlus />}>
-          {t("provider.addProvider")}
-        </Button>
-      </header>
-
-      <Card>
+        
+      <div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <Input
             placeholder={t("actions.searchByName")}
@@ -214,7 +210,11 @@ const ProvidersPage: React.FC = () => {
             ))}
           </Select>
         </div>
-      </Card>
+      </div>
+        <Button onClick={() => handleOpenModal(null)} iconLeft={<LuPlus />}>
+          {t("provider.addProvider")}
+        </Button>
+      </header>
 
       <div
         className={clsx(
