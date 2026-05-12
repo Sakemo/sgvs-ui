@@ -12,19 +12,6 @@ interface ExpenseDetailsDrawerProps {
     onEdit: (expense: ExpenseResponse) => void;
 }
 
-const DetailRow: React.FC<{ label: string; value?: React.ReactNode }> = ({
-    label, value
-}) => (
-    <div className="flex justify-between dark:text-gray-300 py-3 sm:flex-row sm:items-start">
-        <dt className="dark:text-gray-500 w-1/3 text-sm font-medium text-text-secondary">
-            {label}
-        </dt>
-        <dd className="mt-1 text-sm text-text-primary dark:text-gray-100 sm:mt-0 sm:w-2/3">
-            {value ?? <span className="text-text-secondary/70">_</span>}
-        </dd>
-    </div>
-);
-
 const ExpenseDetailsDrawer: React.FC<ExpenseDetailsDrawerProps> = ({
     expense, onClose, onEdit
 }) => {

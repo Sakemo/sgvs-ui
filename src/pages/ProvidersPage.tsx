@@ -18,7 +18,6 @@ import ProvidersTable from "../components/features/providers/ProvidersTable";
 import ProviderDetailsDrawer from "../components/features/providers/ProviderDetailsDrawer";
 import ProviderAddModal from "../components/features/providers/ProviderAddModal";
 import Button from "../components/common/ui/Button";
-import Card from "../components/common/ui/Card";
 import Input from "../components/common/ui/Input";
 import Select from "../components/common/ui/Select";
 import { useConfirmation } from "../contexts/utils/UseConfirmation";

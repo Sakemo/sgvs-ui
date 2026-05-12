@@ -13,7 +13,6 @@ import ProductsTable from '../components/features/products/ProductsTable';
 import ProductFormModal from '../components/features/products/ProductFormModal';
 import ProductDetailsDrawer from '../components/features/products/ProductDetailsDrawer';
 import Button from '../components/common/ui/Button';
-import Card from '../components/common/ui/Card';
 import Input from '../components/common/ui/Input';
 import Select from '../components/common/ui/Select';
 import { LuPlus, LuSearch } from 'react-icons/lu';

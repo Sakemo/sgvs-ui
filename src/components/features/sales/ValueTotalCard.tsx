@@ -3,7 +3,6 @@ import clsx from 'clsx';
 import { cva, type VariantProps } from 'class-variance-authority';
 import Card from '../../common/ui/Card';
 import { formatCurrency } from '../../../utils/formatters';
-import { LuBadgeDollarSign } from 'react-icons/lu';
 
 const valueTextVariants = cva(
   'text-3xl font-bold mt-1',

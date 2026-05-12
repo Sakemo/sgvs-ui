@@ -1,13 +1,12 @@
 import type React from "react";
-import { StockControlType, type ProductResponse } from "../../../api/types/domain";
+import { type ProductResponse } from "../../../api/types/domain";
 import { useTranslation } from "react-i18next";
 import Button from "../../common/ui/Button";
-import { LuCheck, LuPencil, LuX } from "react-icons/lu";
+import { LuPencil, LuX } from "react-icons/lu";
 import Badge from "../../common/ui/Badge";
 import { calculateProfitMargin, formatCurrency, formatDate } from "../../../utils/formatters";
 import { marginBadgeColors } from "./utils/MarginBadgeColors";
 import PricingAssistant from "./utils/PricingAssistant";
-import { useSettings } from "../../../contexts/utils/UseSettings";
 
 interface ProductDetailsDrawerProps {
   product: ProductResponse;
@@ -15,30 +14,10 @@ interface ProductDetailsDrawerProps {
   onEdit: (product: ProductResponse) => void;
 }
 
-const DetailRow: React.FC<{ label: string; value?: React.ReactNode }> = ({
-  label, value
-}) => (
-  <div className="flex justify-between dark:text-gray-300 py-3 sm:flex-row sm:items-start">
-    <dt className="dark:text-gray-500 w-1/3 text-sm font-medium text-text-secondary">
-      {label}
-    </dt>
-    <dd className="mt-1 text-sm text-text-primary dark:text-gray-100 sm:mt-0 sm:w-2/3">
-      {value ?? <span className="text-text-secondary/70">
-        _
-      </span>}
-    </dd>
-  </div>
-);
-
-
 const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({
   product, onClose, onEdit
 }) => {
   const { t } = useTranslation();
-  const { settings } = useSettings();
-  const showPerItemStockIndicator =
-    settings?.stockControlType !== undefined &&
-    settings.stockControlType !== StockControlType.GLOBAL;
 
   const margin = calculateProfitMargin(product.salePrice, product.costPrice);
   const profitValue = product.costPrice !== null ? product.salePrice - product.costPrice : null;
