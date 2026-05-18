@@ -20,6 +20,7 @@ import { useConfirmation } from "../contexts/utils/UseConfirmation";
 import { notificationService } from "../lib/notification.service";
 import CustomerPaymentModal from "../components/features/customers/CustomerPaymentModal";
 import clsx from "clsx";
+import useArrowTableNavigation from "../hooks/useArrowTableNavigation";
 
 type ActivityFilter = "all" | "active" | "inactive";
 type DebtFilter = "all" | "debtors" | "non_debtors";
@@ -82,6 +83,9 @@ const CustomersPage: React.FC = () => {
       };
       const data = await getCustomers(params);
       setCustomers(data);
+      setSelectedCustomer((current) =>
+        current ? data.find((customer) => customer.id === current.id) ?? null : null
+      );
     } catch (err) {
       notificationService.error(
         t("errors.fetchCustomers")
@@ -139,8 +143,12 @@ const CustomersPage: React.FC = () => {
     });
   };
 
+  const selectCustomer = useCallback((customer: CustomerResponse) => {
+    setSelectedCustomer(customer);
+  }, []);
+
   const handleViewDetails = (customer: CustomerResponse) => {
-    setSelectedCustomer(prev => (prev?.id === customer.id ? null : customer));
+    setSelectedCustomer((prev) => (prev?.id === customer.id ? null : customer));
   };
 
   const handleSettleDebt = (customer: CustomerResponse) => {
@@ -174,6 +182,15 @@ const CustomersPage: React.FC = () => {
       },
     });
   };
+
+  useArrowTableNavigation({
+    items: customers,
+    selectedId: selectedCustomer?.id,
+    getId: (customer) => customer.id,
+    onSelect: selectCustomer,
+    enabled: Boolean(selectedCustomer) && !isModalOpen && !customerToPay,
+    rowGroup: "customers",
+  });
 
   return (
     <div className="space-y-6">

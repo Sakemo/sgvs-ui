@@ -22,6 +22,7 @@ import { getProviders } from '../api/services/provider.service';
 import { useConfirmation } from '../contexts/utils/UseConfirmation';
 import { notificationService } from '../lib/notification.service';
 import type { ProviderResponse } from '../api/types/domain';
+import useArrowTableNavigation from '../hooks/useArrowTableNavigation';
 
 const ProductsPage: React.FC = () => {
     const { t } = useTranslation();
@@ -83,6 +84,9 @@ const ProductsPage: React.FC = () => {
             };
             const data = await getProducts(params);
             setProductsPage(data);
+            setSelectedProduct((current) =>
+                current ? data.content.find((product) => product.id === current.id) ?? null : null
+            );
         } catch (err) {
             notificationService.error(t('errors.fetchProducts' + err));
         } finally {
@@ -182,9 +186,22 @@ const ProductsPage: React.FC = () => {
         });
     };
 
+    const selectProduct = useCallback((product: ProductResponse) => {
+        setSelectedProduct(product);
+    }, []);
+
     const handleRowClick = (product: ProductResponse) => {
-        setSelectedProduct(prev => (prev?.id === product.id ? null : product));
+        setSelectedProduct((prev) => (prev?.id === product.id ? null : product));
     };
+
+    useArrowTableNavigation({
+        items: productsPage?.content ?? [],
+        selectedId: selectedProduct?.id,
+        getId: (product) => product.id,
+        onSelect: selectProduct,
+        enabled: Boolean(selectedProduct) && !isModalOpen,
+        rowGroup: 'products',
+    });
 
     return (
         <div className="space-y-6">

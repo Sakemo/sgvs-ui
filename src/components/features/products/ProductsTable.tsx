@@ -114,6 +114,9 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
         <tr
           key={product.id}
           onClick={() => onRowClick(product)}
+          data-row-id={product.id}
+          data-row-group="products"
+          aria-selected={selectedProductId === product.id}
           className={clsx('transition-colors duration-150 cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5', selectedProductId === product.id && '!bg-brand-primary/10 dark:!bg-brand-accent/10')}
         >
           {columns.map((col) => (

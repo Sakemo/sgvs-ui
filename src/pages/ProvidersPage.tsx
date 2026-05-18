@@ -22,6 +22,7 @@ import Input from "../components/common/ui/Input";
 import Select from "../components/common/ui/Select";
 import { useConfirmation } from "../contexts/utils/UseConfirmation";
 import { notificationService } from "../lib/notification.service";
+import useArrowTableNavigation from "../hooks/useArrowTableNavigation";
 
 const ProvidersPage: React.FC = () => {
   const { t } = useTranslation();
@@ -128,8 +129,14 @@ const ProvidersPage: React.FC = () => {
     notificationService.success(t("provider.saveSuccess"));
   };
 
-  const handleRowClick = (provider: ProviderResponse) => {
+  const selectProvider = useCallback((provider: ProviderResponse) => {
     setCurrentProductsPage(0);
+    setProductsPage(null);
+    setIsLoadingProducts(true);
+    setSelectedProvider(provider);
+  }, []);
+
+  const handleRowClick = (provider: ProviderResponse) => {
     if (selectedProvider?.id === provider.id) {
       setSelectedProvider(null);
       setProductsPage(null);
@@ -137,9 +144,7 @@ const ProvidersPage: React.FC = () => {
       return;
     }
 
-    setProductsPage(null);
-    setIsLoadingProducts(true);
-    setSelectedProvider(provider);
+    selectProvider(provider);
   };
 
   const handleCopy = async (id: number) => {
@@ -182,6 +187,15 @@ const ProvidersPage: React.FC = () => {
       },
     });
   };
+
+  useArrowTableNavigation({
+    items: providers,
+    selectedId: selectedProvider?.id,
+    getId: (provider) => provider.id,
+    onSelect: selectProvider,
+    enabled: Boolean(selectedProvider) && !isModalOpen,
+    rowGroup: "providers",
+  });
 
   return (
     <div className="space-y-6">

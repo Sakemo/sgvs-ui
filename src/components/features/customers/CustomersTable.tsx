@@ -93,6 +93,9 @@ const CustomersTable: React.FC<CustomersTableProps> = ({
                 {(customer) => (
                     <tr key={customer.id}
                         onClick={() => onRowClick(customer)}
+                        data-row-id={customer.id}
+                        data-row-group="customers"
+                        aria-selected={selectedRowId === customer.id}
                         className={clsx('transition-colors duration-150 cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5', selectedRowId === customer.id && '!bg-brand-primary/10 dark:!bg-brand-accent/10')}>
                         {columns.map((col, index) => (
                             <td key={`${customer.id}-${index}`} className={clsx('px-4 py-3 whitespace-nowrap text-sm', col.className)}>

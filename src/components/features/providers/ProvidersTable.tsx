@@ -102,6 +102,9 @@ const ProvidersTable: React.FC<ProvidersTableProps> = ({
         <tr
           key={provider.id}
           onClick={() => onRowClick(provider)}
+          data-row-id={provider.id}
+          data-row-group="providers"
+          aria-selected={selectedProviderId === provider.id}
           className={clsx(
             "cursor-pointer transition-colors duration-150 hover:bg-gray-50 dark:hover:bg-white/5",
             selectedProviderId === provider.id &&
