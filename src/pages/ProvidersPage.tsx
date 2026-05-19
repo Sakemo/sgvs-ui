@@ -1,5 +1,5 @@
 import type React from "react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuPlus, LuSearch } from "react-icons/lu";
 import clsx from "clsx";
@@ -23,10 +23,14 @@ import Select from "../components/common/ui/Select";
 import { useConfirmation } from "../contexts/utils/UseConfirmation";
 import { notificationService } from "../lib/notification.service";
 import useArrowTableNavigation from "../hooks/useArrowTableNavigation";
+import useShortcutAction from "../hooks/useShortcutAction";
+import { useSettings } from "../contexts/utils/UseSettings";
+import { formatShortcutBinding } from "../lib/keyboardShortcuts";
 
 const ProvidersPage: React.FC = () => {
   const { t } = useTranslation();
   const showConfirmation = useConfirmation();
+  const { shortcutPreferences } = useSettings();
 
   const [providers, setProviders] = useState<ProviderResponse[]>([]);
   const [selectedProvider, setSelectedProvider] = useState<ProviderResponse | null>(
@@ -49,6 +53,7 @@ const ProvidersPage: React.FC = () => {
     orderBy: "name_asc",
   });
   const debouncedNameFilter = useDebounce(filters.name ?? "", 400);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const orderOptions = [
     { value: "name_asc", label: t("provider.sort.az") },
@@ -187,6 +192,20 @@ const ProvidersPage: React.FC = () => {
       },
     });
   };
+  const createShortcutLabel = formatShortcutBinding(shortcutPreferences.bindings["page.createNew"]);
+  const searchShortcutLabel = formatShortcutBinding(shortcutPreferences.bindings["page.focusPrimarySearch"]);
+
+  useShortcutAction("page.focusPrimarySearch", () => {
+    searchInputRef.current?.focus();
+  }, {
+    enabled: !isModalOpen,
+  });
+
+  useShortcutAction("page.createNew", () => {
+    handleOpenModal(null);
+  }, {
+    enabled: !isModalOpen,
+  });
 
   useArrowTableNavigation({
     items: providers,
@@ -207,10 +226,12 @@ const ProvidersPage: React.FC = () => {
       <div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <Input
+            ref={searchInputRef}
             placeholder={t("actions.searchByName")}
             value={filters.name ?? ""}
             onChange={(e) => handleFilterChange("name", e.target.value)}
             iconLeft={<LuSearch className="h-4 w-4 text-text-secondary" />}
+            title={searchShortcutLabel ? `${t("settings.keyboard.actions.focusPrimarySearch.label")} (${searchShortcutLabel})` : undefined}
           />
           <Select
             value={filters.orderBy ?? "name_asc"}
@@ -224,7 +245,7 @@ const ProvidersPage: React.FC = () => {
           </Select>
         </div>
       </div>
-        <Button onClick={() => handleOpenModal(null)} iconLeft={<LuPlus />}>
+        <Button onClick={() => handleOpenModal(null)} iconLeft={<LuPlus />} title={createShortcutLabel ? `${t("provider.addProvider")} (${createShortcutLabel})` : undefined}>
           {t("provider.addProvider")}
         </Button>
       </header>

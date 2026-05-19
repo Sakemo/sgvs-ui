@@ -1,5 +1,5 @@
 // React and hooks
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import useDebounce from '../hooks/useDebounce';
 
@@ -23,10 +23,14 @@ import { useConfirmation } from '../contexts/utils/UseConfirmation';
 import { notificationService } from '../lib/notification.service';
 import type { ProviderResponse } from '../api/types/domain';
 import useArrowTableNavigation from '../hooks/useArrowTableNavigation';
+import useShortcutAction from '../hooks/useShortcutAction';
+import { useSettings } from '../contexts/utils/UseSettings';
+import { formatShortcutBinding } from '../lib/keyboardShortcuts';
 
 const ProductsPage: React.FC = () => {
     const { t } = useTranslation();
     const showConfirmation = useConfirmation();
+    const { shortcutPreferences } = useSettings();
 
     // Data State
     const [productsPage, setProductsPage] = useState<Page<ProductResponse> | null>(null);
@@ -47,6 +51,7 @@ const ProductsPage: React.FC = () => {
     });
     const [currentPage, setCurrentPage] = useState(0);
     const debouncedNameFilter = useDebounce(filters.name, 400);
+    const searchInputRef = useRef<HTMLInputElement>(null);
 
     const orderOptions = [
         { value: 'name_asc', label: t('product.sort.az', 'Name (A-Z)') },
@@ -193,6 +198,20 @@ const ProductsPage: React.FC = () => {
     const handleRowClick = (product: ProductResponse) => {
         setSelectedProduct((prev) => (prev?.id === product.id ? null : product));
     };
+    const createShortcutLabel = formatShortcutBinding(shortcutPreferences.bindings['page.createNew']);
+    const searchShortcutLabel = formatShortcutBinding(shortcutPreferences.bindings['page.focusPrimarySearch']);
+
+    useShortcutAction('page.focusPrimarySearch', () => {
+        searchInputRef.current?.focus();
+    }, {
+        enabled: !isModalOpen,
+    });
+
+    useShortcutAction('page.createNew', () => {
+        handleOpenModal(null);
+    }, {
+        enabled: !isModalOpen,
+    });
 
     useArrowTableNavigation({
         items: productsPage?.content ?? [],
@@ -213,10 +232,12 @@ const ProductsPage: React.FC = () => {
             <div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Input
+                        ref={searchInputRef}
                         placeholder={t('actions.searchByName', 'Search by name...')}
                         value={filters.name}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFilterChange('name', e.target.value)}
                         iconLeft={<LuSearch className="h-4 w-4 text-text-secondary" />}
+                        title={searchShortcutLabel ? `${t('settings.keyboard.actions.focusPrimarySearch.label')} (${searchShortcutLabel})` : undefined}
                     />
                     <Select
                         value={filters.categoryId ?? ''}
@@ -233,7 +254,7 @@ const ProductsPage: React.FC = () => {
                     </Select>
                 </div>
             </div>
-                <Button onClick={() => handleOpenModal(null)} iconLeft={<LuPlus />}>
+                <Button onClick={() => handleOpenModal(null)} iconLeft={<LuPlus />} title={createShortcutLabel ? `${t('product.addProduct', 'Add')} (${createShortcutLabel})` : undefined}>
                     {t('product.addProduct', 'Add')}
                 </Button>
             </header>

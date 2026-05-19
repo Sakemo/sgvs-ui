@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
+import useShortcutAction from "./useShortcutAction";
 
 interface UseArrowTableNavigationOptions<T> {
   items: T[];
@@ -9,31 +10,6 @@ interface UseArrowTableNavigationOptions<T> {
   rowGroup?: string;
 }
 
-const INTERACTIVE_SELECTOR = [
-  "input",
-  "textarea",
-  "select",
-  "button",
-  "a[href]",
-  '[contenteditable="true"]',
-  '[role="button"]',
-  '[role="link"]',
-  '[role="textbox"]',
-  '[role="combobox"]',
-].join(",");
-
-const shouldIgnoreTarget = (target: EventTarget | null) => {
-  if (!(target instanceof Element)) {
-    return false;
-  }
-
-  if (target.closest('[role="dialog"]')) {
-    return true;
-  }
-
-  return target.closest(INTERACTIVE_SELECTOR) !== null;
-};
-
 function useArrowTableNavigation<T>({
   items,
   selectedId,
@@ -42,54 +18,39 @@ function useArrowTableNavigation<T>({
   enabled = true,
   rowGroup,
 }: UseArrowTableNavigationOptions<T>) {
-  useEffect(() => {
-    if (!enabled || selectedId == null || items.length === 0) {
+  const canNavigate = enabled && selectedId != null && items.length > 0;
+
+  const moveSelection = useCallback((direction: 1 | -1) => {
+    if (selectedId == null) {
       return;
     }
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (
-        event.defaultPrevented ||
-        event.altKey ||
-        event.ctrlKey ||
-        event.metaKey ||
-        event.shiftKey
-      ) {
-        return;
-      }
+    const currentIndex = items.findIndex((item) => getId(item) === selectedId);
 
-      if (event.key !== "ArrowDown" && event.key !== "ArrowUp") {
-        return;
-      }
+    if (currentIndex === -1) {
+      return;
+    }
 
-      if (shouldIgnoreTarget(event.target)) {
-        return;
-      }
+    const nextItem = items[currentIndex + direction];
 
-      const currentIndex = items.findIndex((item) => getId(item) === selectedId);
+    if (!nextItem) {
+      return;
+    }
 
-      if (currentIndex === -1) {
-        return;
-      }
+    onSelect(nextItem);
+  }, [getId, items, onSelect, selectedId]);
 
-      const nextIndex =
-        event.key === "ArrowDown" ? currentIndex + 1 : currentIndex - 1;
-      const nextItem = items[nextIndex];
+  useShortcutAction(
+    "table.selectPrevious",
+    () => moveSelection(-1),
+    { enabled: canNavigate }
+  );
 
-      if (!nextItem) {
-        return;
-      }
-
-      event.preventDefault();
-      onSelect(nextItem);
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [enabled, getId, items, onSelect, selectedId]);
+  useShortcutAction(
+    "table.selectNext",
+    () => moveSelection(1),
+    { enabled: canNavigate }
+  );
 
   useEffect(() => {
     if (!enabled || selectedId == null || !rowGroup) {

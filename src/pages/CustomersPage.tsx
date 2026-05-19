@@ -1,5 +1,5 @@
 import type React from "react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { type CustomerResponse } from "../api/types/domain";
 import useDebounce from "../hooks/useDebounce";
@@ -21,6 +21,9 @@ import { notificationService } from "../lib/notification.service";
 import CustomerPaymentModal from "../components/features/customers/CustomerPaymentModal";
 import clsx from "clsx";
 import useArrowTableNavigation from "../hooks/useArrowTableNavigation";
+import useShortcutAction from "../hooks/useShortcutAction";
+import { useSettings } from "../contexts/utils/UseSettings";
+import { formatShortcutBinding } from "../lib/keyboardShortcuts";
 
 type ActivityFilter = "all" | "active" | "inactive";
 type DebtFilter = "all" | "debtors" | "non_debtors";
@@ -35,6 +38,7 @@ interface CustomerFilters {
 const CustomersPage: React.FC = () => {
   const { t } = useTranslation();
   const showConfirmation = useConfirmation();
+  const { shortcutPreferences } = useSettings();
 
   const [customers, setCustomers] = useState<CustomerResponse[]>([]);
   const [customerToPay, setCustomerToPay] = useState<CustomerResponse | null>(
@@ -55,6 +59,7 @@ const CustomersPage: React.FC = () => {
     orderBy: "name_asc",
   });
   const debouncedNameFilter = useDebounce(filters.name, 400);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const orderOptions = [
     { value: "name_asc", label: t("customer.sort.az") },
@@ -86,7 +91,7 @@ const CustomersPage: React.FC = () => {
       setSelectedCustomer((current) =>
         current ? data.find((customer) => customer.id === current.id) ?? null : null
       );
-    } catch (err) {
+    } catch {
       notificationService.error(
         t("errors.fetchCustomers")
       );
@@ -182,6 +187,20 @@ const CustomersPage: React.FC = () => {
       },
     });
   };
+  const createShortcutLabel = formatShortcutBinding(shortcutPreferences.bindings["page.createNew"]);
+  const searchShortcutLabel = formatShortcutBinding(shortcutPreferences.bindings["page.focusPrimarySearch"]);
+
+  useShortcutAction("page.focusPrimarySearch", () => {
+    searchInputRef.current?.focus();
+  }, {
+    enabled: !isModalOpen && !customerToPay,
+  });
+
+  useShortcutAction("page.createNew", () => {
+    handleOpenModal(null);
+  }, {
+    enabled: !isModalOpen && !customerToPay,
+  });
 
   useArrowTableNavigation({
     items: customers,
@@ -201,10 +220,12 @@ const CustomersPage: React.FC = () => {
         <div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Input
+              ref={searchInputRef}
               placeholder={t("actions.searchByName")}
               value={filters.name}
               onChange={(e) => handleFilterChange("name", e.target.value)}
               iconLeft={<LuSearch className="h-4 w-4 text-text-secondary" />}
+              title={searchShortcutLabel ? `${t("settings.keyboard.actions.focusPrimarySearch.label")} (${searchShortcutLabel})` : undefined}
             />
             <Select
               value={filters.activity}
@@ -239,7 +260,7 @@ const CustomersPage: React.FC = () => {
           </div>
         </div>
 
-        <Button onClick={() => handleOpenModal(null)} iconLeft={<LuPlus />}>
+        <Button onClick={() => handleOpenModal(null)} iconLeft={<LuPlus />} title={createShortcutLabel ? `${t("customer.addCustomer")} (${createShortcutLabel})` : undefined}>
           {t("customer.addCustomer")}
         </Button>
       </header>

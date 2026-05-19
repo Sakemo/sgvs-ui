@@ -1,5 +1,5 @@
 // src/pages/SalesPage.tsx
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { startOfMonth, endOfMonth, startOfYear, endOfYear } from 'date-fns';
 import { LuPlus } from 'react-icons/lu';
@@ -26,9 +26,13 @@ import { notificationService } from '../lib/notification.service';
 import { formatDate } from '../utils/formatters';
 import { recordPayment } from '../api/services/payment.service';
 import PaySaleModal from '../components/features/sales/PaySaleModal';
+import useShortcutAction from '../hooks/useShortcutAction';
+import { useSettings } from '../contexts/utils/UseSettings';
+import { formatShortcutBinding } from '../lib/keyboardShortcuts';
 
 const SalesPage: React.FC = () => {
   const { t } = useTranslation();
+  const { shortcutPreferences } = useSettings();
   
   // Data State
   const [salesPage, setSalesPage] = useState<Page<SaleResponse> | null>(null);
@@ -60,6 +64,7 @@ const SalesPage: React.FC = () => {
   const [productQuery, setProductQuery] = useState('');
   const [productOptions, setProductOptions] = useState<EntitySummary[]>([]);
   const [isSearchingProducts, setIsSearchingProducts] = useState(false);
+  const customerSearchRef = useRef<HTMLInputElement>(null);
   
   const debouncedCustomerQuery = useDebounce(customerQuery, 400);
   const debouncedProductQuery = useDebounce(productQuery, 400);
@@ -241,6 +246,19 @@ const SalesPage: React.FC = () => {
         { value: 'customer.name,asc', label: t('customer.sort.az') },
         { value: 'customer.name,desc', label: t('customer.sort.za') },
     ];
+    const createShortcutLabel = formatShortcutBinding(shortcutPreferences.bindings['page.createNew']);
+
+  useShortcutAction('page.focusPrimarySearch', () => {
+    customerSearchRef.current?.focus();
+  }, {
+    enabled: !isFormModalOpen && !saleToView && !saleToPay,
+  });
+
+  useShortcutAction('page.createNew', () => {
+    setIsFormModalOpen(true);
+  }, {
+    enabled: !isFormModalOpen && !saleToView && !saleToPay,
+  });
 
   return (
     <div className="space-y-6">
@@ -258,6 +276,7 @@ const SalesPage: React.FC = () => {
           <AutocompleteInput
             label=''
             placeholder={t('actions.searchByClient', 'Search by client...')}
+            inputRef={customerSearchRef}
             options={customerOptions.map(c => ({ value: c.id, label: c.name }))}
             selected={filters.customerId ? { value: filters.customerId, label: customerOptions.find(c => c.id === filters.customerId)?.name || '' } : null}
             onSelect={(option) => handleFilterChange('customerId', option ? Number(option.value) : undefined)}
@@ -284,7 +303,7 @@ const SalesPage: React.FC = () => {
         </Select>
         </div>
       </div>
-        <Button onClick={() => setIsFormModalOpen(true)} iconLeft={<LuPlus />}>
+        <Button onClick={() => setIsFormModalOpen(true)} iconLeft={<LuPlus />} title={createShortcutLabel ? `${t('sale.addSale', 'Register Sale')} (${createShortcutLabel})` : undefined}>
           {t('sale.addSale', 'Register Sale')}
         </Button>
       </header>

@@ -205,6 +205,63 @@
       "light": "Light mode",
       "dark": "Dark mode"
     },
+    "keyboard": {
+      "title": "Keyboard shortcuts",
+      "description": "Speed up navigation with global shortcuts and contextual actions on the main screens.",
+      "sequenceHint": "You can use a single shortcut or a short two-step sequence, such as G > D.",
+      "enableLabel": "Enable shortcuts",
+      "resetButton": "Reset defaults",
+      "conflictBanner": "Some shortcuts conflict with each other. Adjust them before saving.",
+      "conflictMessage": "Conflicts with {{action}} ({{shortcut}}).",
+      "saveConflict": "Resolve shortcut conflicts before saving.",
+      "categories": {
+        "navigation": "Navigation",
+        "workspace": "Interface flow",
+        "table": "Lists and selection"
+      },
+      "actions": {
+        "toggleSidebar": {
+          "label": "Toggle sidebar",
+          "description": "Collapse or expand the side navigation."
+        },
+        "showHelp": {
+          "label": "Open shortcut help",
+          "description": "Show the shortcuts available on the current screen."
+        },
+        "focusPrimarySearch": {
+          "label": "Focus primary search",
+          "description": "Move focus to the first search field or textual filter on the page."
+        },
+        "createNew": {
+          "label": "Open primary create flow",
+          "description": "Open the main create modal for the current screen."
+        },
+        "saveSettings": {
+          "label": "Save settings",
+          "description": "Save changes on the settings page."
+        },
+        "selectPrevious": {
+          "label": "Select previous item",
+          "description": "Move selection to the previous row in lists with side details."
+        },
+        "selectNext": {
+          "label": "Select next item",
+          "description": "Move selection to the next row in lists with side details."
+        }
+      },
+      "editor": {
+        "record": "Edit shortcut",
+        "recording": "Recording shortcut",
+        "pressKeys": "Press the keys...",
+        "clear": "Clear shortcut",
+        "empty": "Disabled"
+      },
+      "help": {
+        "title": "Available shortcuts",
+        "description": "These shortcuts are active on this screen with your current configuration.",
+        "empty": "No contextual shortcuts are available on this screen right now."
+      }
+    },
     "stock": {
       "title": "Stock Management",
       "globalTitle": "Global Control",

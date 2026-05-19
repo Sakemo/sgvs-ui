@@ -205,6 +205,63 @@
       "light": "Modo claro",
       "dark": "Modo escuro"
     },
+    "keyboard": {
+      "title": "Atalhos de teclado",
+      "description": "Acelere a navegação com atalhos globais e ações contextuais nas telas principais.",
+      "sequenceHint": "Você pode usar uma combinação simples ou uma sequência curta de duas etapas, como G > D.",
+      "enableLabel": "Ativar atalhos",
+      "resetButton": "Restaurar padrões",
+      "conflictBanner": "Existem atalhos em conflito. Ajuste as combinações antes de salvar.",
+      "conflictMessage": "Conflita com {{action}} ({{shortcut}}).",
+      "saveConflict": "Resolva os conflitos entre atalhos antes de salvar.",
+      "categories": {
+        "navigation": "Navegação",
+        "workspace": "Fluxo da interface",
+        "table": "Listas e seleção"
+      },
+      "actions": {
+        "toggleSidebar": {
+          "label": "Alternar sidebar",
+          "description": "Recolhe ou expande a navegação lateral."
+        },
+        "showHelp": {
+          "label": "Abrir ajuda de atalhos",
+          "description": "Mostra os atalhos disponíveis na tela atual."
+        },
+        "focusPrimarySearch": {
+          "label": "Focar busca principal",
+          "description": "Leva o foco para o primeiro campo de busca ou filtro textual da página."
+        },
+        "createNew": {
+          "label": "Abrir cadastro principal",
+          "description": "Abre o modal principal de criação da tela atual."
+        },
+        "saveSettings": {
+          "label": "Salvar configurações",
+          "description": "Salva as alterações da página de configurações."
+        },
+        "selectPrevious": {
+          "label": "Selecionar item anterior",
+          "description": "Move a seleção para a linha anterior nas listas com detalhes laterais."
+        },
+        "selectNext": {
+          "label": "Selecionar próximo item",
+          "description": "Move a seleção para a próxima linha nas listas com detalhes laterais."
+        }
+      },
+      "editor": {
+        "record": "Editar atalho",
+        "recording": "Gravando atalho",
+        "pressKeys": "Pressione as teclas...",
+        "clear": "Limpar atalho",
+        "empty": "Desativado"
+      },
+      "help": {
+        "title": "Atalhos disponíveis",
+        "description": "Esses atalhos estão ativos nesta tela com a sua configuração atual.",
+        "empty": "Nenhum atalho contextual está disponível nesta tela agora."
+      }
+    },
     "stock": {
       "title": "Gestão de Estoque",
       "globalTitle": "Controle Global",

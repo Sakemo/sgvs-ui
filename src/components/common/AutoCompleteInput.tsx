@@ -21,6 +21,7 @@ interface AutocompleteInputProps {
   onQueryChange: (query: string) => void;
   renderOption?: (option: AutocompleteOption) => React.ReactNode;
   isLoading?: boolean;
+  inputRef?: React.Ref<HTMLInputElement>;
 }
 
 const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
@@ -32,6 +33,7 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
   onQueryChange,
   renderOption,
   isLoading = false,
+  inputRef,
 }) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState("");
@@ -53,6 +55,7 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
         )}
         <div className="relative">
           <Combobox.Input
+            ref={inputRef}
             className="h-10 w-full rounded-input border border-border-light dark:border-border-dark bg-transparent px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary/50"
             displayValue={(option: AutocompleteOption) => option?.label ?? ""}
             onChange={(event) => setQuery(event.target.value)}

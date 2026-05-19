@@ -15,6 +15,11 @@ import {
   LuChartBar,
 } from 'react-icons/lu';
 import { type IconType } from 'react-icons';
+import { useSettings } from '../../contexts/utils/UseSettings';
+import {
+  formatShortcutBinding,
+  type ShortcutActionId,
+} from '../../lib/keyboardShortcuts';
 
 interface NavItem {
   path: string;
@@ -34,6 +39,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse }) => {
   const { t } = useTranslation();
+  const { shortcutPreferences } = useSettings();
 
   const mainNavItems: (NavItem | NavGroup)[] = [
     {
@@ -63,11 +69,32 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse }) => {
   const footerNavItem: NavItem = {
     path: '/settings', labelKey: 'sidebar.settings', icon: LuSettings,
   };
+  const shortcutActionByPath: Record<string, ShortcutActionId> = {
+    '/dashboard': 'navigate.dashboard',
+    '/reports': 'navigate.reports',
+    '/sales': 'navigate.sales',
+    '/expenses': 'navigate.expenses',
+    '/products': 'navigate.products',
+    '/providers': 'navigate.providers',
+    '/customers': 'navigate.customers',
+    '/settings': 'navigate.settings',
+  };
 
   const linkBaseClasses = 'flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium transition-colors duration-150';
   const iconOnlyLinkClasses = 'mx-auto h-11 w-11 justify-center gap-0 px-0';
   const linkInactiveClasses = 'text-text-secondary hover:bg-brand-primary/8 hover:text-text-primary dark:text-[#D7CEC8] dark:hover:bg-brand-primary/14 dark:hover:text-[#F7F1ED]';
   const linkActiveClasses = 'bg-brand-primary/12 text-[#2E6430] dark:bg-brand-primary/18 dark:text-[#F7F1ED] font-semibold';
+  const toggleShortcut = formatShortcutBinding(
+    shortcutPreferences.bindings['interface.toggleSidebar']
+  );
+  const getNavTitle = (path: string, labelKey: string) => {
+    const shortcutLabel = formatShortcutBinding(
+      shortcutPreferences.bindings[shortcutActionByPath[path]]
+    );
+    const translatedLabel = t(labelKey);
+
+    return shortcutLabel ? `${translatedLabel} (${shortcutLabel})` : translatedLabel;
+  };
 
   return (
     <aside
@@ -86,7 +113,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse }) => {
           <button
             type="button"
             onClick={onToggleCollapse}
-            title={t(isCollapsed ? 'sidebar.expand' : 'sidebar.collapse')}
+            title={
+              toggleShortcut
+                ? `${t(isCollapsed ? 'sidebar.expand' : 'sidebar.collapse')} (${toggleShortcut})`
+                : t(isCollapsed ? 'sidebar.expand' : 'sidebar.collapse')
+            }
             aria-label={t(isCollapsed ? 'sidebar.expand' : 'sidebar.collapse')}
             className="inline-flex h-10 w-10 items-center justify-center rounded-btn text-text-secondary transition-colors duration-150 hover:bg-brand-primary/8 hover:text-text-primary dark:text-[#D7CEC8] dark:hover:bg-brand-primary/14 dark:hover:text-[#F7F1ED]"
           >
@@ -110,7 +141,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse }) => {
                     key={child.path}
                     to={child.path}
                     end={child.path === '/'}
-                    title={t(child.labelKey)}
+                    title={getNavTitle(child.path, child.labelKey)}
                     aria-label={t(child.labelKey)}
                     className={({ isActive }) =>
                       clsx(
@@ -145,7 +176,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse }) => {
       <div className="border-t border-border-light p-4 dark:border-border-dark">
         <NavLink
           to={footerNavItem.path}
-          title={t(footerNavItem.labelKey)}
+          title={getNavTitle(footerNavItem.path, footerNavItem.labelKey)}
           aria-label={t(footerNavItem.labelKey)}
           className={({ isActive }) =>
             clsx(

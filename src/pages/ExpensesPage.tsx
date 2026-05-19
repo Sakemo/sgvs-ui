@@ -1,5 +1,5 @@
 import type React from "react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { type ExpenseResponse, ExpenseType, type Page } from "../api/types/domain";
 import { deleteExpense, getExpenses, type GetExpensesParams } from "../api/services/expense.service";
@@ -16,9 +16,14 @@ import ExpenseFormModal from "../components/features/expenses/ExpenseFormModal";
 
 import { useConfirmation } from "../contexts/utils/UseConfirmation";
 import { notificationService } from "../lib/notification.service";
+import useArrowTableNavigation from "../hooks/useArrowTableNavigation";
+import useShortcutAction from "../hooks/useShortcutAction";
+import { useSettings } from "../contexts/utils/UseSettings";
+import { formatShortcutBinding } from "../lib/keyboardShortcuts";
 
 const ExpensesPage: React.FC = () => {
     const { t } = useTranslation();
+    const { shortcutPreferences } = useSettings();
     const [expensesPage, setExpensesPage] = useState<Page<ExpenseResponse> | null>(null);
     const showConfirmation = useConfirmation();
 
@@ -35,6 +40,7 @@ const ExpensesPage: React.FC = () => {
     });
     const [currentPage, setCurrentPage] = useState(0);
     const debouncedNameFilter = useDebounce(filters.name, 400);
+    const searchInputRef = useRef<HTMLInputElement>(null);
     const fetchExpenses = useCallback(async () => {
         setLoading(true);
         try {
@@ -46,7 +52,7 @@ const ExpensesPage: React.FC = () => {
             };
             const data = await getExpenses(params);
             setExpensesPage(data);
-        } catch (err) {
+        } catch {
             notificationService.error(t('errors.fetchExpenses'));
         } finally {
             setLoading(false);
@@ -106,6 +112,29 @@ const ExpensesPage: React.FC = () => {
     const handleRowClick = (expense: ExpenseResponse) => {
         setSelectedExpense(prev => (prev?.id === expense.id ? null : expense));
     }
+    const createShortcutLabel = formatShortcutBinding(shortcutPreferences.bindings['page.createNew']);
+    const searchShortcutLabel = formatShortcutBinding(shortcutPreferences.bindings['page.focusPrimarySearch']);
+
+    useShortcutAction('page.focusPrimarySearch', () => {
+        searchInputRef.current?.focus();
+    }, {
+        enabled: !isModalOpen,
+    });
+
+    useShortcutAction('page.createNew', () => {
+        handleOpenModal(null);
+    }, {
+        enabled: !isModalOpen,
+    });
+
+    useArrowTableNavigation({
+        items: expensesPage?.content ?? [],
+        selectedId: selectedExpense?.id,
+        getId: (expense) => expense.id,
+        onSelect: setSelectedExpense,
+        enabled: Boolean(selectedExpense) && !isModalOpen,
+        rowGroup: 'expenses',
+    });
 
     const startDateValue = filters.startDate ? filters.startDate.split('T')[0] : '';
     const endDateValue = filters.endDate ? filters.endDate.split('T')[0] : '';
@@ -118,7 +147,7 @@ const ExpensesPage: React.FC = () => {
                 </h1>
                 <div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <Input placeholder={t('actions.searchByName')} value={filters.name} onChange={(e) => handleFilterChange('name', e.target.value)} iconLeft={<LuSearch className="text-text-secondary" />} />
+                        <Input ref={searchInputRef} placeholder={t('actions.searchByName')} value={filters.name} onChange={(e) => handleFilterChange('name', e.target.value)} iconLeft={<LuSearch className="text-text-secondary" />} title={searchShortcutLabel ? `${t('settings.keyboard.actions.focusPrimarySearch.label')} (${searchShortcutLabel})` : undefined} />
                         <Input type="date" value={startDateValue} onChange={(e) => handleDateChange('startDate', e.target.value)} />
                         <Input type="date" value={endDateValue} onChange={(e) => handleDateChange('endDate', e.target.value)} />
                         <Select value={filters.expenseType ?? ''} onChange={(e) => handleFilterChange('expenseType', e.target.value || undefined)}>
@@ -134,7 +163,7 @@ const ExpensesPage: React.FC = () => {
                     </div>
                 </div>
 
-                <Button onClick={() => handleOpenModal(null)} iconLeft={<LuPlus />}>
+                <Button onClick={() => handleOpenModal(null)} iconLeft={<LuPlus />} title={createShortcutLabel ? `${t('expense.addTitle')} (${createShortcutLabel})` : undefined}>
                     {t('expense.addTitle')}
                 </Button>
             </header>
