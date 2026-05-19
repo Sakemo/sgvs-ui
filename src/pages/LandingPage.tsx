@@ -179,13 +179,13 @@ const LandingPage: React.FC = () => {
               </div>
 
               <ul className="grid gap-3 text-sm text-text-secondary dark:text-text-dark-secondary sm:grid-cols-3">
-                <li className="rounded-2xl border border-border-light/90 bg-card-light/85 px-4 py-4 shadow-soft dark:border-border-dark-subtle dark:bg-card-dark/85">
+                <li className="border border-border-light/90 bg-card-light/85 px-4 py-4 shadow-soft dark:border-border-dark-subtle dark:bg-card-dark/85">
                   {t("landing.hero.bullets.sales")}
                 </li>
-                <li className="rounded-2xl border border-border-light/90 bg-card-light/85 px-4 py-4 shadow-soft dark:border-border-dark-subtle dark:bg-card-dark/85">
+                <li className="border border-border-light/90 bg-card-light/85 px-4 py-4 shadow-soft dark:border-border-dark-subtle dark:bg-card-dark/85">
                   {t("landing.hero.bullets.stock")}
                 </li>
-                <li className="rounded-2xl border border-border-light/90 bg-card-light/85 px-4 py-4 shadow-soft dark:border-border-dark-subtle dark:bg-card-dark/85">
+                <li className="border border-border-light/90 bg-card-light/85 px-4 py-4 shadow-soft dark:border-border-dark-subtle dark:bg-card-dark/85">
                   {t("landing.hero.bullets.insights")}
                 </li>
               </ul>
@@ -193,7 +193,7 @@ const LandingPage: React.FC = () => {
 
             <div className="relative">
               <div className="absolute inset-x-10 top-10 -z-10 h-64 rounded-full bg-brand-primary/18 blur-3xl dark:bg-accent-dark-green/20" />
-              <div className="overflow-hidden rounded-[2rem] border border-border-light bg-card-light/92 p-5 shadow-card backdrop-blur dark:border-border-dark-subtle dark:bg-card-dark/92">
+              <div className="">
                 <div className="flex items-start justify-between gap-4 border-b border-border-light/90 pb-5 dark:border-border-dark-subtle">
                   <div>
                     <p className="text-sm font-medium text-text-secondary dark:text-text-dark-secondary">
