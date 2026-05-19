@@ -12,7 +12,6 @@ import {
   LuUsers,
 } from "react-icons/lu";
 import type { IconType } from "react-icons";
-import ThemeToggleButton from "../components/layout/common/ThemeToggleButton";
 import { useAuth } from "../contexts/AuthContext";
 
 interface FeatureItem {
