@@ -265,6 +265,86 @@
       "error": "Erro ao criar conta"
     }
   },
+  "landing": {
+    "badge": "Gestão comercial pronta para o dia a dia",
+    "hero": {
+      "eyebrow": "Tudo o que importa em uma visão só",
+      "title": "Vendas, estoque e financeiro em uma rotina só.",
+      "description": "O flick.business ajuda seu negócio a registrar vendas, controlar estoque e acompanhar resultados sem depender de planilhas espalhadas ou processos confusos.",
+      "bullets": {
+        "sales": "Venda com rapidez e acompanhe pagamentos no mesmo fluxo.",
+        "stock": "Visualize estoque, reposição e produtos com muito mais clareza.",
+        "insights": "Leia receitas, despesas e indicadores sem perder tempo."
+      }
+    },
+    "cta": {
+      "primary": "Entrar",
+      "secondary": "Criar conta",
+      "register": "Criar conta",
+      "dashboard": "Abrir painel"
+    },
+    "preview": {
+      "eyebrow": "Visão do sistema",
+      "title": "Painel limpo, focado no que move a operação",
+      "live": "Fluxo conectado",
+      "connected": "Conectado",
+      "listTitle": "Áreas integradas",
+      "listDescription": "Cada módulo conversa com o restante da operação para reduzir retrabalho.",
+      "cards": {
+        "sales": {
+          "title": "Vendas acompanhadas",
+          "value": "Fluxo de caixa organizado",
+          "detail": "Totalização, formas de pagamento e fiado no mesmo lugar."
+        },
+        "stock": {
+          "title": "Estoque atento",
+          "value": "Produtos com contexto",
+          "detail": "Categorias, custos, margem e alertas para agir na hora certa."
+        },
+        "finance": {
+          "title": "Resultado mais claro",
+          "value": "Leitura rápida do negócio",
+          "detail": "Dashboard e relatórios para acompanhar receita, despesa e desempenho."
+        }
+      }
+    },
+    "features": {
+      "eyebrow": "Por que usar",
+      "title": "Uma experiência pensada para vender, operar e decidir melhor",
+      "dashboard": {
+        "title": "Dashboard direto ao ponto",
+        "description": "Acompanhe receita, lucro, despesas e contas a receber numa leitura rápida do negócio."
+      },
+      "inventory": {
+        "title": "Estoque e margem sob controle",
+        "description": "Cadastre produtos, categorias, custos e estoque sem perder visibilidade sobre preço e rentabilidade."
+      },
+      "customers": {
+        "title": "Clientes e fiado com contexto",
+        "description": "Gerencie cadastro, saldo devedor e limite de crédito em um fluxo mais seguro para o dia a dia."
+      },
+      "reports": {
+        "title": "Relatórios para agir",
+        "description": "Veja tendências, produtos de destaque e indicadores que ajudam na próxima decisão."
+      }
+    },
+    "modules": {
+      "eyebrow": "Operação centralizada",
+      "title": "Da venda ao relatório, cada módulo apoia a mesma rotina.",
+      "description": "O sistema foi desenhado para pequenos negócios que precisam agilidade para vender e clareza para decidir.",
+      "sales": "Vendas com totalização, formas de pagamento e controle de fiado.",
+      "products": "Produtos, categorias, custo, preço e margem no mesmo cadastro.",
+      "providers": "Fornecedores organizados para reposição e histórico de compras.",
+      "customers": "Clientes com limite, saldo devedor e acompanhamento rápido.",
+      "expenses": "Despesas e saídas para fechar o resultado com mais confiança.",
+      "reports": "Indicadores para ler desempenho sem depender de planilhas."
+    },
+    "finalCta": {
+      "eyebrow": "Pronto para entrar",
+      "title": "Acesse o sistema e transforme a primeira tela em uma porta de entrada para o produto.",
+      "description": "Faça login para continuar seu trabalho ou crie sua conta para começar a organizar vendas, estoque e finanças com o flick.business."
+    }
+  },
   "payment": {
     "success": "Pagamento registrado com sucesso.",
     "noPendingSales": "Este cliente nao possui vendas pendentes.",

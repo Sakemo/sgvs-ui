@@ -265,6 +265,86 @@
       "error": "Failed to create account"
     }
   },
+  "landing": {
+    "badge": "Business management built for daily operations",
+    "hero": {
+      "eyebrow": "Everything that matters in one clear view",
+      "title": "Sales, inventory, and finance in a single routine.",
+      "description": "flick.business helps your business record sales, control inventory, and track results without scattered spreadsheets or confusing processes.",
+      "bullets": {
+        "sales": "Sell faster and follow payments in the same flow.",
+        "stock": "See inventory, restocking, and products with much more clarity.",
+        "insights": "Read revenue, expenses, and indicators without wasting time."
+      }
+    },
+    "cta": {
+      "primary": "Sign in",
+      "secondary": "Create account",
+      "register": "Create account",
+      "dashboard": "Open dashboard"
+    },
+    "preview": {
+      "eyebrow": "System overview",
+      "title": "A clean panel focused on what moves the operation",
+      "live": "Connected flow",
+      "connected": "Connected",
+      "listTitle": "Integrated areas",
+      "listDescription": "Each module talks to the rest of the operation to reduce rework.",
+      "cards": {
+        "sales": {
+          "title": "Tracked sales",
+          "value": "Organized cash flow",
+          "detail": "Totals, payment methods, and on-credit sales in the same place."
+        },
+        "stock": {
+          "title": "Inventory in focus",
+          "value": "Products with context",
+          "detail": "Categories, cost, margin, and alerts to act at the right time."
+        },
+        "finance": {
+          "title": "Clearer results",
+          "value": "A quick read of the business",
+          "detail": "Dashboard and reports to track revenue, expenses, and performance."
+        }
+      }
+    },
+    "features": {
+      "eyebrow": "Why use it",
+      "title": "An experience designed to sell, operate, and decide better",
+      "dashboard": {
+        "title": "Straight-to-the-point dashboard",
+        "description": "Track revenue, profit, expenses, and receivables in a fast business snapshot."
+      },
+      "inventory": {
+        "title": "Inventory and margin under control",
+        "description": "Manage products, categories, costs, and stock without losing visibility into pricing and profitability."
+      },
+      "customers": {
+        "title": "Customers and on-credit sales with context",
+        "description": "Manage profiles, outstanding balances, and credit limits in a safer daily workflow."
+      },
+      "reports": {
+        "title": "Reports that lead to action",
+        "description": "See trends, top products, and indicators that help guide the next decision."
+      }
+    },
+    "modules": {
+      "eyebrow": "Centralized operation",
+      "title": "From sale to report, every module supports the same routine.",
+      "description": "The system was designed for small businesses that need agility to sell and clarity to decide.",
+      "sales": "Sales with totals, payment methods, and on-credit control.",
+      "products": "Products, categories, cost, price, and margin in the same registration flow.",
+      "providers": "Providers organized for restocking and purchase history.",
+      "customers": "Customers with credit limits, outstanding balance, and quick follow-up.",
+      "expenses": "Expenses and cash outflows to close results with more confidence.",
+      "reports": "Indicators to read performance without relying on spreadsheets."
+    },
+    "finalCta": {
+      "eyebrow": "Ready to enter",
+      "title": "Access the system and turn the first screen into a real entry point to the product.",
+      "description": "Sign in to continue your work or create an account to start organizing sales, inventory, and finances with flick.business."
+    }
+  },
   "payment": {
     "success": "Payment recorded successfully.",
     "noPendingSales": "This customer has no pending sales.",

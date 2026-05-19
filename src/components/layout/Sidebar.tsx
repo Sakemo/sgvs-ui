@@ -39,7 +39,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggleCollapse }) => {
     {
       groupLabelKey: 'sidebar.groups.overview',
       children: [
-        { path: '/', labelKey: 'sidebar.dashboard', icon: LuLayoutDashboard },
+        { path: '/dashboard', labelKey: 'sidebar.dashboard', icon: LuLayoutDashboard },
         { path: '/reports', labelKey: 'sidebar.reports', icon: LuChartBar },
       ],
     },

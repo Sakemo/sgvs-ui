@@ -10,6 +10,7 @@ import DashboardPage from "./pages/DashboardPage";
 import ReportsPage from "./pages/ReportsPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import LandingPage from "./pages/LandingPage";
 
 // Context
 import { SettingsProvider } from "./contexts/SettingsProvider";
@@ -23,6 +24,17 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const { isAuthenticated } = useAuth();
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   return children;
+};
+
+const PublicOnlyRoute = ({ children }: { children: JSX.Element }) => {
+  const { isAuthenticated } = useAuth();
+  if (isAuthenticated) return <Navigate to="/dashboard" replace />;
+  return children;
+};
+
+const AppRedirect = () => {
+  const { isAuthenticated } = useAuth();
+  return <Navigate to={isAuthenticated ? "/dashboard" : "/"} replace />;
 };
 
 function App() {
@@ -52,8 +64,23 @@ function App() {
                 }}
               />
               <Routes>
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/" element={<LandingPage />} />
+                <Route
+                  path="/login"
+                  element={
+                    <PublicOnlyRoute>
+                      <LoginPage />
+                    </PublicOnlyRoute>
+                  }
+                />
+                <Route
+                  path="/register"
+                  element={
+                    <PublicOnlyRoute>
+                      <RegisterPage />
+                    </PublicOnlyRoute>
+                  }
+                />
 
                 <Route
                   element={
@@ -62,7 +89,7 @@ function App() {
                     </ProtectedRoute>
                   }
                 >
-                  <Route path="/" element={<DashboardPage />} />
+                  <Route path="/dashboard" element={<DashboardPage />} />
                   <Route path="/sales" element={<SalesPage />} />
                   <Route path="/expenses" element={<ExpensesPage />} />
                   <Route path="/reports" element={<ReportsPage />} />
@@ -72,7 +99,7 @@ function App() {
                   <Route path="/settings" element={<SettingsPage />} />
                 </Route>
 
-                <Route path="*" element={<Navigate to="/" replace />} />
+                <Route path="*" element={<AppRedirect />} />
               </Routes>
             </ConfirmationModalProvider>
           </SettingsProvider>

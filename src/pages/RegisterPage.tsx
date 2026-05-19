@@ -71,7 +71,7 @@ const RegisterPage: React.FC = () => {
       login(data.token, toUserFromAuthResponse(data, formData.username, formData.email));
 
       notificationService.success(t('auth.register.success'));
-      navigate('/');
+      navigate('/dashboard');
     } catch (error) {
       // Tentar extrair erros de campo da resposta
       const passwordError = getFieldErrorMessage(error, 'password');

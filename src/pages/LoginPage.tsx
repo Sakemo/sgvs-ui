@@ -41,7 +41,7 @@ const LoginPage: React.FC = () => {
 
       login(data.token, toUserFromAuthResponse(data, identifier));
       notificationService.success(t("auth.login.success"));
-      navigate("/");
+      navigate("/dashboard");
 
     } catch (error) {
       notificationService.error(getAuthErrorMessage(error, t, "login"));
