@@ -96,52 +96,7 @@ const LandingPage: React.FC = () => {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-bg-light text-text-primary transition-colors duration-200 dark:bg-bg-dark dark:text-text-dark-primary">
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute left-[-8rem] top-[-4rem] h-72 w-72  bg-brand-primary/16 blur-3xl dark:bg-accent-dark-green/18" />
-        <div className="absolute bottom-[-5rem] right-[-6rem] h-80 w-80  bg-[#D7EBCF] blur-3xl dark:bg-[#17342C] dark:opacity-90" />
-        <div className="absolute inset-x-0 top-0 h-[34rem] bg-gradient-to-b from-card-light/60 via-transparent to-transparent dark:from-card-dark/30" />
-      </div>
-
       <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-4 sm:px-6 lg:px-8">
-        <header className="flex flex-wrap items-center justify-between gap-3 py-6">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-3 text-text-primary transition-colors hover:text-brand-accent dark:text-text-dark-primary dark:hover:text-accent-dark-green"
-          >
-            <span className="inline-flex h-11 w-11 items-center justify-center  border border-brand-primary/20 bg-card-light text-lg font-bold shadow-soft dark:border-accent-dark-green/30 dark:bg-card-dark">
-              fb
-            </span>
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-text-secondary dark:text-text-dark-secondary">
-                flick.business
-              </p>
-              <p className="text-xs text-text-secondary dark:text-text-dark-secondary">
-                {t("landing.badge")}
-              </p>
-            </div>
-          </Link>
-
-          <div className="flex flex-wrap items-center gap-3">
-            <ThemeToggleButton />
-            {isAuthenticated ? (
-              <Link to="/dashboard" className={primaryLinkClasses}>
-                {t("landing.cta.dashboard")}
-                <LuArrowRight className="h-4 w-4" />
-              </Link>
-            ) : (
-              <>
-                <Link to="/login" className={secondaryLinkClasses}>
-                  {t("auth.login.submit")}
-                </Link>
-                <Link to="/register" className={primaryLinkClasses}>
-                  {t("landing.cta.register")}
-                  <LuArrowRight className="h-4 w-4" />
-                </Link>
-              </>
-            )}
-          </div>
-        </header>
-
         <main className="flex-1">
           <section className="grid gap-10 pb-16 pt-6 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:pb-24 lg:pt-10">
             <div className="space-y-8">
