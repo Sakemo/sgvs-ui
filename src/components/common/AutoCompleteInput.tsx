@@ -2,7 +2,7 @@ import type React from "react";
 import { Fragment, useEffect, useRef, useState } from "react";
 import useDebounce from "../../hooks/useDebounce";
 import { Combobox, Transition } from "@headlessui/react";
-import { LuCheck, LuChevronDown } from "react-icons/lu";
+import { LuCheck, LuChevronDown, LuPlus } from "react-icons/lu";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 
@@ -19,9 +19,16 @@ interface AutocompleteInputProps {
   selected: AutocompleteOption | null;
   onSelect: (option: AutocompleteOption | null) => void;
   onQueryChange: (query: string) => void;
+  onCreateOption?: (query: string) => void | Promise<void>;
+  getCreateOptionLabel?: (query: string) => string;
   renderOption?: (option: AutocompleteOption) => React.ReactNode;
   isLoading?: boolean;
   inputRef?: React.Ref<HTMLInputElement>;
+}
+
+interface CreateAutocompleteOption extends AutocompleteOption {
+  __autocompleteAction: "create";
+  query: string;
 }
 
 const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
@@ -31,6 +38,8 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
   selected,
   onSelect,
   onQueryChange,
+  onCreateOption,
+  getCreateOptionLabel,
   renderOption,
   isLoading = false,
   inputRef,
@@ -40,13 +49,49 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
   const debouncedQuery = useDebounce(query, 300);
 
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const trimmedQuery = query.trim();
+  const hasExactMatch = options.some(
+    (option) => option.label.trim().toLocaleLowerCase() === trimmedQuery.toLocaleLowerCase()
+  );
+  const shouldShowCreateOption = Boolean(
+    onCreateOption && trimmedQuery && !hasExactMatch
+  );
+  const createOption: CreateAutocompleteOption | null = shouldShowCreateOption
+    ? {
+        value: `__create__${trimmedQuery}`,
+        label: getCreateOptionLabel?.(trimmedQuery) ?? `${t("actions.create")} "${trimmedQuery}"`,
+        __autocompleteAction: "create",
+        query: trimmedQuery,
+      }
+    : null;
 
   useEffect(() => {
     onQueryChange(debouncedQuery);
   }, [debouncedQuery, onQueryChange]);
 
+  const isCreateOption = (
+    option: AutocompleteOption | CreateAutocompleteOption | null
+  ): option is CreateAutocompleteOption =>
+    Boolean(
+      option &&
+      "__autocompleteAction" in option &&
+      option.__autocompleteAction === "create" &&
+      typeof option.query === "string"
+    );
+
+  const handleChange = (option: AutocompleteOption | CreateAutocompleteOption | null) => {
+    setQuery("");
+
+    if (isCreateOption(option)) {
+      void onCreateOption?.(option.query);
+      return;
+    }
+
+    onSelect(option);
+  };
+
   return (
-    <Combobox value={selected} onChange={onSelect}>
+    <Combobox value={selected} onChange={handleChange}>
       <div className="relative w-full">
         {label && (
           <Combobox.Label className="mb-1 block text-sm font-medium text-text-secondary">
@@ -82,33 +127,56 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
                 {isLoading && <div className="px-4 py-2 text-text-secondary">
                     {t("common.loading")}
                     </div>}
-                {!isLoading && options.length === 0 && query !== '' ? (
+                {!isLoading && options.length === 0 && query !== '' && !createOption ? (
                     <div className="relative cursor-default select-none px-4 py-2 text-text-secondary">
                         {t("common.noResults")}
                     </div>
                 ) : (
-                    options.map((option) => (
-            <Combobox.Option
-              key={option.value}
-              className={({ active }) => clsx('relative cursor-default select-none py-2 px-4', active ? 'bg-brand-primary/10' : '')}
-              value={option}
-            >
-              {({ selected: isSelected }) =>
-                renderOption ? (
-                  renderOption(option) as React.ReactElement
-                ) : (
-                  <div className="flex items-center">
-                    <span className={clsx("flex-shrink-0 w-5", isSelected ? 'opacity-100' : 'opacity-0')}>
-                      <LuCheck className="h-5 w-5 text-brand-primary" />
-                    </span>
-                    <span className={clsx('ml-2 block truncate', isSelected ? 'font-semibold' : 'font-normal')}>
-                      {option.label}
-                    </span>
-                  </div>
-                )
-              }
-            </Combobox.Option>
-                    ))
+                    <>
+                      {options.map((option) => (
+                        <Combobox.Option
+                          key={option.value}
+                          className={({ active }) => clsx('relative cursor-default select-none py-2 px-4', active ? 'bg-brand-primary/10' : '')}
+                          value={option}
+                        >
+                          {({ selected: isSelected }) =>
+                            renderOption ? (
+                              renderOption(option) as React.ReactElement
+                            ) : (
+                              <div className="flex items-center">
+                                <span className={clsx("flex-shrink-0 w-5", isSelected ? 'opacity-100' : 'opacity-0')}>
+                                  <LuCheck className="h-5 w-5 text-brand-primary" />
+                                </span>
+                                <span className={clsx('ml-2 block truncate', isSelected ? 'font-semibold' : 'font-normal')}>
+                                  {option.label}
+                                </span>
+                              </div>
+                            )
+                          }
+                        </Combobox.Option>
+                      ))}
+                      {createOption && (
+                        <Combobox.Option
+                          key={createOption.value}
+                          className={({ active }) =>
+                            clsx(
+                              "relative cursor-default select-none py-2 px-4",
+                              active ? "bg-brand-primary/10" : ""
+                            )
+                          }
+                          value={createOption}
+                        >
+                          <div className="flex items-center text-brand-primary">
+                            <span className="flex-shrink-0 w-5">
+                              <LuPlus className="h-5 w-5" />
+                            </span>
+                            <span className="ml-2 block truncate font-medium">
+                              {createOption.label}
+                            </span>
+                          </div>
+                        </Combobox.Option>
+                      )}
+                    </>
                 )}
             </Combobox.Options>
         </Transition>

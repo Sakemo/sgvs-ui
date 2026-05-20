@@ -28,8 +28,12 @@ import ToggleSwitch from "../../common/ui/ToggleSwitch";
 import { notificationService } from "../../../lib/notification.service";
 import AutocompleteInput from "../../common/AutoCompleteInput";
 import { useConfirmation } from "../../../contexts/utils/UseConfirmation";
-import { deleteCategory } from "../../../api/services/category.service";
+import {
+  createCategory,
+  deleteCategory,
+} from "../../../api/services/category.service";
 import CategoryFormModal from "../categories/CategoryFormModal";
+import { createProvider } from "../../../api/services/provider.service";
 
 interface ProductFormModalProps {
   isOpen: boolean;
@@ -60,10 +64,17 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
   const [isProviderModalOpen, setIsProviderModalOpen] = useState(false);
   const [keepAdding, setKeepAdding] = useState(false);
   const nameInputRef = useRef<HTMLInputElement>(null);
+  const [availableCategories, setAvailableCategories] = useState<EntitySummary[]>(categories);
+  const [availableProviders, setAvailableProviders] = useState<EntitySummary[]>(providers);
+  const [categoryQuery, setCategoryQuery] = useState("");
+  const [providerQuery, setProviderQuery] = useState("");
+  const [isCreatingCategory, setIsCreatingCategory] = useState(false);
+  const [isCreatingProvider, setIsCreatingProvider] = useState(false);
 
   const [isCalculating, setIsCalculating] = useState(false);
   // Estado do Switch
   const [isSmartPricing, setIsSmartPricing] = useState(true);
+  const providerClearOptionValue = "__none__";
 
   // --- Handlers Auxiliares ---
   const handleDeleteCategory = (categoryId: number) => {
@@ -109,6 +120,11 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
 
   const handleCategorySaveSuccess = (savedCategory: CategoryResponse) => {
     setIsCategoryModalOpen(false);
+    setCategoryQuery("");
+    setAvailableCategories((prev) => {
+      const next = prev.filter((category) => category.id !== savedCategory.id);
+      return [savedCategory, ...next];
+    });
     onDataRefresh();
     if (!categoryToEdit) {
       setFormData((prev) => ({ ...prev, categoryId: savedCategory.id }));
@@ -122,6 +138,11 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
 
   const handleNewProvider = (newProvider: ProviderResponse) => {
     setIsProviderModalOpen(false);
+    setProviderQuery("");
+    setAvailableProviders((prev) => {
+      const next = prev.filter((provider) => provider.id !== newProvider.id);
+      return [newProvider, ...next];
+    });
     onDataRefresh();
     setFormData((prev) => ({ ...prev, providerId: newProvider.id }));
   };
@@ -167,12 +188,22 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
   const wasOpenRef = useRef(false);
 
   useEffect(() => {
+    setAvailableCategories(categories);
+  }, [categories]);
+
+  useEffect(() => {
+    setAvailableProviders(providers);
+  }, [providers]);
+
+  useEffect(() => {
     const isOpening = isOpen && !wasOpenRef.current;
     let timer: ReturnType<typeof setTimeout> | undefined;
 
     if (isOpening) {
       setKeepAdding(false);
       setFormData(getInitialFormData());
+      setCategoryQuery("");
+      setProviderQuery("");
 
       // Lógica para decidir se o switch começa ligado ou desligado
       if (isEditMode && productToEdit) {
@@ -201,15 +232,15 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
     if (
       isOpen &&
       !isEditMode &&
-      categories.length > 0 &&
+      availableCategories.length > 0 &&
       (formData.categoryId === undefined || formData.categoryId === null)
     ) {
       setFormData((prev) => ({
         ...prev,
-        categoryId: categories[0].id,
+        categoryId: availableCategories[0].id,
       }));
     }
-  }, [isOpen, isEditMode, categories, formData.categoryId]);
+  }, [isOpen, isEditMode, availableCategories, formData.categoryId]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -257,6 +288,77 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
       return () => clearTimeout(timer);
     }
   }, [isSmartPricing, formData.costPrice, formData.desiredProfitMargin]);
+
+  const handleQuickCreateCategory = async (name: string) => {
+    const trimmedName = name.trim();
+    if (!trimmedName) {
+      return;
+    }
+
+    setIsCreatingCategory(true);
+    try {
+      const savedCategory = await createCategory({ name: trimmedName });
+      setAvailableCategories((prev) => {
+        const next = prev.filter((category) => category.id !== savedCategory.id);
+        return [savedCategory, ...next];
+      });
+      setFormData((prev) => ({ ...prev, categoryId: savedCategory.id }));
+      setCategoryQuery("");
+      onDataRefresh();
+      notificationService.success(t("category.addSuccess", "Category added"));
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message?: string }>;
+      notificationService.error(
+        axiosError.response?.data?.message || t("errors.genericSave")
+      );
+    } finally {
+      setIsCreatingCategory(false);
+    }
+  };
+
+  const handleQuickCreateProvider = async (name: string) => {
+    const trimmedName = name.trim();
+    if (!trimmedName) {
+      return;
+    }
+
+    setIsCreatingProvider(true);
+    try {
+      const savedProvider = await createProvider({ name: trimmedName });
+      setAvailableProviders((prev) => {
+        const next = prev.filter((provider) => provider.id !== savedProvider.id);
+        return [savedProvider, ...next];
+      });
+      setFormData((prev) => ({ ...prev, providerId: savedProvider.id }));
+      setProviderQuery("");
+      onDataRefresh();
+      notificationService.success(
+        t("provider.saveSuccess", "Provider saved successfully!")
+      );
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message?: string }>;
+      notificationService.error(
+        axiosError.response?.data?.message || t("errors.genericSave")
+      );
+    } finally {
+      setIsCreatingProvider(false);
+    }
+  };
+
+  const filteredCategoryOptions = availableCategories
+    .filter((category) =>
+      category.name.toLocaleLowerCase().includes(categoryQuery.trim().toLocaleLowerCase())
+    )
+    .map((category) => ({ value: category.id, label: category.name }));
+
+  const filteredProviderOptions = [
+    { value: providerClearOptionValue, label: t("common.none") },
+    ...availableProviders
+      .filter((provider) =>
+        provider.name.toLocaleLowerCase().includes(providerQuery.trim().toLocaleLowerCase())
+      )
+      .map((provider) => ({ value: provider.id, label: provider.name })),
+  ];
 
   // --- Submit ---
   const handleSubmit = async (e: React.FormEvent) => {
@@ -342,12 +444,13 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
                 <AutocompleteInput
                   label={`${t("common.category")} *`}
                   placeholder={t("actions.searchByName")}
-                  options={categories.map((c) => ({ value: c.id, label: c.name }))}
+                  options={filteredCategoryOptions}
                   selected={
                     formData.categoryId
                       ? {
                           value: formData.categoryId,
-                          label: categories.find((c) => c.id === formData.categoryId)?.name || "",
+                          label:
+                            availableCategories.find((c) => c.id === formData.categoryId)?.name || "",
                         }
                       : null
                   }
@@ -357,8 +460,9 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
                       categoryId: option ? Number(option.value) : undefined,
                     }))
                   }
-                  onQueryChange={() => undefined}
-                  isLoading={false}
+                  onQueryChange={setCategoryQuery}
+                  onCreateOption={handleQuickCreateCategory}
+                  isLoading={isCreatingCategory}
                   renderOption={(option) => (
                     <div className="flex items-center justify-between w-full">
                       <span className="block truncate">{option.label}</span>
@@ -526,19 +630,32 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
             </div>
 
             <div className="flex items-end gap-2">
-              <Select
+              <AutocompleteInput
                 label={t("product.provider")}
-                name="providerId"
-                value={formData.providerId ?? ""}
-                onChange={handleChange}
-              >
-                <option value="">{t("common.none")}</option>
-                {providers.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
-                ))}
-              </Select>
+                placeholder={t("actions.searchByName")}
+                options={filteredProviderOptions}
+                selected={
+                  formData.providerId
+                    ? {
+                        value: formData.providerId,
+                        label:
+                          availableProviders.find((provider) => provider.id === formData.providerId)?.name || "",
+                      }
+                    : null
+                }
+                onSelect={(option) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    providerId:
+                      !option || option.value === providerClearOptionValue
+                        ? undefined
+                        : Number(option.value),
+                  }))
+                }
+                onQueryChange={setProviderQuery}
+                onCreateOption={handleQuickCreateProvider}
+                isLoading={isCreatingProvider}
+              />
               <Button
                 type="button"
                 variant="ghost"

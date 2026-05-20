@@ -5,7 +5,11 @@ import { AxiosError } from "axios";
 
 // API & Types
 import { getProducts, getProductSuggestions } from "../../../api/services/product.service";
-import { getCustomers, getCustomerSuggestions } from "../../../api/services/customer.service";
+import {
+  createCustomer,
+  getCustomers,
+  getCustomerSuggestions,
+} from "../../../api/services/customer.service";
 import { registerSale } from "../../../api/services/sale.service";
 import {
   type SaleItemRequest,
@@ -73,6 +77,7 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
   const [selectedProductOption, setSelectedProductOption] = useState<AutocompleteOption | null>(null);
   
   const [isSearching, setIsSearching] = useState({ customers: false, products: false });
+  const [isCreatingCustomer, setIsCreatingCustomer] = useState(false);
   const [productDetailsCache, setProductDetailsCache] = useState<Record<number, ProductResponse>>({});
 
   const selectedProductDetails = useMemo(() => {
@@ -213,6 +218,43 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
     setItems((prev) => prev.filter((item) => item.productId !== productId));
   };
 
+  const handleCreateCustomer = async (name: string) => {
+    const trimmedName = name.trim();
+    if (!trimmedName) {
+      return;
+    }
+
+    setIsCreatingCustomer(true);
+
+    try {
+      const savedCustomer = await createCustomer({
+        name: trimmedName,
+        active: true,
+        creditEnabled: paymentMethod === PaymentMethod.ON_CREDIT,
+      });
+
+      const createdOption = { value: savedCustomer.id, label: savedCustomer.name };
+      setInitialCustomerOptions((prev) => {
+        const alreadyExists = prev.some((option) => option.value === createdOption.value);
+        return alreadyExists ? prev : [createdOption, ...prev];
+      });
+      setSearchedCustomerOptions((prev) => {
+        const alreadyExists = prev.some((option) => option.value === createdOption.value);
+        return alreadyExists ? prev : [createdOption, ...prev];
+      });
+      setSelectedCustomerOption(createdOption);
+      setCustomerQuery("");
+      notificationService.success(t("customer.saveSuccess", "Customer saved successfully."));
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message?: string }>;
+      notificationService.error(
+        axiosError.response?.data?.message || t("errors.genericSave")
+      );
+    } finally {
+      setIsCreatingCustomer(false);
+    }
+  };
+
   const totalSaleValue = useMemo(
     () => items.reduce((sum, item) => sum + item.totalValue, 0),
     [items]
@@ -299,7 +341,8 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
                   selected={selectedCustomerOption}
                   onSelect={setSelectedCustomerOption}
                   onQueryChange={setCustomerQuery}
-                  isLoading={isSearching.customers}
+                  onCreateOption={handleCreateCustomer}
+                  isLoading={isSearching.customers || isCreatingCustomer}
                 />
                 <Select
                   label={t("common.paymentMethod")}
