@@ -8,6 +8,11 @@ import {
     SHORTCUT_STORAGE_KEY,
     type ShortcutPreferences,
 } from "../lib/keyboardShortcuts";
+import {
+    DEFAULT_START_PAGE_STORAGE_KEY,
+    sanitizeStartPage,
+    type StartPage,
+} from "../lib/defaultStartPage";
 
 const loadShortcutPreferences = (): ShortcutPreferences => {
     try {
@@ -18,6 +23,14 @@ const loadShortcutPreferences = (): ShortcutPreferences => {
     }
 };
 
+const loadDefaultStartPage = (): StartPage => {
+    try {
+        return sanitizeStartPage(localStorage.getItem(DEFAULT_START_PAGE_STORAGE_KEY));
+    } catch {
+        return sanitizeStartPage(null);
+    }
+};
+
 export const SettingsProvider: React.FC<{ children: ReactNode }> = ({
     children
 }) => {
@@ -25,6 +38,7 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({
     const [settings, setSettings] = useState<GeneralSettingsResponse | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [shortcutPreferences, setShortcutPreferences] = useState<ShortcutPreferences>(loadShortcutPreferences);
+    const [defaultStartPage, setDefaultStartPage] = useState<StartPage>(loadDefaultStartPage);
 
     const fetchSettings = () => {
         if (!isAuthenticated) {
@@ -82,12 +96,20 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({
         localStorage.setItem(SHORTCUT_STORAGE_KEY, JSON.stringify(sanitizedPreferences));
     };
 
+    const updateDefaultStartPage = (page: StartPage) => {
+        const sanitizedPage = sanitizeStartPage(page);
+        setDefaultStartPage(sanitizedPage);
+        localStorage.setItem(DEFAULT_START_PAGE_STORAGE_KEY, sanitizedPage);
+    };
+
     const value = {
         settings,
         isLoading,
         refetchSettings: fetchSettings,
         shortcutPreferences,
         updateShortcutPreferences,
+        defaultStartPage,
+        updateDefaultStartPage,
     };
 
     return (

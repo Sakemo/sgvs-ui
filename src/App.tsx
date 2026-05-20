@@ -19,6 +19,7 @@ import { ThemeProvider } from "./contexts/ThemeProvider";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { Toaster } from "react-hot-toast";
 import type { JSX } from "react";
+import { useSettings } from "./contexts/utils/UseSettings";
 
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const { isAuthenticated } = useAuth();
@@ -28,13 +29,15 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
 
 const PublicOnlyRoute = ({ children }: { children: JSX.Element }) => {
   const { isAuthenticated } = useAuth();
-  if (isAuthenticated) return <Navigate to="/dashboard" replace />;
+  const { defaultStartPage } = useSettings();
+  if (isAuthenticated) return <Navigate to={defaultStartPage} replace />;
   return children;
 };
 
 const AppRedirect = () => {
   const { isAuthenticated } = useAuth();
-  return <Navigate to={isAuthenticated ? "/dashboard" : "/"} replace />;
+  const { defaultStartPage } = useSettings();
+  return <Navigate to={isAuthenticated ? defaultStartPage : "/"} replace />;
 };
 
 function App() {

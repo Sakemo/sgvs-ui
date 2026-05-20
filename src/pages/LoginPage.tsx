@@ -6,6 +6,7 @@ import { loginUser } from "../api/services/auth.service";
 import { useTranslation } from "react-i18next";
 import type { AuthResponse, User } from "../api/types/domain";
 import { getAuthErrorMessage } from "../lib/auth-error-message";
+import { useSettings } from "../contexts/utils/UseSettings";
 
 const toUserFromAuthResponse = (
   data: AuthResponse,
@@ -27,6 +28,7 @@ const LoginPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { login } = useAuth();
+  const { defaultStartPage } = useSettings();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -41,7 +43,7 @@ const LoginPage: React.FC = () => {
 
       login(data.token, toUserFromAuthResponse(data, identifier));
       notificationService.success(t("auth.login.success"));
-      navigate("/dashboard");
+      navigate(defaultStartPage, { replace: true });
 
     } catch (error) {
       notificationService.error(getAuthErrorMessage(error, t, "login"));

@@ -27,6 +27,7 @@ import {
   type ShortcutActionId,
   type ShortcutPreferences,
 } from '../lib/keyboardShortcuts';
+import type { StartPage } from '../lib/defaultStartPage';
 
 const SettingsPage: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -37,11 +38,14 @@ const SettingsPage: React.FC = () => {
     refetchSettings,
     shortcutPreferences,
     updateShortcutPreferences,
+    defaultStartPage,
+    updateDefaultStartPage,
   } = useSettings();
   const { theme, setTheme } = useTheme();
   const [formData, setFormData] = useState<Partial<GeneralSettingsRequest>>({});
   const [language, setLanguage] = useState<'pt' | 'en'>('en');
   const [selectedTheme, setSelectedTheme] = useState<Theme>('light');
+  const [startPage, setStartPage] = useState<StartPage>(defaultStartPage);
   const [isSaving, setIsSaving] = useState(false);
   const [shortcutDraft, setShortcutDraft] = useState<ShortcutPreferences>(shortcutPreferences);
 
@@ -60,6 +64,10 @@ const SettingsPage: React.FC = () => {
   }, [theme]);
 
   useEffect(() => {
+    setStartPage(defaultStartPage);
+  }, [defaultStartPage]);
+
+  useEffect(() => {
     setShortcutDraft(shortcutPreferences);
   }, [shortcutPreferences]);
 
@@ -68,6 +76,7 @@ const SettingsPage: React.FC = () => {
   const currentLanguage = i18n.resolvedLanguage?.startsWith('pt') ? 'pt' : 'en';
   const hasLanguageChanges = language !== currentLanguage;
   const hasThemeChanges = selectedTheme !== theme;
+  const hasStartPageChanges = startPage !== defaultStartPage;
   const hasShortcutChanges =
     JSON.stringify(shortcutPreferences) !== JSON.stringify(shortcutDraft);
   const shortcutConflicts = useMemo(
@@ -78,10 +87,24 @@ const SettingsPage: React.FC = () => {
     (conflicts) => conflicts && conflicts.length > 0
   );
   const isDirty =
-    hasSettingsChanges || hasLanguageChanges || hasThemeChanges || hasShortcutChanges;
+    hasSettingsChanges ||
+    hasLanguageChanges ||
+    hasThemeChanges ||
+    hasStartPageChanges ||
+    hasShortcutChanges;
   const saveShortcutLabel = formatShortcutBinding(
     shortcutPreferences.bindings['settings.save']
   );
+  const startPageOptions = [
+    { value: '/sales', label: t('sidebar.sales') },
+    { value: '/dashboard', label: t('sidebar.dashboard') },
+    { value: '/products', label: t('sidebar.products') },
+    { value: '/providers', label: t('sidebar.providers') },
+    { value: '/customers', label: t('sidebar.customers') },
+    { value: '/expenses', label: t('sidebar.expenses') },
+    { value: '/reports', label: t('sidebar.reports') },
+    { value: '/settings', label: t('sidebar.settings') },
+  ] satisfies Array<{ value: StartPage; label: string }>;
 
   const handleFormChange = (updatedValues: Partial<GeneralSettingsRequest>) => {
     setFormData(prev => ({ ...prev, ...updatedValues }));
@@ -123,6 +146,10 @@ const SettingsPage: React.FC = () => {
 
       if (hasThemeChanges) {
         setTheme(selectedTheme);
+      }
+
+      if (hasStartPageChanges) {
+        updateDefaultStartPage(startPage);
       }
 
       if (hasShortcutChanges) {
@@ -167,7 +194,7 @@ const SettingsPage: React.FC = () => {
         <Card>
           <h2 className="mb-2 text-lg font-semibold">{t('settings.interface.title')}</h2>
           <p className="mb-4 text-sm text-text-secondary">{t('settings.interface.description')}</p>
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-3">
             <Select
               label={t('settings.language.label')}
               value={language}
@@ -185,6 +212,18 @@ const SettingsPage: React.FC = () => {
             >
               <option value="light">{t('settings.theme.light')}</option>
               <option value="dark">{t('settings.theme.dark')}</option>
+            </Select>
+            <Select
+              label={t('settings.startPage.label')}
+              value={startPage}
+              onChange={(e) => setStartPage(e.target.value as StartPage)}
+              disabled={isSaving}
+            >
+              {startPageOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
             </Select>
           </div>
         </Card>

@@ -193,12 +193,15 @@
     "saveSuccess": "Settings saved successfully.",
     "interface": {
       "title": "Interface",
-      "description": "Customize the application's language and appearance."
+      "description": "Customize the application's language, appearance, and default start page."
     },
     "language": {
       "title": "Default Language",
       "description": "Sets the application's default language.",
       "label": "Language"
+    },
+    "startPage": {
+      "label": "Start page after login"
     },
     "theme": {
       "label": "Appearance",

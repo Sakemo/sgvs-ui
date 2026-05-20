@@ -193,12 +193,15 @@
     "saveSuccess": "Configurações salvas com sucesso.",
     "interface": {
       "title": "Interface",
-      "description": "Personalize o idioma e a aparência da aplicação."
+      "description": "Personalize o idioma, a aparência e a página inicial da aplicação."
     },
     "language": {
       "title": "Idioma Padrão",
       "description": "Define o idioma padrão da aplicação.",
       "label": "Idioma"
+    },
+    "startPage": {
+      "label": "Página inicial após login"
     },
     "theme": {
       "label": "Aparência",
