@@ -72,6 +72,28 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
   
   const [searchedCustomerOptions, setSearchedCustomerOptions] = useState<AutocompleteOption[]>([]);
   const [searchedProductOptions, setSearchedProductOptions] = useState<AutocompleteOption[]>([]);
+
+  const formatApiErrors = (errors: Record<string, unknown> | unknown[] | undefined): string | null => {
+    if (!errors) {
+      return null;
+    }
+
+    if (Array.isArray(errors)) {
+      return errors
+        .map((value) => (typeof value === "string" ? value : JSON.stringify(value)))
+        .filter(Boolean)
+        .join(". ");
+    }
+
+    if (typeof errors === "object") {
+      return Object.values(errors)
+        .map((value) => (typeof value === "string" ? value : JSON.stringify(value)))
+        .filter(Boolean)
+        .join(". ");
+    }
+
+    return String(errors);
+  };
   
   const [selectedCustomerOption, setSelectedCustomerOption] = useState<AutocompleteOption | null>(null);
   const [selectedProductOption, setSelectedProductOption] = useState<AutocompleteOption | null>(null);
@@ -308,13 +330,15 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
     } catch (error) {
       const axiosError = error as AxiosError<{
         message?: string;
-        errors?: Record<string, string>;
+        errors?: Record<string, unknown>;
       }>;
       const apiErrors = axiosError.response?.data?.errors;
-      if (apiErrors) {
-        notificationService.error(`${apiErrors}`);
+      const apiErrorMessage = formatApiErrors(apiErrors);
+      if (apiErrorMessage) {
+        notificationService.error(apiErrorMessage);
       } else {
-        notificationService.error(axiosError.response?.data?.message || t("errors.genericSave"),
+        notificationService.error(
+          axiosError.response?.data?.message || t("errors.genericSave"),
         );
       }
     } finally {

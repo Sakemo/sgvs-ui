@@ -76,6 +76,28 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
   const [isSmartPricing, setIsSmartPricing] = useState(true);
   const providerClearOptionValue = "__none__";
 
+  const formatApiErrors = (errors: Record<string, unknown> | unknown[] | undefined): string | null => {
+    if (!errors) {
+      return null;
+    }
+
+    if (Array.isArray(errors)) {
+      return errors
+        .map((value) => (typeof value === "string" ? value : JSON.stringify(value)))
+        .filter(Boolean)
+        .join(". ");
+    }
+
+    if (typeof errors === "object") {
+      return Object.values(errors)
+        .map((value) => (typeof value === "string" ? value : JSON.stringify(value)))
+        .filter(Boolean)
+        .join(". ");
+    }
+
+    return String(errors);
+  };
+
   // --- Handlers Auxiliares ---
   const handleDeleteCategory = (categoryId: number) => {
     showConfirmation({
@@ -371,7 +393,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
     }
 
     if (Object.keys(newErrors).length > 0) {
-      notificationService.error(`${newErrors}`);
+      notificationService.error(Object.values(newErrors).join(". "));
       setIsLoading(false);
       return;
     }
@@ -405,12 +427,15 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
         onSaveSuccess(savedProduct);
       }
     } catch (error) {
-      const axiosError = error as AxiosError<{ message?: string; errors?: Record<string, string> }>;
+      const axiosError = error as AxiosError<{ message?: string; errors?: Record<string, unknown> }>;
       const apiErrors = axiosError.response?.data?.errors;
-      if (apiErrors) {
-        notificationService.error(`${apiErrors}`);
+      const apiErrorMessage = formatApiErrors(apiErrors);
+      if (apiErrorMessage) {
+        notificationService.error(apiErrorMessage);
       } else {
-        notificationService.error(t("errors.genericSave", "An unexpected error occurred."));
+        notificationService.error(
+          axiosError.response?.data?.message || t("errors.genericSave", "An unexpected error occurred.")
+        );
       }
     } finally {
       setIsLoading(false);
