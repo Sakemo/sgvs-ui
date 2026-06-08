@@ -6,6 +6,13 @@ export const loginUser = async (data: LoginRequest):Promise<AuthResponse> => {
   return response.data;
 }
 
+export const googleLogin = async (idToken: string): Promise<AuthResponse> => {
+  const response = await apiClient.post<AuthResponse>('/auth/google', {
+    idToken,
+  });
+  return response.data;
+};
+
 export const registerUser = async (data: RegisterRequest): Promise<AuthResponse> => {
     const response = await apiClient.post<AuthResponse>('/auth/register', data);
     return response.data;

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import { useAuth } from "../contexts/AuthContext";
 import { notificationService } from "../lib/notification.service";
 import { loginUser } from "../api/services/auth.service";
@@ -7,6 +8,8 @@ import { useTranslation } from "react-i18next";
 import type { AuthResponse, User } from "../api/types/domain";
 import { getAuthErrorMessage } from "../lib/auth-error-message";
 import { useSettings } from "../contexts/utils/UseSettings";
+import { GoogleLoginButton } from "../components/features/GoogleLoginButton";
+import { GOOGLE_CLIENT_ID } from "../lib/googleAuth";
 
 const toUserFromAuthResponse = (
   data: AuthResponse,
@@ -54,24 +57,27 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-bg-light dark:bg-bg-dark flex items-center justify-center px-4 py-8 transition-colors duration-200 ease-in-out">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-brand-primary dark:text-brand-accent mb-2">
-            flick.business
-          </h1>
-          <h2 className="text-xl font-semibold text-text-primary dark:text-[#F7F1ED]">
-            {t("auth.login.title")}
-          </h2>
-          <p className="mt-2 text-sm text-text-secondary dark:text-[#CABEB6]">
-            {t("auth.login.subtitle")}
-          </p>
-        </div>
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <div className="min-h-screen bg-bg-light dark:bg-bg-dark flex items-center justify-center px-4 py-8 transition-colors duration-200 ease-in-out">
+        <div className="max-w-md w-full space-y-8">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-brand-primary dark:text-brand-accent mb-2">
+              flick.business
+            </h1>
+            <h2 className="text-xl font-semibold text-text-primary dark:text-[#F7F1ED]">
+              {t("auth.login.title")}
+            </h2>
+            <p className="mt-2 text-sm text-text-secondary dark:text-[#CABEB6]">
+              {t("auth.login.subtitle")}
+            </p>
+          </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="mt-8 space-y-6 rounded-xl border border-border-light bg-card-light p-8 shadow-card transition-colors dark:border-border-dark dark:bg-card-dark"
-        >
+          <GoogleLoginButton />
+
+          <form
+            onSubmit={handleSubmit}
+            className="mt-8 space-y-6 rounded-xl border border-border-light bg-card-light p-8 shadow-card transition-colors dark:border-border-dark dark:bg-card-dark"
+          >
           <div>
             <label
               htmlFor="username"
@@ -142,6 +148,7 @@ const LoginPage: React.FC = () => {
         </div>
       </div>
     </div>
+    </GoogleOAuthProvider>
   );
 };
 
