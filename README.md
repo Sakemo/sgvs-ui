@@ -1,89 +1,440 @@
-Frontend repo for: (https://github.com/Sakemo/sgvs-api)[flick-business-backend]
+# 🎨 SGVS UI - Simplified Sales Management System
 
-### **Master Project Document: flick.business**
-
-**Version:** 1.0 (Post-Refactor)
-**Last Updated:** July 28, 2025
-
-#### **1. Introduction & Project Vision**
-
-The **flick.business** is a full-stack web application designed to be a powerful, intuitive, and visually impactful management tool for small to medium-sized businesses. The project's core philosophy extends beyond simple transaction logging to provide the user with a "CEO experience," complete with actionable insights and full control over financial and inventory operations. The software aims to transform raw data into business intelligence, with a sharp focus on cash flow, profitability, and product performance.
-
-Built on a modern and scalable architecture, flick.business utilizes React (Vite + TypeScript) on the frontend and Java (Spring Boot) on the backend, with PostgreSQL for relational data. The application was developed following "MIT-level" principles: clean code, decoupled architecture, robust testing, and an exceptional user experience (UX), including internationalization (i18n), a dark/light theme, and reactive UI components. This document serves as the master roadmap for ongoing development, detailing what has been completed and outlining the next strategic steps.
+[![Status](https://img.shields.io/badge/Status-In%20Development-yellow?style=flat-square&logo=checkmark)](https://github.com)
+[![React Version](https://img.shields.io/badge/React-19.1.0-blue?style=flat-square&logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Latest-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-Latest-purple?style=flat-square&logo=vite)](https://vite.dev/)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4.17-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
 
 ---
 
-### **2. Master Project Roadmap**
+## 📋 Description
 
-✅ = Completed | ⏳ = In Progress / Partially Completed | 🎯 = Next Target | ❌ = Not Started
-
-#### **PHASE 1: Foundation & Architectural Migration (100% ✅)**
-
-This phase focused on rebuilding the application from the ground up to establish a high-quality technical foundation.
-
-*   ✅ **Backend:** Spring Boot project rebuilt with a clean architecture, 100% in English (packages, classes, methods).
-*   ✅ **Frontend:** React/Vite project rebuilt with a modern architecture, TypeScript, and reusable UI components based on `CVA`.
-*   ✅ **Database:** PostgreSQL schema recreated, 100% in English, managed via `ddl-auto` in development.
-*   ✅ **Essential Features Migrated:**
-    *   **Products:** Full CRUD, filtering, sorting (including "most sold"), copying, and a details drawer.
-    *   **Customers:** Full CRUD, filtering, sorting, a details modal, and confirmation dialogs.
-    *   **Expenses:** Full CRUD, filtering, a details drawer, and a conditional UI for **Restocking Expenses** that updates inventory.
-    *   **Sales:** Full CRUD, filtering, pagination, summary cards (gross, net), and intelligent autocomplete for products and customers.
-    *   **Settings:** Implementation of **Configurable Stock Control** (GLOBAL, PER_ITEM, NONE).
-    *   **Dashboard:** All planned cards and charts are functional and connected to the API.
-*   ✅ **"MIT-Level" UX:**
-    *   Full `i18n` (English/Portuguese).
-    *   Global Toast Notification System with `react-hot-toast`.
-    *   Global Confirmation Modal for critical actions.
-    *   `AdvancedOptions` component to simplify complex forms.
-    *   Application-wide Dark/Light theme.
-*   ✅ **Code Quality:** Comprehensive unit tests for the backend service layer (`Product`, `Sale`, `Customer`, `Expense`).
+**SGVS UI** is a modern, responsive frontend application built with **React 19**, **TypeScript**, and **Vite** that provides a "CEO experience" for small and medium-sized business managers. With an intuitive interface, real-time analytics, and intelligent workflows, the platform transforms raw sales and inventory data into actionable business insights. Features dark/light theme support, full internationalization (English/Portuguese), and accessible components.
 
 ---
 
-#### **🎯 PHASE 2: Authentication & Multi-User Support (Next Target)**
+## 🎬 Visual Demonstration
 
-This is the next fundamental step to turn the application into a secure product ready for multiple users.
+### Dashboard & Product Management
+Here's a screenshot of the main dashboard showing sales metrics and quick product access:
 
-*   🎯 **Backend - Spring Security & JWT:**
-    *   **What:** Secure the entire API. Only authenticated users will be able to access the endpoints.
-    *   **How:**
-        1.  Introduce a `User` entity (`username`, `password`, `roles`).
-        2.  Configure Spring Security to use **JWT (JSON Web Tokens)** for stateless authentication.
-        3.  Create authentication endpoints: `POST /api/auth/register` and `POST /api/auth/login`.
-        4.  Implement a JWT filter that validates the token on every request to protected endpoints.
-*   🎯 **Frontend - Login Flow & Protected Routes:**
-    *   **What:** Create the login experience and protect application pages.
-    *   **How:**
-        1.  Create a `LoginPage` and `RegisterPage`.
-        2.  Develop an **`AuthContext`** to manage user state (logged in/out) and the JWT across the application.
-        3.  Implement a `ProtectedRoute` component to wrap routes in `App.tsx`, redirecting unauthenticated users.
-        4.  Update the `apiClient` (request interceptor) to add the `Authorization: Bearer <token>` header to all API calls.
+<img width="1870" height="954" alt="Screenshot 2026-05-14 at 14-34-53 Flick Business" src="https://github.com/user-attachments/assets/121b8ca7-cdc5-495a-a9b4-d3e28f6c5cec" />
 
----
+```
+Features visible:
+✅ Real-time sales metrics (revenue, profit, orders)
+✅ Visual charts with sales trends
+✅ Quick-access inventory status
+✅ Dark/Light theme toggle
+```
 
-#### **PHASE 3: Business Intelligence & User "Magic" (20% ⏳)**
+### Sales & Inventory Management
+Sales form with autocomplete and inventory control:
 
-This phase focuses on turning data into even more valuable insights and enhancing user workflows.
+<img width="1870" height="954" alt="Screenshot 2026-05-14 at 14-35-42 Flick Business" src="https://github.com/user-attachments/assets/d928efe1-cdf1-4a27-833f-4ddb7a884588" />
 
-*   ✅ **`#8` Profit Margin in Product Table:** Completed.
-*   ✅ **`#2` Product ABC Curve Report:** Completed.
-*   ⏳ **`#1` Low Stock Alert:** A notification system for products reaching a minimum stock level.
-*   ⏳ **`#9` Suggested Selling Price:** System-suggested sale price based on cost and a desired profit margin.
-*   ❌ **`#10` Loss Management System:** A feature to record inventory losses (damaged, expired), crucial for accurate Cost of Goods Sold (COGS) calculation.
-*   ❌ **`#3` Credit Aging Control (Accounts Receivable):** A report showing which customers have outstanding debts and for how long.
-*   ❌ **`#4` Daily/Weekly Cash Flow Report:** A report focused on real cash inflows and outflows.
-*   ❌ **`#11` Most Loyal Customers Card:** A dashboard card or report highlighting the most valuable customers.
-*   ⏳ **`#5` Quick Add Product in Sales Form:** The ability to add a new product on-the-fly from the sales form.
-*   ❌ **`#6` Barcode Scanner Integration:** Support for adding items via a device camera or USB barcode scanner.
-*   ❌ **`#12` Restock Button in the Products Table:** A shortcut to initiate a restocking expense directly from the products list.
+```
+Features visible:
+✅ Intelligent product/customer autocomplete
+✅ Real-time margin calculations
+✅ Inventory updates on sale completion
+✅ Discount management per item
+```
+
+> 💡 **Tip:** <img width="1280" height="720" alt="Screen-Recording(1) (online-video-cutter com) (online-video-cutter com)" src="https://github.com/user-attachments/assets/b1be2b7f-f60a-460b-9d58-1d3ecb50bbcd" />
+
 
 ---
 
-#### **PHASE 4: Finalization, Infrastructure & Deployment (Future Roadmap)**
+## 🛠 Technologies Used
 
-*   ❌ **Comprehensive Testing:** Increase backend unit test coverage, implement integration tests with `Testcontainers`, and add UI/component tests on the frontend with `React Testing Library`.
-*   ❌ **Full Containerization:** Create `Dockerfile`s and a `docker-compose.yml` to orchestrate all services (API, UI, PostgreSQL, etc.) with a single command.
-*   ❌ **Database Migration Infrastructure:** Implement **Flyway** to manage database schema changes in a versioned and safe manner.
-*   ❌ **CI/CD & Deployment:** Set up a pipeline (e.g., GitHub Actions) for automated builds, tests, and deployment to a cloud platform (e.g., Azure, AWS).
-*   ⏳ **Final Documentation:** Refine this master document and create an impeccable `README.md` for the repository, complete with diagrams, GIFs, and clear instructions.
+### **Frontend Framework**
+- **React 19** — Modern UI library with hooks and concurrent features
+- **TypeScript** — Static typing for safer code
+- **Vite** — Lightning-fast build tool and dev server
+- **React Router v7** — Client-side routing and navigation
+
+### **Styling & UI Components**
+- **TailwindCSS 3.4.17** — Utility-first CSS framework
+- **Class Variance Authority (CVA)** — Type-safe component variants
+- **Headless UI** — Unstyled, accessible components
+- **Lucide React** — Modern icon library
+- **React Icons** — Additional icon sets
+
+### **State Management & Data**
+- **React Context API** — Global state (Auth, Theme, Settings)
+- **Axios** — HTTP client for API communication
+- **JWT Decode** — Token parsing for authentication
+
+### **Internationalization & UX**
+- **i18next + react-i18next** — Multi-language support (EN/PT-BR)
+- **react-hot-toast** — Toast notifications
+- **date-fns** — Date formatting and manipulation
+
+### **Data Visualization**
+- **Recharts** — React charting library for analytics
+
+### **Development & Quality**
+- **ESLint** — Code linting
+- **Prettier** — Code formatting
+- **TypeScript Compiler** — Type checking
+- **Vite HMR** — Hot module replacement
+
+---
+
+## ✨ Key Features
+
+### 🎯 **Dashboard & Analytics**
+- ✅ Real-time sales metrics and KPIs
+- ✅ Visual charts (line, bar, pie) with sales trends
+- ✅ Profit margin overview
+- ✅ Low stock alerts
+- ✅ Product ABC curve analysis
+
+### 📦 **Product Management**
+- ✅ Full CRUD with drag-to-copy functionality
+- ✅ Real-time profit margin calculations
+- ✅ Stock level tracking and alerts
+- ✅ Category organization
+- ✅ Advanced filtering and sorting
+- ✅ Product details drawer
+
+### 👥 **Customer Management**
+- ✅ Complete customer database
+- ✅ Contact details and purchase history
+- ✅ Customer filtering and search
+- ✅ Confirmation modals for critical actions
+- ✅ Generic customer support
+
+### 💰 **Sales Management**
+- ✅ Fast sales creation with autocomplete
+- ✅ Multi-item cart system
+- ✅ Real-time subtotal and margin calculations
+- ✅ Per-item discount control
+- ✅ Automatic inventory updates
+- ✅ Sales history and filtering
+
+### 💸 **Expense Tracking**
+- ✅ Operational expense recording
+- ✅ Restocking expenses with inventory sync
+- ✅ Expense categorization
+- ✅ Historical reports and analytics
+
+### 🌓 **User Experience**
+- ✅ Light/Dark theme toggle with persistence
+- ✅ Full English/Portuguese support
+- ✅ Responsive design (mobile, tablet, desktop)
+- ✅ Global toast notification system
+- ✅ Confirmation dialogs for destructive actions
+- ✅ Loading states and error handling
+- ✅ Keyboard navigation & shortcuts
+
+### 🔐 **Authentication**
+- ✅ Secure login/register
+- ✅ Google OAuth integration
+- ✅ JWT token management
+- ✅ Protected routes
+- ✅ Session persistence
+
+---
+
+## 🎓 The Process and Learnings
+
+### **The Process**
+
+We started by creating a component library with **CVA (Class Variance Authority)** to ensure consistency across all UI elements. This was crucial because consistency directly impacts user trust.
+
+Building the **Sales form** was the most complex task — it required:
+
+1. **Real-time autocomplete** — Searching products and customers with debouncing to avoid excessive API calls.
+2. **Reactive form state** — When you add/remove items, the totals must update instantly. Solution: managed state with proper dependency arrays.
+3. **Theme management** — Toggling dark mode at the application level without flickering. Solution: Context API + localStorage for persistence.
+4. **Internationalization complexity** — 50+ translation keys across different sections. Solution: structured i18n files + namespace organization.
+
+### **What I Learned**
+
+This project deeply expanded my understanding of:
+
+- **React Performance**: Not every state update needs the entire app to re-render. I learned about React.memo, useCallback, and proper Context API segmentation.
+- **Component Design Philosophy**: Building truly reusable components is HARD. CVA helped enforce constraints while maintaining flexibility.
+- **Accessibility (a11y)**: Headless UI taught me that accessible components aren't an afterthought — they're fundamental to good UX.
+- **Form State Management**: Managing form complexity in React without a library (like React Hook Form) revealed why those libraries exist.
+- **Type Safety with TypeScript**: Strong typing caught bugs at compile-time that would've only surfaced in production. Especially critical for API response handling.
+- **Global State Pitfalls**: Too much global state causes performance issues. I learned to segment state by domain (Auth, Theme, Settings).
+- **Dark Mode Implementation**: It's not just CSS variables — it requires careful consideration of contrast, readability, and user preference persistence.
+
+---
+
+## 🚀 How to Run the Project
+Just want to **use** the project? https://sgvs-ui.onrender.com/login
+<img width="1280" height="720" alt="Screen-Recording(1) (online-video-cutter com) (online-video-cutter com)" src="https://github.com/user-attachments/assets/fe867783-3d3a-403f-8551-3e12c13f9269" />
+
+### Developers
+### **Prerequisites**
+
+You'll need to have installed:
+
+- **Node.js 18+** ([Download](https://nodejs.org/))
+- **npm 9+** or **yarn** (comes with Node.js)
+- **Git** to clone the repository
+- **SGVS API running** on `http://localhost:8081` (see [sgvs-api](https://github.com/your-username/sgvs-api))
+
+### **Step 1: Clone the Repository**
+
+```bash
+git clone https://github.com/your-username/sgvs-ui.git
+cd sgvs-ui
+```
+
+### **Step 2: Install Dependencies**
+
+```bash
+npm install
+```
+
+> This will install all packages from package.json.
+
+### **Step 3: Configure Environment Variables**
+
+1. Create a .env.local file in the project root:
+
+```bash
+touch .env.local
+```
+
+2. Add your configuration:
+
+```env
+# API Configuration
+VITE_API_BASE_URL=http://localhost:8081/api
+VITE_API_TIMEOUT=30000
+
+# Google OAuth
+VITE_GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+
+# App Configuration
+VITE_APP_NAME=SGVS
+VITE_PORT=5173
+```
+
+> ⚠️ **IMPORTANT:** Never commit .env.local! Use `.env.local.example` for version control.
+
+### **Step 4: Ensure Backend API is Running**
+
+The frontend expects the SGVS API to be running on `http://localhost:8081`:
+
+```bash
+# In another terminal, start the backend
+cd ../sgvs-api
+./mvnw spring-boot:run
+```
+
+Or verify with:
+
+```bash
+curl http://localhost:8081/actuator/health
+```
+
+### **Step 5: Start the Development Server**
+
+```bash
+npm run dev
+```
+
+The application will open at: **`http://localhost:5173`**
+
+You'll see HMR (Hot Module Replacement) enabled — changes are reflected instantly without page reload.
+
+### **Step 6: Login to the Application**
+
+1. Navigate to the login page
+2. Use credentials from the backend or Google OAuth
+3. Explore the dashboard!
+
+### **Step 7: Build for Production**
+
+```bash
+npm run build
+```
+
+This creates an optimized build in the dist folder.
+
+### **Step 8: Preview Production Build Locally**
+
+```bash
+npm run preview
+```
+
+Visit **`http://localhost:5173`** to test the production build.
+
+---
+
+## 🔌 Environment Variables (.env.local Example)
+
+Create a .env.local file with these variables:
+
+```env
+# Backend API
+VITE_API_BASE_URL=http://localhost:8081/api
+VITE_API_TIMEOUT=30000
+
+# Google OAuth (optional for Google login)
+VITE_GOOGLE_CLIENT_ID=100517451932-6ig5ef7nssk34smisede47ogo9vsihuh.apps.googleusercontent.com
+
+# Application
+VITE_APP_NAME=SGVS
+VITE_PORT=5173
+
+# Logging (optional)
+VITE_DEBUG=false
+```
+
+> **For production**, replace `localhost:8081` with your actual API URL.
+
+---
+
+## 📁 Project Structure
+
+```
+src/
+├── api/                    # API integration
+│   ├── services/          # Service layer (ProductService, SaleService, etc.)
+│   └── types/             # TypeScript interfaces & types
+├── assets/                # Images, SVGs, static files
+├── components/            # Reusable UI components
+│   ├── common/           # Buttons, modals, inputs
+│   ├── features/         # Feature-specific components (ProductTable, SalesForm)
+│   ├── layout/           # Layout components (Navbar, Sidebar)
+│   └── lib/              # Component utilities
+├── contexts/             # React Context providers
+│   ├── AuthContext.tsx
+│   ├── ThemeContext.tsx
+│   ├── SettingsContext.tsx
+│   └── ConfirmationModalProvider.tsx
+├── hooks/                # Custom React hooks
+│   ├── useDebounce.ts
+│   ├── usePagination.ts
+│   └── useShortcutAction.ts
+├── lib/                  # Utilities & helpers
+│   ├── apiClient.ts      # Axios instance with interceptors
+│   ├── auth-error-message.ts
+│   └── keyboardShortcuts.ts
+├── locales/              # i18n translations
+│   ├── en/
+│   └── pt/
+├── pages/                # Route pages
+│   ├── LoginPage.tsx
+│   ├── DashboardPage.tsx
+│   ├── ProductsPage.tsx
+│   ├── SalesPage.tsx
+│   └── ...
+├── styles/               # Global styles
+├── utils/                # Helper functions
+├── App.tsx               # Main app component & routes
+├── main.tsx              # Entry point
+└── vite-env.d.ts         # Vite type definitions
+```
+
+---
+
+## 🧪 Linting & Code Quality
+
+### **Run ESLint**
+
+```bash
+npm run lint
+```
+
+### **Format Code with Prettier**
+
+```bash
+npm run format
+```
+
+### **Type Checking**
+
+```bash
+npm run type-check
+```
+
+---
+
+## 📦 Build & Deployment
+
+### **Production Build**
+
+```bash
+npm run build
+```
+
+Creates optimized, minified files in dist.
+
+### **Deploy to Vercel (Recommended)**
+
+```bash
+npm install -g vercel
+vercel
+```
+
+### **Deploy to Netlify**
+
+```bash
+npm install -g netlify-cli
+netlify deploy --prod --dir=dist
+```
+
+### **Deploy to AWS S3 + CloudFront**
+
+```bash
+# Build
+npm run build
+
+# Deploy (requires AWS credentials)
+aws s3 sync dist/ s3://your-bucket-name --delete
+```
+
+---
+
+## 📚 Documentation & Resources
+
+- **React Docs:** https://react.dev
+- **Vite Docs:** https://vite.dev
+- **TypeScript Handbook:** https://www.typescriptlang.org/docs/
+- **TailwindCSS:** https://tailwindcss.com/docs
+- **i18next:** https://www.i18next.com/
+- **Recharts:** https://recharts.org/
+
+---
+
+## 🤝 Contributing
+
+This is a portfolio project. If you find bugs or have UI/UX suggestions, please open an **issue** or **pull request**.
+
+---
+
+## 📄 License
+
+This project is under the **MIT** license. See the LICENSE file for details.
+
+---
+
+## 👨‍💻 Author
+
+Crafted with ❤️ as a modern full-stack business management application.
+
+**Backend (Spring Boot):** [sgvs-api](https://github.com/your-username/sgvs-api)
+
+---
+
+## 🔗 Useful Links
+
+- [React Documentation](https://react.dev)
+- [Vite Documentation](https://vite.dev)
+- [TailwindCSS](https://tailwindcss.com)
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
+- [Recharts Documentation](https://recharts.org/)
+- [i18next Guide](https://www.i18next.com/)
+- [Axios Documentation](https://axios-http.com/)
+```
