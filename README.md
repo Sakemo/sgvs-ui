@@ -169,7 +169,6 @@ This project deeply expanded my understanding of:
 
 ## 🚀 How to Run the Project
 Just want to **use** the project? https://sgvs-ui.onrender.com/login
-<img width="1280" height="720" alt="Screen-Recording(1) (online-video-cutter com) (online-video-cutter com)" src="https://github.com/user-attachments/assets/fe867783-3d3a-403f-8551-3e12c13f9269" />
 
 ### Developers
 ### **Prerequisites**
@@ -291,8 +290,6 @@ VITE_PORT=5173
 VITE_DEBUG=false
 ```
 
-> **For production**, replace `localhost:8081` with your actual API URL.
-
 ---
 
 ## 📁 Project Structure
@@ -410,7 +407,7 @@ aws s3 sync dist/ s3://your-bucket-name --delete
 
 ## 🤝 Contributing
 
-This is a portfolio project. If you find bugs or have UI/UX suggestions, please open an **issue** or **pull request**.
+This is a personal project. If you find bugs or have UI/UX suggestions, please open an **issue** or **pull request**.
 
 ---
 
@@ -422,7 +419,7 @@ This project is under the **MIT** license. See the LICENSE file for details.
 
 ## 👨‍💻 Author
 
-Crafted with ❤️ as a modern full-stack business management application.
+Crafted with ❤️ and ☕ as a modern full-stack business management application.
 
 **Backend (Spring Boot):** [sgvs-api](https://github.com/your-username/sgvs-api)
 
