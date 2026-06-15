@@ -158,6 +158,29 @@
     "lowStockAlerts": "Alertas de Estoque Baixo",
     "lowStockUnitsAndMinimum": "{{currentStock}} unidades (mínimo: {{minimumStock}})"
   },
+  "onboarding": {
+    "title": "Bem-vindo ao flick.business",
+    "subtitle": "Guia rápido do primeiro acesso",
+    "description": "Use este passo a passo para configurar o essencial e fazer sua primeira venda sem precisar adivinhar o próximo passo.",
+    "stepLabel": "Etapa {{number}}",
+    "steps": {
+      "products": {
+        "title": "Cadastre seus produtos",
+        "description": "Comece pelos itens principais, com custo, preço e estoque para o sistema calcular as margens corretamente."
+      },
+      "customers": {
+        "title": "Adicione seus clientes",
+        "description": "Cadastre as pessoas ou empresas para agilizar as próximas vendas."
+      },
+      "sales": {
+        "title": "Registre sua primeira venda",
+        "description": "Use as vendas para testar o fluxo completo e ver como estoque, pagamentos e relatórios se conectam."
+      }
+    },
+    "tipTitle": "Ordem recomendada",
+    "tipDescription": "Primeiro produtos, depois clientes e então a primeira venda. Você pode ajustar a página inicial e outras preferências depois em Configurações.",
+    "cta": "Entendi, começar a usar o sistema"
+  },
   "errors": {
     "fetchProducts": "Falha ao carregar produtos.",
     "fetchDashboardData": "Falha ao carregar os dados do dashboard.",

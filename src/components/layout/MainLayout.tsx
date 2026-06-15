@@ -4,9 +4,12 @@ import Sidebar from './Sidebar';
 import LowStockPopup from '../features/dashboard/LowStockPopup';
 import { KeyboardShortcutsRuntimeProvider } from '../../contexts/KeyboardShortcutsRuntimeProvider';
 import KeyboardShortcutsHelpModal from './KeyboardShortcutsHelpModal';
+import FirstLoginOnboardingModal from './FirstLoginOnboardingModal';
 import { NAVIGATION_SHORTCUTS, type ShortcutActionId } from '../../lib/keyboardShortcuts';
 import useShortcutAction from '../../hooks/useShortcutAction';
 import { useKeyboardShortcuts } from '../../contexts/utils/UseKeyboardShortcuts';
+import { useAuth } from '../../contexts/AuthContext';
+import { hasSeenFirstLoginOnboarding, markFirstLoginOnboardingSeen } from '../../lib/onboarding';
 
 const ShortcutRegistration: React.FC<{
   actionId: ShortcutActionId;
@@ -40,13 +43,32 @@ const LayoutShortcutRegistrations: React.FC<{
 };
 
 const MainLayout: React.FC = () => {
+  const { user, isAuthenticated } = useAuth();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(() => {
     return localStorage.getItem('sidebar-collapsed') === 'true';
   });
+  const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('sidebar-collapsed', String(isSidebarCollapsed));
   }, [isSidebarCollapsed]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !user) {
+      setIsOnboardingOpen(false);
+      return;
+    }
+
+    const alreadySeen = hasSeenFirstLoginOnboarding(user);
+    setIsOnboardingOpen(!alreadySeen);
+  }, [isAuthenticated, user]);
+
+  const handleCloseOnboarding = () => {
+    if (user) {
+      markFirstLoginOnboardingSeen(user);
+    }
+    setIsOnboardingOpen(false);
+  };
 
   return (
     <KeyboardShortcutsRuntimeProvider>
@@ -61,6 +83,10 @@ const MainLayout: React.FC = () => {
           </div>
         </main>
         <LowStockPopup />
+        <FirstLoginOnboardingModal
+          isOpen={isOnboardingOpen}
+          onClose={handleCloseOnboarding}
+        />
         <LayoutShortcutRegistrations
           onToggleSidebar={() => setIsSidebarCollapsed((prev) => !prev)}
         />

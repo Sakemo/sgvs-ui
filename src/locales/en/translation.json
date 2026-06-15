@@ -158,6 +158,29 @@
     "lowStockAlerts": "Low Stock Alerts",
     "lowStockUnitsAndMinimum": "{{currentStock}} units (minimum: {{minimumStock}})"
   },
+  "onboarding": {
+    "title": "Welcome to flick.business",
+    "subtitle": "First login quick start",
+    "description": "Use this quick guide to set up the essentials and complete your first sale without guessing the next step.",
+    "stepLabel": "Step {{number}}",
+    "steps": {
+      "products": {
+        "title": "Register your products",
+        "description": "Start with your main items, costs, prices, and stock so the system can calculate margins correctly."
+      },
+      "customers": {
+        "title": "Add your customers",
+        "description": "Save the people or companies you sell to most often to speed up future sales."
+      },
+      "sales": {
+        "title": "Record your first sale",
+        "description": "Use sales to test the flow end to end and see how stock, payments, and reports connect."
+      }
+    },
+    "tipTitle": "Recommended order",
+    "tipDescription": "Products first, then customers, then the first sale. You can change the default start page and other preferences later in Settings.",
+    "cta": "Got it, start using the system"
+  },
   "errors": {
     "fetchProducts": "Failed to load products.",
     "fetchDashboardData": "Failed to load dashboard data.",
