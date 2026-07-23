@@ -24,6 +24,7 @@ interface AutocompleteInputProps {
   renderOption?: (option: AutocompleteOption) => React.ReactNode;
   isLoading?: boolean;
   inputRef?: React.Ref<HTMLInputElement>;
+  onInputKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 interface CreateAutocompleteOption extends AutocompleteOption {
@@ -43,6 +44,7 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
   renderOption,
   isLoading = false,
   inputRef,
+  onInputKeyDown,
 }) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState("");
@@ -105,6 +107,7 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
             displayValue={(option: AutocompleteOption) => option?.label ?? ""}
             onChange={(event) => setQuery(event.target.value)}
             placeholder={placeholder}
+            onKeyDown={onInputKeyDown}
             onFocus={() => {
               if (buttonRef.current) {
                 buttonRef.current.click();

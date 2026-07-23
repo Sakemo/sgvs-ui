@@ -50,7 +50,7 @@ apiClient.interceptors.response.use(
         );
 
         if (!window.location.pathname.startsWith("/login")) {
-          window.location.assign("/login");
+          window.location.assign("/");
         }
       }
 

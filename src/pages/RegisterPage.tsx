@@ -192,7 +192,7 @@ const RegisterPage: React.FC = () => {
             <span className="text-sm text-text-secondary dark:text-[#CABEB6]">
               {t('auth.register.hasAccount')}{' '}
               <Link
-                to="/login"
+                to="/"
                 className="font-medium text-brand-primary hover:text-brand-primary/80 dark:text-brand-accent dark:hover:text-brand-accent/80 transition-colors"
               >
                 {t('auth.register.loginLink')}

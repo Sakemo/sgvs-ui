@@ -83,7 +83,7 @@ const AccountSettings: React.FC = () => {
         try {
           await deleteProfile();
           logout();
-          navigate('/login');
+          navigate('/');
         } catch {
           notificationService.error(t('errors.deleteAccount'));
         }

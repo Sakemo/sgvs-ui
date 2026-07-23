@@ -6,7 +6,6 @@
   align-items: center;
   gap: 1rem;
   width: 100%;
-  max-width: 300px;
 }
 
 .google-login-divider {
@@ -25,7 +24,7 @@
   top: 50%;
   width: 40%;
   height: 1px;
-  background-color: #d1d5db;
+  background-color: #6b7280;
 }
 
 .google-login-divider::before {

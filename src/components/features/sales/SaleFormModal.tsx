@@ -1,5 +1,5 @@
 // src/components/features/sales/SaleFormModal.tsx
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { AxiosError } from "axios";
 
@@ -52,6 +52,8 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
   onSaveSuccess,
 }) => {
   const { t } = useTranslation();
+
+  const productSearchInputRef = useRef<HTMLInputElement>(null);
 
   // State
   const [keepCreatingSales, setKeepCreatingSales] = useState(false);
@@ -169,12 +171,19 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
             .finally(() => setIsSearching(prev => ({ ...prev, products: false })));
     }, [productQuery]);
 
+  useEffect(() => {
+    if (isOpen) {
+      requestAnimationFrame(() => {
+        productSearchInputRef.current?.focus();
+        });
+      }
+    }, [isOpen]);
+
   // validation for options
   const customerAutocompleteOptions = customerQuery ? searchedCustomerOptions : initialCustomerOptions;
   const productAutocompleteOptions = productQuery ? searchedProductOptions : initialProductOptions;
 
   // handlers
-
   const handleAddItem = () => {
     const numQuantity = parseFloat(quantity);
     if (!selectedProductOption || isNaN(numQuantity) || numQuantity <= 0) {
@@ -234,6 +243,10 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
     setSelectedProductOption(null);
     setProductQuery("");
     setQuantity("1");
+
+    requestAnimationFrame(() => {
+      productSearchInputRef.current?.focus();
+    });
   };
 
   const handleRemoveItem = (productId: number) => {
@@ -346,6 +359,20 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
     }
   };
 
+    const handleProductSearchKeyDown = (
+      event: React.KeyboardEvent<HTMLInputElement>
+    ) => {
+      if (event.ctrlKey && event.key === "Enter") {
+        event.preventDefault();
+        void handleSubmit(event as unknown as React.FormEvent);
+        return;
+      }
+      if(event.key === "Enter" && selectedProductOption) {
+        event.preventDefault();
+        handleAddItem();
+      }
+    };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -353,7 +380,12 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
       title={t("sale.addSale")}
       className="sm:max-w-6xl"
     >
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} onKeyDown={(event) => {
+        if(event.ctrlKey && event.key === 'Enter') {
+          event.preventDefault();
+          void handleSubmit(event as unknown as React.FormEvent);
+        }
+      }}>
         <div className="p-6">
           <div className="grid grid-cols-1 lg:grid-cols-[1.7fr_1fr] gap-6">
             <div className="space-y-6">
@@ -396,6 +428,8 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
                     selected={selectedProductOption}
                     onSelect={setSelectedProductOption}
                     onQueryChange={setProductQuery}
+                    onInputKeyDown={handleProductSearchKeyDown}
+                    inputRef={productSearchInputRef}
                     isLoading={isSearching.products}
                   />
                   <Input

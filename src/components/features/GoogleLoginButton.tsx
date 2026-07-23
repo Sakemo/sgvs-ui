@@ -69,9 +69,9 @@ export function GoogleLoginButton() {
       <GoogleLogin
         onSuccess={handleGoogleSuccess}
         onError={handleGoogleError}
-        theme="outline"
-        size="large"
-        width="300"
+        theme="filled_black"
+        size="medium"
+        width="380"
       />
       <p className="google-login-divider">ou</p>
     </div>
