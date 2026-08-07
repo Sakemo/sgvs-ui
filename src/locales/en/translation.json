@@ -87,6 +87,7 @@
     "confirmPayment": "Confirm Payment",
     "searchByClient": "Search by client...",
     "searchByProduct": "Search by product...",
+    "searchByProductOrBarcode": "Search by name, category, or barcode...",
     "settleDebt": "Settle Debt",
     "settlePayment": "Settle Payment"
   },
@@ -146,6 +147,7 @@
     "netProfit": "Net Profit",
     "totalExpenses": "Total Expenses",
     "totalReceivables": "Total Receivables",
+    "totalAccountsPayable": "Accounts Payable",
     "averageTicket": "Average Ticket",
     "vsPreviousPeriod": "vs. previous period",
     "revenueProfitTrend": "Revenue & Profit Trend",
@@ -198,6 +200,7 @@
     "deleteProvider": "Failed to delete provider.",
     "deleteExpense": "Failed to delete expense.",
     "deleteCustomer": "Failed to delete customer.",
+    "settleExpense": "Failed to settle expense.",
     "saveSettings": "Failed to save settings.",
     "updateProfile": "Failed to update profile.",
     "deleteAccount": "Failed to delete account.",
@@ -542,6 +545,8 @@
     }
   },
   "sale": {
+    "cashReceived": "Cash Received",
+    "change": "Change",
     "pageTitle": "Sales",
     "addSale": "Register Sale",
     "grossRevenue": "Revenue",
@@ -575,7 +580,18 @@
     "confirmDeleteTitle": "Delete expense?",
     "deleteSuccess": "Expense deleted successfully.",
     "saveSuccess": "Expense saved successfully.",
-    "noExpenseFound": "No expenses found."
+    "settleSuccess": "Expense settled successfully.",
+    "settleExpenseTitle": "Settle Expense",
+    "noExpenseFound": "No expenses found.",
+    "accountsPayable": "Accounts Payable",
+    "statusPaid": "Paid",
+    "statusPending": "Pending",
+    "settlementPaymentMethod": "Settlement Payment Method",
+    "settlementCashReference": "Settlement Cash Reference",
+    "paidAt": "Paid At",
+    "details": {
+      "noDescription": "No description provided"
+    }
   },
   "expenseCategories": {
     "restocking": "Restocking",

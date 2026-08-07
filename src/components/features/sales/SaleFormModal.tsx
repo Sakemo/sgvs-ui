@@ -56,7 +56,7 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
   const productSearchInputRef = useRef<HTMLInputElement>(null);
 
   // State
-  const [keepCreatingSales, setKeepCreatingSales] = useState(false);
+  const [keepCreatingSales, setKeepCreatingSales] = useState(true);
   const [items, setItems] = useState<FormSaleItem[]>([]);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(
     PaymentMethod.CASH
@@ -65,13 +65,15 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [quantity, setQuantity] = useState("1");
 
+  const [cashReceived, setCashReceived] = useState('0')
+
   // --- Autocomplete States ---
   const [customerQuery, setCustomerQuery] = useState('');
   const [productQuery, setProductQuery] = useState('');
-  
+
   const [initialCustomerOptions, setInitialCustomerOptions] = useState<AutocompleteOption[]>([]);
   const [initialProductOptions, setInitialProductOptions] = useState<AutocompleteOption[]>([]);
-  
+
   const [searchedCustomerOptions, setSearchedCustomerOptions] = useState<AutocompleteOption[]>([]);
   const [searchedProductOptions, setSearchedProductOptions] = useState<AutocompleteOption[]>([]);
 
@@ -96,10 +98,10 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
 
     return String(errors);
   };
-  
+
   const [selectedCustomerOption, setSelectedCustomerOption] = useState<AutocompleteOption | null>(null);
   const [selectedProductOption, setSelectedProductOption] = useState<AutocompleteOption | null>(null);
-  
+
   const [isSearching, setIsSearching] = useState({ customers: false, products: false });
   const [isCreatingCustomer, setIsCreatingCustomer] = useState(false);
   const [productDetailsCache, setProductDetailsCache] = useState<Record<number, ProductResponse>>({});
@@ -121,63 +123,69 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
   }, [setCustomerQuery, setProductQuery]);
 
   useEffect(() => {
-      if (isOpen) {
-          setIsLoading(true);
-          resetForm();
-          
-          Promise.all([
-              getProductSuggestions(),
-              getCustomerSuggestions()
-          ]).then(([productSuggestions, customerSuggestions]) => {
-              setInitialProductOptions(productSuggestions.map(p => ({ value: p.id, label: `${p.name} (${formatCurrency(p.salePrice)})` })));
-              setInitialCustomerOptions(customerSuggestions.map(c => ({ value: c.id, label: c.name })));
-              const initialProductCache = productSuggestions.reduce((acc, p) => ({ ...acc, [p.id]: p }), {});
-              setProductDetailsCache(initialProductCache);
-          }).catch(() => {
-              notificationService.error(t('errors.fetchInitialData'));
-          }).finally(() => {
-              setIsLoading(false);
-          });
-      }
+    if (isOpen) {
+      setIsLoading(true);
+      resetForm();
+
+      Promise.all([
+        getProductSuggestions(),
+        getCustomerSuggestions()
+      ]).then(([productSuggestions, customerSuggestions]) => {
+        setInitialProductOptions(productSuggestions.map(p => ({
+          value: p.id,
+          label: `${p.name} (${formatCurrency(p.salePrice)})${p.category?.name ? ` · ${p.category.name}` : ''}`
+        })));
+        setInitialCustomerOptions(customerSuggestions.map(c => ({ value: c.id, label: c.name })));
+        const initialProductCache = productSuggestions.reduce((acc, p) => ({ ...acc, [p.id]: p }), {});
+        setProductDetailsCache(initialProductCache);
+      }).catch(() => {
+        notificationService.error(t('errors.fetchInitialData'));
+      }).finally(() => {
+        setIsLoading(false);
+      });
+    }
   }, [isOpen, resetForm, t]);
 
   // fetch customers
   useEffect(() => {
-      if (customerQuery.length < 1) {
-          setSearchedCustomerOptions([]);
-          return;
-      }
-      setIsSearching(prev => ({ ...prev, customers: true }));
-      getCustomers({ name: customerQuery, isActive: true })
-          .then(customers => setSearchedCustomerOptions(customers.map(c => ({ value: c.id, label: c.name }))))
-          .finally(() => setIsSearching(prev => ({ ...prev, customers: false })));
+    if (customerQuery.length < 1) {
+      setSearchedCustomerOptions([]);
+      return;
+    }
+    setIsSearching(prev => ({ ...prev, customers: true }));
+    getCustomers({ name: customerQuery, isActive: true })
+      .then(customers => setSearchedCustomerOptions(customers.map(c => ({ value: c.id, label: c.name }))))
+      .finally(() => setIsSearching(prev => ({ ...prev, customers: false })));
   }, [customerQuery]);
-  
+
   // fetch products
-    useEffect(() => {
-        if (productQuery.length < 1) {
-            setSearchedProductOptions([]);
-            return;
-        }
-        setIsSearching(prev => ({ ...prev, products: true }));
-        getProducts({ name: productQuery, size: 10 })
-            .then(page => {
-                setSearchedProductOptions(page.content.map(p => ({ value: p.id, label: `${p.name} (${formatCurrency(p.salePrice)})` })));
-                const newProductCache = page.content.reduce((acc, p) => ({
-                  ...acc, [p.id]: p
-                }), {});
-                setProductDetailsCache(prev => ({ ...prev, ...newProductCache }));
-              })
-            .finally(() => setIsSearching(prev => ({ ...prev, products: false })));
-    }, [productQuery]);
+  useEffect(() => {
+    if (productQuery.length < 1) {
+      setSearchedProductOptions([]);
+      return;
+    }
+    setIsSearching(prev => ({ ...prev, products: true }));
+    getProducts({ name: productQuery, size: 10 })
+      .then(page => {
+        setSearchedProductOptions(page.content.map(p => ({
+          value: p.id,
+          label: `${p.name} (${formatCurrency(p.salePrice)})${p.category?.name ? ` · ${p.category.name}` : ''}`
+        })));
+        const newProductCache = page.content.reduce((acc, p) => ({
+          ...acc, [p.id]: p
+        }), {});
+        setProductDetailsCache(prev => ({ ...prev, ...newProductCache }));
+      })
+      .finally(() => setIsSearching(prev => ({ ...prev, products: false })));
+  }, [productQuery]);
 
   useEffect(() => {
     if (isOpen) {
       requestAnimationFrame(() => {
         productSearchInputRef.current?.focus();
-        });
-      }
-    }, [isOpen]);
+      });
+    }
+  }, [isOpen]);
 
   // validation for options
   const customerAutocompleteOptions = customerQuery ? searchedCustomerOptions : initialCustomerOptions;
@@ -295,6 +303,22 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
     [items]
   );
 
+  const parsedCashReceived = parseFloat(cashReceived);
+
+  const effectCashReceived = useMemo(
+    () =>{ 
+      if(isNaN(parsedCashReceived) || parsedCashReceived < totalSaleValue){
+        return totalSaleValue
+      }
+      return parsedCashReceived;
+    },[totalSaleValue, parsedCashReceived]
+  )
+
+  const change = useMemo(
+    () => effectCashReceived - totalSaleValue,
+    [totalSaleValue, effectCashReceived]
+  );
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -304,17 +328,17 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
 
     if (items.length === 0) {
       notificationService.error(t(
-          "validation.saleItemsRequired",
-          `At least one item is required for the sale.`
-        ),
+        "validation.saleItemsRequired",
+        `At least one item is required for the sale.`
+      ),
       );
       return;
     }
     if (paymentMethod === PaymentMethod.ON_CREDIT && !customerId) {
       notificationService.error(t(
-          "validation.customerRequiredForCredit",
-          "A customer is required for ON_CREDIT sales."
-        ),
+        "validation.customerRequiredForCredit",
+        "A customer is required for ON_CREDIT sales."
+      ),
       );
       return;
     }
@@ -359,19 +383,19 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
     }
   };
 
-    const handleProductSearchKeyDown = (
-      event: React.KeyboardEvent<HTMLInputElement>
-    ) => {
-      if (event.ctrlKey && event.key === "Enter") {
-        event.preventDefault();
-        void handleSubmit(event as unknown as React.FormEvent);
-        return;
-      }
-      if(event.key === "Enter" && selectedProductOption) {
-        event.preventDefault();
-        handleAddItem();
-      }
-    };
+  const handleProductSearchKeyDown = (
+    event: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (event.ctrlKey && event.key === "Enter") {
+      event.preventDefault();
+      void handleSubmit(event as unknown as React.FormEvent);
+      return;
+    }
+    if (event.key === "Enter" && selectedProductOption) {
+      event.preventDefault();
+      handleAddItem();
+    }
+  };
 
   return (
     <Modal
@@ -381,7 +405,7 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
       className="sm:max-w-6xl"
     >
       <form onSubmit={handleSubmit} onKeyDown={(event) => {
-        if(event.ctrlKey && event.key === 'Enter') {
+        if (event.ctrlKey && event.key === 'Enter') {
           event.preventDefault();
           void handleSubmit(event as unknown as React.FormEvent);
         }
@@ -389,33 +413,6 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
         <div className="p-6">
           <div className="grid grid-cols-1 lg:grid-cols-[1.7fr_1fr] gap-6">
             <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <AutocompleteInput
-                  label={t("common.client")}
-                  placeholder={t("actions.searchByName")}
-                  options={customerAutocompleteOptions}
-                  selected={selectedCustomerOption}
-                  onSelect={setSelectedCustomerOption}
-                  onQueryChange={setCustomerQuery}
-                  onCreateOption={handleCreateCustomer}
-                  isLoading={isSearching.customers || isCreatingCustomer}
-                />
-                <Select
-                  label={t("common.paymentMethod")}
-                  name="paymentMethod"
-                  value={paymentMethod}
-                  onChange={(e) =>
-                    setPaymentMethod(e.target.value as PaymentMethod)
-                  }
-                >
-                  {Object.values(PaymentMethod).map((pm) => (
-                    <option key={pm} value={pm}>
-                      {t(`paymentMethods.${pm.toLowerCase()}`)}
-                    </option>
-                  ))}
-                </Select>
-              </div>
-
               <Card>
                 <h3 className="text-lg font-semibold mb-4">
                   {t("sale.addItem")}
@@ -423,7 +420,7 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
                 <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_auto] gap-4 items-end">
                   <AutocompleteInput
                     label={t("product.objectName")}
-                    placeholder={t("actions.searchByName")}
+                    placeholder={t("actions.searchByProductOrBarcode")}
                     options={productAutocompleteOptions}
                     selected={selectedProductOption}
                     onSelect={setSelectedProductOption}
@@ -459,6 +456,42 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
                   </Button>
                 </div>
               </Card>
+
+              <div className={`grid grid-cols-1 ${paymentMethod === PaymentMethod.CASH && 'md:grid-cols-3'} ${paymentMethod != PaymentMethod.CASH && 'md:grid-cols-2'} gap-4`}>
+                <AutocompleteInput
+                  label={t("common.client")}
+                  placeholder={t("actions.searchByName")}
+                  options={customerAutocompleteOptions}
+                  selected={selectedCustomerOption}
+                  onSelect={setSelectedCustomerOption}
+                  onQueryChange={setCustomerQuery}
+                  onCreateOption={handleCreateCustomer}
+                  isLoading={isSearching.customers || isCreatingCustomer}
+                />
+                <Select
+                  label={t("common.paymentMethod")}
+                  name="paymentMethod"
+                  value={paymentMethod}
+                  onChange={(e) =>
+                    setPaymentMethod(e.target.value as PaymentMethod)
+                  }
+                >
+                  {Object.values(PaymentMethod).map((pm) => (
+                    <option key={pm} value={pm}>
+                      {t(`paymentMethods.${pm.toLowerCase()}`)}
+                    </option>
+                  ))}
+                </Select>
+                {paymentMethod === PaymentMethod.CASH &&
+                  <Input
+                    label={t('sale.cashReceived')}
+                    type="number"
+                    value={effectCashReceived}
+                    onChange={(e) => setCashReceived(e.target.value)}
+                    min={totalSaleValue}
+                  />
+                }
+              </div>
 
               <Textarea
                 label={t("common.description")}
@@ -507,13 +540,25 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
                   </ul>
                 )}
               </div>
-              <div className="mt-4 text-right">
-                <span className="text-text-secondary">
-                  {t("sale.totalValue")}:{" "}
-                </span>
-                <span className="text-xl font-bold">
-                  {formatCurrency(totalSaleValue)}
-                </span>
+              <div className="mt-4 justify-between text-right flex flex-row">
+                {paymentMethod === PaymentMethod.CASH &&
+                  <div className="text-text-secondary ">
+                    <span>
+                      {t("sale.change")}:{" "}
+                    </span>
+                    <span>
+                      {formatCurrency(change)}
+                    </span>
+                  </div>
+                }
+                <div>
+                  <span className="text-text-secondary">
+                    {t("sale.totalValue")}:{" "}
+                  </span>
+                  <span className="text-xl font-bold">
+                    {formatCurrency(totalSaleValue)}
+                  </span>
+                </div>
               </div>
             </div>
           </div>

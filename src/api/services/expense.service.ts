@@ -27,6 +27,21 @@ export const getTotalExpenses = async (params: { startDate?: string | null; endD
     }
 }
 
+export const getAccountsPayable = async (params: { startDate?: string | null; endDate?: string | null }): Promise<number> => {
+    try {
+        const response = await apiClient.get<number>('/expenses/accounts-payable', { params });
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching accounts payable: ", error);
+        return 0;
+    }
+}
+
+export const settleExpense = async (id: number, data: { paymentMethod: string; cashReferenceNumber?: string | null }): Promise<ExpenseResponse> => {
+    const response = await apiClient.put<ExpenseResponse>(`/expenses/${id}/settle`, data);
+    return response.data;
+}
+
 export const createExpense = async (data: ExpenseRequest): Promise<ExpenseResponse> => {
     const response = await apiClient.post<ExpenseResponse>('/expenses', data);
     const expense = response.data;

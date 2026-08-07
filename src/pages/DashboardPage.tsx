@@ -140,6 +140,19 @@ const DashboardPage: React.FC = () => {
                 className="min-h-[152px] p-3"
                 changeColorVariant="yellow"
               />
+              <MetricCard
+                title={t("dashboard.totalAccountsPayable")}
+                value={dashboardData?.totalAccountsPayable.value ?? 0}
+                percentageChange={
+                  dashboardData?.totalAccountsPayable.percentageChange ?? 0
+                }
+                sparklineData={
+                  dashboardData?.totalAccountsPayable.sparklineData ?? []
+                }
+                isLoading={isLoading}
+                className="min-h-[152px] p-3"
+                changeColorVariant="expense"
+              />
             </div>
           </div>
 

@@ -2,9 +2,11 @@ import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { type ExpenseResponse, ExpenseType, type Page } from "../api/types/domain";
-import { deleteExpense, getExpenses, type GetExpensesParams } from "../api/services/expense.service";
+import { deleteExpense, getAccountsPayable, getExpenses, type GetExpensesParams } from "../api/services/expense.service";
 import useDebounce from "../hooks/useDebounce";
 import Button from "../components/common/ui/Button";
+import Card from "../components/common/ui/Card";
+import { formatCurrency } from "../utils/formatters";
 import { LuPlus, LuSearch } from "react-icons/lu";
 import Input from "../components/common/ui/Input";
 import Select from "../components/common/ui/Select";
@@ -28,6 +30,8 @@ const ExpensesPage: React.FC = () => {
     const showConfirmation = useConfirmation();
 
     const [loading, setLoading] = useState(true);
+    const [accountsPayable, setAccountsPayable] = useState(0);
+    const [accountsPayableLoading, setAccountsPayableLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [expenseToEdit, setExpenseToEdit] = useState<ExpenseResponse | null>(null);
     const [selectedExpense, setSelectedExpense] = useState<ExpenseResponse | null>(null);
@@ -59,9 +63,28 @@ const ExpensesPage: React.FC = () => {
         }
     }, [filters, currentPage, debouncedNameFilter, t])
 
+    const fetchAccountsPayable = useCallback(async () => {
+        setAccountsPayableLoading(true);
+        try {
+            const data = await getAccountsPayable({
+                startDate: filters.startDate ?? null,
+                endDate: filters.endDate ?? null,
+            });
+            setAccountsPayable(data);
+        } catch {
+            notificationService.error(t('errors.fetchExpenses'));
+        } finally {
+            setAccountsPayableLoading(false);
+        }
+    }, [filters.startDate, filters.endDate, t]);
+
     useEffect(() => {
         fetchExpenses();
     }, [fetchExpenses]);
+
+    useEffect(() => {
+        fetchAccountsPayable();
+    }, [fetchAccountsPayable]);
 
     const handleFilterChange = (field: keyof typeof filters, value: string | undefined) => {
         setCurrentPage(0);
@@ -112,6 +135,12 @@ const ExpensesPage: React.FC = () => {
     const handleRowClick = (expense: ExpenseResponse) => {
         setSelectedExpense(prev => (prev?.id === expense.id ? null : expense));
     }
+
+    const handleExpenseSettleSuccess = useCallback(async () => {
+        await fetchExpenses();
+        await fetchAccountsPayable();
+        setSelectedExpense(null);
+    }, [fetchExpenses, fetchAccountsPayable]);
     const createShortcutLabel = formatShortcutBinding(shortcutPreferences.bindings['page.createNew']);
     const searchShortcutLabel = formatShortcutBinding(shortcutPreferences.bindings['page.focusPrimarySearch']);
 
@@ -167,6 +196,17 @@ const ExpensesPage: React.FC = () => {
                     {t('expense.addTitle')}
                 </Button>
             </header>
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-4">
+                <div />
+                <Card className="border-brand-accent/20 bg-brand-primary/5 dark:bg-brand-accent/10 p-4">
+                    <p className="text-sm font-medium text-text-secondary">
+                        {t('expense.accountsPayable')}
+                    </p>
+                    <p className="mt-2 text-3xl font-semibold text-text-primary dark:text-gray-100">
+                        {accountsPayableLoading ? '...' : formatCurrency(accountsPayable)}
+                    </p>
+                </Card>
+            </div>
             <div className={clsx("flex flex-col lg:flex-row", selectedExpense ? "gap-6" : "gap-0")}>
                 <div className={clsx("transition-all duration-300 ease-in-out", selectedExpense ? "lg:w-2/3" : "w-full")}>
                     <ExpensesTable
@@ -189,7 +229,12 @@ const ExpensesPage: React.FC = () => {
                 </div>
                 <div className={clsx("transition-all duration-300 ease-in-out", selectedExpense ? "lg:w-1/3 opacity-100" : "w-0 opacity-0 pointer-events-none")}>
                     {selectedExpense && (
-                        <ExpenseDetailsDrawer expense={selectedExpense} onClose={() => setSelectedExpense(null)} onEdit={handleOpenModal} />
+                        <ExpenseDetailsDrawer
+                            expense={selectedExpense}
+                            onClose={() => setSelectedExpense(null)}
+                            onEdit={handleOpenModal}
+                            onSettleSuccess={handleExpenseSettleSuccess}
+                        />
                     )}
                 </div>
             </div>

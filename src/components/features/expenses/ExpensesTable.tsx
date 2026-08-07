@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import type { ExpenseResponse } from "../../../api/types/domain";
+import { PaymentMethod } from "../../../api/types/domain";
 import type { TableColumn } from "../../common/Table";
 import { formatCurrency, formatDate } from "../../../utils/formatters";
 import Badge from "../../common/ui/Badge";
@@ -40,6 +41,22 @@ const ExpensesTable: React.FC<ExpensesTableProps> = ({
                     {t(`paymentMethods.${row.paymentMethod.toLowerCase()}`)}
                 </Badge>
             )
+        },
+        {
+            header: t('common.status'),
+            accessor: (row) => {
+                const isCredit = row.paymentMethod === PaymentMethod.ON_CREDIT;
+                const status = isCredit
+                    ? row.paid
+                        ? t('expense.statusPaid')
+                        : t('expense.statusPending')
+                    : t('expense.statusPaid');
+                return (
+                    <Badge variant="subtle" colorScheme={isCredit && !row.paid ? 'red' : 'blue'}>
+                        {status}
+                    </Badge>
+                );
+            },
         },
         {
             header: t('common.actions'),

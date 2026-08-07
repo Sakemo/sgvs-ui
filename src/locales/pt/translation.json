@@ -87,6 +87,7 @@
     "confirmPayment": "Confirmar Pagamento",
     "searchByClient": "Buscar por cliente...",
     "searchByProduct": "Buscar por produto...",
+    "searchByProductOrBarcode": "Buscar por nome, categoria ou código de barras...",
     "settleDebt": "Quitar Dívida",
     "settlePayment": "Quitar Pagamento"
   },
@@ -146,6 +147,7 @@
     "netProfit": "Lucro Líquido",
     "totalExpenses": "Despesas Totais",
     "totalReceivables": "Contas a Receber",
+    "totalAccountsPayable": "Contas a Pagar",
     "averageTicket": "Ticket Médio",
     "vsPreviousPeriod": "vs. período anterior",
     "revenueProfitTrend": "Tendência de Receita e Lucro",
@@ -198,6 +200,7 @@
     "deleteProvider": "Falha ao deletar fornecedor.",
     "deleteExpense": "Falha ao deletar despesa.",
     "deleteCustomer": "Falha ao deletar cliente.",
+    "settleExpense": "Falha ao quitar despesa.",
     "saveSettings": "Falha ao salvar configurações.",
     "updateProfile": "Falha ao atualizar perfil.",
     "deleteAccount": "Falha ao excluir conta.",
@@ -542,6 +545,8 @@
     }
   },
   "sale": {
+    "cashReceived": "Dinheiro Recebido",
+    "change": "Troco",
     "pageTitle": "Vendas",
     "addSale": "Registrar Venda",
     "grossRevenue": "Receita",
@@ -575,7 +580,18 @@
     "confirmDeleteTitle": "Excluir despesa?",
     "deleteSuccess": "Despesa excluída com sucesso.",
     "saveSuccess": "Despesa salva com sucesso.",
-    "noExpenseFound": "Nenhuma despesa encontrada."
+    "settleSuccess": "Despesa quitada com sucesso.",
+    "settleExpenseTitle": "Quitar Despesa",
+    "noExpenseFound": "Nenhuma despesa encontrada.",
+    "accountsPayable": "Contas a Pagar",
+    "statusPaid": "Pago",
+    "statusPending": "Pendente",
+    "settlementPaymentMethod": "Forma de Pagamento da Quitação",
+    "settlementCashReference": "Referência de Caixa",
+    "paidAt": "Pago em",
+    "details": {
+      "noDescription": "Nenhuma descrição fornecida"
+    }
   },
   "expenseCategories": {
     "restocking": "Reposição de Estoque",

@@ -106,6 +106,7 @@ export interface DashboardResponse {
   netProfit: MetricCardData;
   totalExpense: MetricCardData;
   totalReceivables: MetricCardData;
+  totalAccountsPayable: MetricCardData;
   averageTicket: MetricCardData;
   salesByPaymentMethod: ChartDataPoint[];
   topSellingProducts: ChartDataPoint[];
@@ -229,6 +230,10 @@ export interface ExpenseResponse {
   expenseDate: string;
   expenseType: ExpenseType;
   paymentMethod: PaymentMethod;
+  paid: boolean;
+  settlementPaymentMethod?: PaymentMethod | null;
+  settlementCashReference?: string | null;
+  paidAt?: string | null;
   description: string | null;
   createdAt: string;
   updatedAt: string;
