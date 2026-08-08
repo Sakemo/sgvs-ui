@@ -10,7 +10,6 @@ import DashboardPage from "./pages/DashboardPage";
 import ReportsPage from "./pages/ReportsPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import LandingPage from "./pages/LandingPage";
 
 // Context
 import { SettingsProvider } from "./contexts/SettingsProvider";
@@ -67,7 +66,7 @@ function App() {
                 }}
               />
               <Routes>
-                <Route path="/" element={<LandingPage />} />
+                <Route path="/" element={<LoginPage />} />
                 <Route
                   path="/login"
                   element={

@@ -65,7 +65,8 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [quantity, setQuantity] = useState("1");
 
-  const [cashReceived, setCashReceived] = useState('0')
+  const [cashReceived, setCashReceived] = useState(0);
+  const [isCashInputFocused, setIsCashInputFocused] = useState(false);
 
   // --- Autocomplete States ---
   const [customerQuery, setCustomerQuery] = useState('');
@@ -268,7 +269,7 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
     }
 
     setIsCreatingCustomer(true);
-
+    
     try {
       const savedCustomer = await createCustomer({
         name: trimmedName,
@@ -297,26 +298,23 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
       setIsCreatingCustomer(false);
     }
   };
-
+  
   const totalSaleValue = useMemo(
     () => items.reduce((sum, item) => sum + item.totalValue, 0),
     [items]
   );
 
-  const parsedCashReceived = parseFloat(cashReceived);
-
-  const effectCashReceived = useMemo(
-    () =>{ 
-      if(isNaN(parsedCashReceived) || parsedCashReceived < totalSaleValue){
-        return totalSaleValue
-      }
-      return parsedCashReceived;
-    },[totalSaleValue, parsedCashReceived]
-  )
-
+  useEffect(() => {
+    const parsedCash =
+      isNaN(cashReceived) || cashReceived < totalSaleValue
+        ? parseFloat(totalSaleValue.toFixed(2))
+        : parseFloat(cashReceived.toFixed(2));
+    setCashReceived(parsedCash);
+  }, [cashReceived, totalSaleValue]);
+  
   const change = useMemo(
-    () => effectCashReceived - totalSaleValue,
-    [totalSaleValue, effectCashReceived]
+    () => cashReceived - totalSaleValue,
+    [totalSaleValue, cashReceived]
   );
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -486,8 +484,8 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
                   <Input
                     label={t('sale.cashReceived')}
                     type="number"
-                    value={effectCashReceived}
-                    onChange={(e) => setCashReceived(e.target.value)}
+                    value={cashReceived}
+                    onChange={(e) => setCashReceived(parseFloat(e.target.value))}
                     min={totalSaleValue}
                   />
                 }
@@ -540,13 +538,16 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
                   </ul>
                 )}
               </div>
+
+              {/* bottom total bar */}
               <div className="mt-4 justify-between text-right flex flex-row">
+                {/* change input */}
                 {paymentMethod === PaymentMethod.CASH &&
-                  <div className="text-text-secondary ">
-                    <span>
+                  <div className="">
+                    <span className="text-text-secondary">
                       {t("sale.change")}:{" "}
                     </span>
-                    <span>
+                    <span className="">
                       {formatCurrency(change)}
                     </span>
                   </div>

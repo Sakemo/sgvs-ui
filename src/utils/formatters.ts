@@ -90,6 +90,8 @@ export const formatCurrency = (value: number | null | undefined): string => {
   }).format(value ?? 0); // Usa '?? 0' como um fallback seguro para null/undefined
 };
 
+
+
 /**
  * Formata uma data (string ISO) de forma inteligente e traduzível.
  * - Se for hoje, retorna "Hoje, HH:mm".
