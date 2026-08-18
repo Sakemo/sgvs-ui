@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import {
   createProduct,
@@ -60,18 +60,24 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
   const isEditMode = !!productToEdit;
 
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+
   const [categoryToEdit, setCategoryToEdit] = useState<EntitySummary | null>(null);
   const [isProviderModalOpen, setIsProviderModalOpen] = useState(false);
+
   const [keepAdding, setKeepAdding] = useState(false);
   const nameInputRef = useRef<HTMLInputElement>(null);
+
   const [availableCategories, setAvailableCategories] = useState<EntitySummary[]>(categories);
   const [availableProviders, setAvailableProviders] = useState<EntitySummary[]>(providers);
+
   const [categoryQuery, setCategoryQuery] = useState("");
   const [providerQuery, setProviderQuery] = useState("");
+
   const [isCreatingCategory, setIsCreatingCategory] = useState(false);
   const [isCreatingProvider, setIsCreatingProvider] = useState(false);
 
   const [isCalculating, setIsCalculating] = useState(false);
+  
   // Estado do Switch
   const [isSmartPricing, setIsSmartPricing] = useState(true);
   const providerClearOptionValue = "__none__";
@@ -170,28 +176,22 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
   };
 
   // --- Inicialização ---
-  const getInitialFormData = (): ProductRequest => {
-    if (isEditMode && productToEdit) {
-      return {
-        name: productToEdit.name,
-        description: productToEdit.description,
-        barcode: productToEdit.barcode,
-        stockQuantity: productToEdit.stockQuantity,
-        salePrice: productToEdit.salePrice,
-        costPrice: productToEdit.costPrice,
-        desiredProfitMargin: productToEdit.desiredProfitMargin ?? 30,
-        minimumStock: productToEdit.minimumStock ?? 0,
-        unitOfSale: productToEdit.unitOfSale,
-        active: productToEdit.active,
-        managesStock: productToEdit.managesStock,
-        categoryId: productToEdit.category.id,
-        providerId: productToEdit.provider?.id,
-      };
-    }
+  const getInitialFormData = useCallback(() => {
+    if(isEditMode && productToEdit){
+      return { 
+        // Idetinfication
+        name: productToEdit.name, description: productToEdit.description, categoryId: productToEdit.category.id, providerId: productToEdit.provider?.id, barcode: productToEdit.barcode, 
+        //Prices
+        salePrice: productToEdit.salePrice, costPrice: productToEdit.costPrice, desiredProfitMargin: productToEdit.desiredProfitMargin ?? 30, 
+        //Stock
+        managesStock: productToEdit.managesStock, stockQuantity: productToEdit.stockQuantity, minimumStock: productToEdit.minimumStock ?? 0, unitOfSale: productToEdit.unitOfSale, active: productToEdit.active, 
+      } 
+    };
     return {
       name: "",
       description: "",
       barcode: "",
+      managesStock: true,
       stockQuantity: 0,
       minimumStock: 0,
       salePrice: undefined,
@@ -199,12 +199,12 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
       desiredProfitMargin: 30,
       unitOfSale: UnitOfSale.UNIT,
       active: true,
-      managesStock: false,
       categoryId: categories[0]?.id,
       providerId: undefined,
-    };
-  };
+    }
+  }, [categories, isEditMode, productToEdit])
 
+  
   const [formData, setFormData] = useState<Partial<ProductRequest>>(() => getInitialFormData());
   const [isLoading, setIsLoading] = useState(false);
   const wasOpenRef = useRef(false);
@@ -247,7 +247,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
     return () => {
       if (timer) clearTimeout(timer);
     };
-  }, [isOpen, isEditMode, productToEdit, categories]);
+  }, [isOpen, isEditMode, productToEdit, categories, getInitialFormData]);
 
   // Fallback para categoria padrão
   useEffect(() => {
@@ -284,7 +284,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
   };
 
   // --- Cálculo de Preço ---
-  const handleCalculatePrice = async () => {
+  const handleCalculatePrice = useCallback(async () => {
     if (isSmartPricing && formData.costPrice && formData.desiredProfitMargin) {
       setIsCalculating(true);
       try {
@@ -300,8 +300,8 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
         setIsCalculating(false);
       }
     }
-  };
-
+  }, [formData.costPrice, formData.desiredProfitMargin, isSmartPricing, t]); 
+  
   useEffect(() => {
     if (isSmartPricing && formData.costPrice && formData.desiredProfitMargin) {
       const timer = setTimeout(() => {
@@ -309,7 +309,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [isSmartPricing, formData.costPrice, formData.desiredProfitMargin]);
+  }, [handleCalculatePrice, isSmartPricing, formData.costPrice, formData.desiredProfitMargin]);
 
   const handleQuickCreateCategory = async (name: string) => {
     const trimmedName = name.trim();

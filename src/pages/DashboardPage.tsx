@@ -16,6 +16,7 @@ import SalesTrendChart from "../components/features/dashboard/SalesTrendChart";
 import TopProductsList from "../components/features/dashboard/TopProductsList";
 import PaymentMethodDonut from "../components/features/dashboard/PaymentMethodDonut";
 import { notificationService } from "../lib/notification.service";
+import { formatCurrency } from "../utils/formatters";
 
 const DashboardPage: React.FC = () => {
   const { t } = useTranslation();
@@ -82,12 +83,16 @@ const DashboardPage: React.FC = () => {
   return (
     <div className="space-y-4 dark:text-[#F7F1ED]">
       <header className="flex flex-wrap items-center justify-between gap-4">
-        <div className="w-full sm:w-auto">
+        <div className="w-full sm:w-auto flex justify-between">
           <DateFilterDropdown
             selectedOption={dateFilter}
             onSelect={setDateFilter}
             options={dateFilterOptions}
           />
+          <span className="block w-full h-10 pr-8 sm:text-sm border border-border-light dark:border-border-dark rounded-l-md bg-card-light dark:bg-card-dark flex items-center mx-12">
+            <p className="pl-4 py-6 text-[12px] text-left text-text-secondary">{t('dashboard.totalAccountsPayable')}</p>
+            <p>{formatCurrency(dashboardData?.totalAccountsPayable?.value)}</p>
+          </span>
         </div>
       </header>
 
@@ -139,19 +144,6 @@ const DashboardPage: React.FC = () => {
                 isLoading={isLoading}
                 className="min-h-[152px] p-3"
                 changeColorVariant="yellow"
-              />
-              <MetricCard
-                title={t("dashboard.totalAccountsPayable")}
-                value={dashboardData?.totalAccountsPayable.value ?? 0}
-                percentageChange={
-                  dashboardData?.totalAccountsPayable.percentageChange ?? 0
-                }
-                sparklineData={
-                  dashboardData?.totalAccountsPayable.sparklineData ?? []
-                }
-                isLoading={isLoading}
-                className="min-h-[152px] p-3"
-                changeColorVariant="expense"
               />
             </div>
           </div>

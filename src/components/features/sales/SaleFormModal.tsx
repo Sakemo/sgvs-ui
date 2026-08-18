@@ -17,6 +17,8 @@ import {
   PaymentMethod,
   UnitOfSale,
   type ProductResponse,
+  type EntitySummary,
+  type ProviderResponse,
 } from "../../../api/types/domain";
 
 // Components
@@ -33,6 +35,9 @@ import AutocompleteInput, {
 } from "../../common/AutoCompleteInput";
 import ToggleSwitch from "../../common/ui/ToggleSwitch";
 import { notificationService } from "../../../lib/notification.service";
+import ProductFormModal from "../products/ProductFormModal";
+import { getCategories } from "../../../api/services/category.service";
+import { getProviders } from "../../../api/services/provider.service";
 
 interface SaleFormModalProps {
   isOpen: boolean;
@@ -55,6 +60,12 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
 
   const productSearchInputRef = useRef<HTMLInputElement>(null);
 
+  const [categories, setCategories] = useState<EntitySummary[]>([]);
+  const [providers, setProviders] = useState<ProviderResponse[]>([]);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [productToEdit, setProductToEdit] = useState<ProductResponse | null>(null);
+
   // State
   const [keepCreatingSales, setKeepCreatingSales] = useState(true);
   const [items, setItems] = useState<FormSaleItem[]>([]);
@@ -66,7 +77,6 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
   const [quantity, setQuantity] = useState("1");
 
   const [cashReceived, setCashReceived] = useState(0);
-  const [isCashInputFocused, setIsCashInputFocused] = useState(false);
 
   // --- Autocomplete States ---
   const [customerQuery, setCustomerQuery] = useState('');
@@ -123,6 +133,7 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
     setQuantity("1");
   }, [setCustomerQuery, setProductQuery]);
 
+  // load initial data
   useEffect(() => {
     if (isOpen) {
       setIsLoading(true);
@@ -160,7 +171,7 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
   }, [customerQuery]);
 
   // fetch products
-  useEffect(() => {
+  const fetchProducts = useCallback(() => {
     if (productQuery.length < 1) {
       setSearchedProductOptions([]);
       return;
@@ -181,6 +192,10 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
   }, [productQuery]);
 
   useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
+  useEffect(() => {
     if (isOpen) {
       requestAnimationFrame(() => {
         productSearchInputRef.current?.focus();
@@ -188,11 +203,43 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
     }
   }, [isOpen]);
 
+  const fetchDependencies = useCallback(async () => {
+    try {
+      const [categoriesData, providersData] = await Promise.all([
+        getCategories(),
+        getProviders()
+      ]);
+
+      setCategories(categoriesData);
+      setProviders(providersData);
+    } catch (err) {
+      notificationService.error(t(`errors.fetchInitialData` + err));
+    }
+  }, [t]);
+
   // validation for options
   const customerAutocompleteOptions = customerQuery ? searchedCustomerOptions : initialCustomerOptions;
   const productAutocompleteOptions = productQuery ? searchedProductOptions : initialProductOptions;
 
   // handlers
+  const handleOpenModal = (product: ProductResponse | null) => {
+    setProductToEdit(product);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => setIsModalOpen(false);
+
+  const handleSaveSuccess = () => {
+      fetchProducts();
+      handleCloseModal();
+      notificationService.success(t('product.saveSuccess', 'Product saved successfully!'))
+  };
+
+  const handleDataRefresh = () => {
+    fetchDependencies();
+    fetchProducts();
+  }
+
   const handleAddItem = () => {
     const numQuantity = parseFloat(quantity);
     if (!selectedProductOption || isNaN(numQuantity) || numQuantity <= 0) {
@@ -269,7 +316,7 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
     }
 
     setIsCreatingCustomer(true);
-    
+
     try {
       const savedCustomer = await createCustomer({
         name: trimmedName,
@@ -298,7 +345,7 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
       setIsCreatingCustomer(false);
     }
   };
-  
+
   const totalSaleValue = useMemo(
     () => items.reduce((sum, item) => sum + item.totalValue, 0),
     [items]
@@ -311,7 +358,7 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
         : parseFloat(cashReceived.toFixed(2));
     setCashReceived(parsedCash);
   }, [cashReceived, totalSaleValue]);
-  
+
   const change = useMemo(
     () => cashReceived - totalSaleValue,
     [totalSaleValue, cashReceived]
@@ -387,6 +434,7 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
     if (event.ctrlKey && event.key === "Enter") {
       event.preventDefault();
       void handleSubmit(event as unknown as React.FormEvent);
+
       return;
     }
     if (event.key === "Enter" && selectedProductOption) {
@@ -416,17 +464,40 @@ const SaleFormModal: React.FC<SaleFormModalProps> = ({
                   {t("sale.addItem")}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_auto] gap-4 items-end">
-                  <AutocompleteInput
-                    label={t("product.objectName")}
-                    placeholder={t("actions.searchByProductOrBarcode")}
-                    options={productAutocompleteOptions}
-                    selected={selectedProductOption}
-                    onSelect={setSelectedProductOption}
-                    onQueryChange={setProductQuery}
-                    onInputKeyDown={handleProductSearchKeyDown}
-                    inputRef={productSearchInputRef}
-                    isLoading={isSearching.products}
-                  />
+                  <div className="flex items-center">
+                    <AutocompleteInput
+                      label={t("product.objectName")}
+                      placeholder={t("actions.searchByProductOrBarcode")}
+                      options={productAutocompleteOptions}
+                      selected={selectedProductOption}
+                      onSelect={setSelectedProductOption}
+                      onQueryChange={setProductQuery}
+                      onInputKeyDown={handleProductSearchKeyDown}
+                      inputRef={productSearchInputRef}
+                      isLoading={isSearching.products}
+                    />
+                    <Button
+                      className="mt-auto ml-1"
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => { handleOpenModal(null) }}
+                      title={t("category.addTitle")}
+                      iconLeft={<LuPlus />}
+                    />
+                    {isModalOpen && (
+                        <ProductFormModal 
+                          isOpen={isModalOpen} 
+                          onClose={handleCloseModal} 
+                          onSaveSuccess={handleSaveSuccess} 
+                          productToEdit={productToEdit} 
+                          categories={categories} 
+                          providers={providers} 
+                          onDataRefresh={handleDataRefresh}
+                        />
+                    )}
+
+                  </div>
                   <Input
                     label={t("sale.quantity")}
                     type="number"

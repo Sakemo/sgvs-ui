@@ -293,7 +293,14 @@ const ProductsPage: React.FC = () => {
                 </div>
             </div>
             {isModalOpen && (
-                <ProductFormModal isOpen={isModalOpen} onClose={handleCloseModal} onSaveSuccess={handleSaveSuccess} productToEdit={productToEdit} categories={categories} providers={providers} onDataRefresh={handleDataRefresh}/>
+                <ProductFormModal 
+                    isOpen={isModalOpen} 
+                    onClose={handleCloseModal} 
+                    onSaveSuccess={handleSaveSuccess} 
+                    productToEdit={productToEdit} 
+                    categories={categories} 
+                    providers={providers} 
+                    onDataRefresh={handleDataRefresh}/>
             )}
         </div>
     );
